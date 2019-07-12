@@ -1,0 +1,104 @@
+<script type="text/x-red" data-help-name="Com-Server">
+	<p>This node integrates a <a href="https://www.wut.de/e-58665-ww-daus-000.php" target="_blank">Wiesemann & Theis Com-Server</a> in Node-RED.</p>
+	<p>It can both transmit incoming data through the Com-Server and generate Node-RED messages from serial data received by the device.</p>
+
+	<h3>Inputs</h3>
+	<dl class="message-properties">
+		<dt>Payload <span class="property-type">string | buffer</span></dt>
+		<dd>Serial data to be transmitted through the Com-Server</dd>
+	</dl>
+
+	<h3>Outputs</h3>
+	<dl class="message-properties">
+		<dt>Payload <span class="property-type">string | buffer</span></dt>
+		<dd>Serial data received by the Com-Server</dd>
+	</dl>
+
+	<h3>Details</h3>
+	<p>This node enables you to access a <a href="https://www.wut.de/e-58665-ww-daus-000.php" target="_blank">WuT Com-Server</a> and its serial interface respectively.</p>
+
+	<p>
+		On the one hand each incoming <code>msg.payload</code> (string or buffer) will be transmitted on the serial interface of the Com-Server.
+		On the other hand all received serial data will be wrapped into corresponding Node-RED messages.
+	</p>
+
+	<p>
+		For (Node-RED) output messages there are different formats ("string" (default), "buffer").
+		For the "string" format you can optionally specify a delimiter.
+		Incoming serial data will then be buffered and only sent out (as one message) when the delimiter is received.
+		In addition you can specifiy if the delimiter itself should be transmitted (default: no).
+	</p>
+
+	<p>
+		Furthermore, you can adjust the Com-Server's UART configuration (baudrate, parity,...).
+		If you enable the "configure UART parameters" checkbox, the corresponding additional configuration elements will be shown (see "configuration").
+		This configuration will automatically be transmitted when connected to the Com-Server (no triggering through input messages needed).
+	</p>
+
+	<p>
+		Note: This way of configuring the UART parameters is only suitable for devices connected to Node-RED.
+		The data is not stored persistently but re-transmitted whenever the device is restarted/reconnected.
+		Please use the device's web interface or telnet for persistent UART configuration changes.
+	</p>
+
+	<h3>References</h3>
+	<ul>
+		<li><a href="https://www.wut.de/e-wwwww-ww-hpus-000.php" target="_blank">Wiesemann & Theis GmbH</a></li>
+		<li><a href="https://www.wut.de/e-58665-ww-daus-000.php" target="_blank">WuT Com-Server++</a></li>
+		<li><a href="https://www.wut.de/e-58www-10-inus-000.php" target="_blank">TCP/IP-Ethernet <> Serial</a></li>
+	</ul>
+
+	<h3>Configuration</h3>
+	<dl class="message-properties">
+		<dt class="optional">Name <span class="property-type">string</span></dt>
+		<dd>Custom name for the Node-RED node</dd>
+		
+		<dt>Host <span class="property-type">string</span></dt>
+		<dd>Com-Server address / hostname</dd>
+			
+		<dt>Port <span class="property-type">number</span></dt>
+		<dd>Com-Server TCP port (default: 8000)</dd>
+		
+		<dt>Output <span class="property-type">select</span></dt>
+		<dd>Output format for incoming serial data</dd>
+		
+		<dt class="optional">Delimited by <span class="property-type">string</span></dt>
+		<dd>Delimiter for buffering and grouping of incoming serial data (for output format "string" only)</dd>
+		
+		<dt class="optional">Send delimiter<span class="property-type">boolean</span></dt>
+		<dd>Send delimiter oder drop it? (for output format "string" only)</dd>
+		
+		<dt>Encoding <span class="property-type">select</span></dt>
+		<dd>Character encoding for both incoming and outcoming (string) messages</dd>
+
+		<dt class="optional">Configure UART parameters <span class="property-type">boolean</span></dt>
+		<dd>dis-/enable UART configuration (see "details")</dd>
+		
+		<!--
+			<dt>Control Port <span class="property-type">number</span></dt>
+			<dd>Com-Server TCP (control)port (default: 9094)</dd>
+		-->
+
+		<dt>Baudrate <span class="property-type">select</span></dt>
+		<dd>UART configuration (default: 9.600)</dd>
+		
+		<dt>Parity <span class="property-type">select</span></dt>
+		<dd>UART configuration (default: NONE)</dd>
+		
+		<dt>Data Bits <span class="property-type">select</span></dt>
+		<dd>UART configuration (default: 8)</dd>
+		
+		<dt>Stop Bits <span class="property-type">select</span></dt>
+		<dd>UART configuration (default: 1)</dd>
+		
+		<dt class="optional">Password <span class="property-type">password</span></dt>
+		<dd>Password for controlport/configuration access (default: "")</dd>
+		
+		<!--
+			<dt class="optional">save with EEPROM update <span class="property-type">boolean</span></dt>
+			<dd>
+				If true, changes will be applied to the non-volatile memory and still be active after restarting the Com-Server.
+			</dd>
+		-->
+	</dl>
+</script>

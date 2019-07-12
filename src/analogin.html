@@ -1,0 +1,106 @@
+<script type="text/javascript">
+	const nodeType = 'Analog IN';
+	const defaultClampCount = 8;
+	const portinfoType = 1;
+
+	let labels = {}; // { webio-id-1: [label1, label2,...], webio-id-2: [...], ...}
+
+	// workaround to get custom input labels for Web-IOs
+	RED.comms.subscribe("wut/portlabels/#", function (topic, msg) {
+		const webioId = topic.split("/")[2];
+		if (webioId && msg) {
+			labels[webioId] = msg[portinfoType] || [];
+		} else {
+			console.warn('Invalid portlabels message received', topic, msg);
+		}
+	});
+
+	const startTime = new Date();
+	const startupTimer = setInterval(function () {
+		const nodes = RED.nodes.filterNodes({}) || [];
+		if (nodes.length || new Date() - startTime > 10000) {
+			clearInterval(startupTimer);
+			// workaround to generate parameterized status messages (this.status(...) does not support dynamic parameters (yet)!)
+			RED.comms.subscribe("wut/i18n-status/#", function (topic, msg) {
+				if (msg && msg.text) {
+					const id = topic.split("/")[2];
+					const node = RED.nodes.node(id);
+					if (node) {
+						msg.text = node._(msg.text.toString(), msg.params || {});
+						node.status = msg;
+						node.dirty = true;
+						RED.view.redraw();
+					} else {
+						console.warn('Invalid i18n-status message received. Cannot find node with id ' + id);
+					}
+				} else {
+					console.warn('Invalid i18n-status message received. Message is empty or invalid:', msg);
+				}
+			});
+		}
+	}, 300); // subscribe only when nodes have been loaded (or 10s timeout) -> otherwise retained messages might not be processed correctly because node is not available yet
+
+	RED.nodes.registerType(nodeType, {
+		category: 'WuT',
+		color: '#009fe3',
+		defaults: {
+			name: { value: '' },
+			webio: { value: '', type: 'Web-IO' },
+			number: { value: 1, required: true, validate: RED.validators.number() }
+		},
+		outputs: 1,
+		icon: "wutlogo.png",
+		label: function () {
+			return this.name || (labels[this.webio] || [])[this.number - 1] || nodeType;
+		},
+		labelStyle: function () {
+			return this.name ? 'node_label_italic' : '';
+		},
+		oneditprepare: function () {
+			let lastWebio = null;
+			let lastNumber = this.number;
+
+			$('#node-input-webio').change(function () {
+				const tempWebio = $(this).val();
+				if (tempWebio !== lastWebio) {
+					lastWebio = tempWebio;
+					$('#node-input-number').children('option').remove(); // remove all clamp options
+					let tempLabels = labels[tempWebio] || [];
+					if (!tempLabels.length) {
+						for (let i = 0; i < defaultClampCount; ++i) {
+							tempLabels.push(null); // to ensure IE compatibility (tempLabels = new Array(defaultClampCount).fill(null);)
+						}
+					}
+					for (let i = 0; i < tempLabels.length; ++i) { // add new options according to label list
+						// NOTE: analog clamp numbers are 1 based (digital are 0 based!)
+						const label = tempLabels[i] || (i + 1);
+						$('#node-input-number').append($('<option></option>').attr('value', i + 1).text(label));
+					}
+					// finally, restore selection
+					const selection = $('#node-input-number').val(lastNumber);
+					if (!selection.length) {
+						$('#node-input-number').val(''); // clear selection (e. g. if a non-existing clamp was selected before)
+					}
+				}
+			});
+			$('#node-input-number').change(function () {
+				lastNumber = $(this).val() || lastNumber;
+			});
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="Analog IN">
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="config.label.name"></span></label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]config.label.name" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-webio"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.webio"></span></label>
+		<input type="text" id="node-input-webio" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-number"><i class="fa fa-fw fa-dot-circle-o"></i> <span data-i18n="config.label.clamp"></span></label>
+		<select id="node-input-number"></select>
+	</div>
+</script>

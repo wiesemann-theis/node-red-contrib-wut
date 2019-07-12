@@ -1,0 +1,21 @@
+{
+	"name": "node-red-contrib-wut",
+	"version": "1.0.0",
+	"description": "Integrate Wiesemann & Theis products - like Com-Servers, Web-IOs or Web-Thermometers - into Node-RED.",
+	"author": "Wiesemann & Theis GmbH <info@wut.de> (https://www.wut.de/)",
+	"license": "MIT",
+	"repository": "",
+	"homepage": "https://www.wut.de/",
+	"keywords": [],
+	"dependencies": {},
+	"devDependencies": {},
+	"node-red": {
+		"nodes": {
+			"analog-in": "src/analogin.js",
+			"digital-in": "src/digitalin.js",
+			"digital-out": "src/digitalout.js",
+			"web-io": "src/webio.js",
+			"com-server": "src/comserver.js"
+		}
+	}
+}

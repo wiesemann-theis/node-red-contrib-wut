@@ -1,0 +1,103 @@
+<script type="text/x-red" data-help-name="Com-Server">
+	<p>Anbindung eines <a href="https://www.wut.de/e-58665-ww-dade-000.php" target="_blank">Wiesemann & Theis Com-Server</a> an Node-RED.</p>
+	<p>Kann sowohl eingehende Daten über den Com-Server seriell ausgeben, als auch serielle Eingänge als Node-RED-Meldungen weiterleiten.</p>
+
+	<h3>Inputs</h3>
+	<dl class="message-properties">
+		<dt>Payload <span class="property-type">string | buffer</span></dt>
+		<dd>Serielle Daten, die vom Com-Server ausgegeben werden sollen</dd>
+	</dl>
+
+	<h3>Outputs</h3>
+	<dl class="message-properties">
+		<dt>Payload <span class="property-type">string | buffer</span></dt>
+		<dd>Serielle Daten, die vom Com-Server empfangen wurden</dd>
+	</dl>
+
+	<h3>Details</h3>
+	<p>Dieser Knoten bietet die Möglichkeit, auf einen <a href="https://www.wut.de/e-58665-ww-dade-000.php" target="_blank">WuT Com-Server</a> bzw. dessen serielle Schnittstelle zuzugreifen.</p>
+
+	<p>Zum einen wird der <code>msg.payload</code> (String oder Buffer) aller eingehenden Node-RED-Meldungen auf der seriellen Schnittstelle ausgegeben.
+		Zum anderen werden alle auf der seriellen Schnittstelle eingehenden Daten als Node-RED-Meldungen ausgegeben.</p>
+	
+	<p>
+		Für die (Node-RED-)Ausgabe kann zwischen den Formaten "String" (Standard) und "Buffer" gewählt werden.
+		Für das "String"-Format kann außerdem optional ein Trennzeichen (oder Trennzeichenkette) angegeben werden.
+		Die eingehenden seriellen Daten werden dann zunächst zwischengespeichert und erst (in einer Meldung) gebündelt ausgegeben, wenn das Trennzeichen empfangen wurde.
+		Zusätzlich kann konfiguriert werden, ob das Trennzeichen selbst mit ausgegeben werden soll (Standard: nein).
+	</p>
+
+	<p>
+		Außerdem besteht die Möglichkeit, die UART Konfiguration (Baudrate, Parity,...) des Com-Servers zu bearbeiten.
+		Wenn die Checkbox "UART Parameter konfigurieren" aktiviert wird, erscheinen entsprechende weitere Konfigurationsparameter (vgl. "Konfiguration").
+		Diese Konfiguration wird dann beim Verbindungsaufbau automatisch übertragen (kein Trigger über einen Input o. ä. nötig).
+	</p>
+
+	<p>
+		Hinweis: Diese Art der UART-Konfiguration ist nur für Geräte geeignet, die mit Node-RED verbunden sind.
+		Die Parameter werden nicht persistent gespeichert, sondern nach jedem Neustart bzw. Verbindungsaufbau des Geräts erneut übertragen.
+		Eine persistente Änderung ist nur über die Webschnittstelle oder Telnet möglich.
+	</p>
+
+	<h3>Links</h3>
+	<ul>
+		<li><a href="https://www.wut.de" target="_blank">Wiesemann & Theis GmbH</a></li>
+		<li><a href="https://www.wut.de/e-58665-ww-dade-000.php" target="_blank">WuT Com-Server++</a></li>
+		<li><a href="https://www.wut.de/e-58www-10-inde-000.php" target="_blank">TCP/IP-Ethernet <> Seriell</a></li>
+	</ul>
+
+	<h3>Konfiguration</h3>
+	<dl class="message-properties">		
+		<dt class="optional">Name <span class="property-type">string</span></dt>
+		<dd>Bezeichnung des Node-RED-Knotens</dd>
+
+		<dt>Host <span class="property-type">string</span></dt>
+		<dd>Adresse / Hostname des Com-Servers</dd>
+			
+		<dt>Port <span class="property-type">number</span></dt>
+		<dd>TCP-Port des Com-Servers (Standard: 8000)</dd>
+		
+		<dt>Ausgabe <span class="property-type">select</span></dt>
+		<dd>Ausgabeformat für eingehende serielle Daten</dd>
+		
+		<dt class="optional">Trennzeichen <span class="property-type">string</span></dt>
+		<dd>Trennzeichen zur Zwischenspeicherung und Bündelung serieller Eingänge (nur für Ausgabeformat "String", s. o.)</dd>
+		
+		<dt class="optional">Trennzeichen ausgeben<span class="property-type">boolean</span></dt>
+		<dd>Trennzeichen mit ausgeben oder herausfiltern? (nur für Ausgabeformat "String", s. o.)</dd>
+		
+		<dt>Kodierung <span class="property-type">select</span></dt>
+		<dd>Zeichenkodierung für eingehende und ausgehende Meldungen im String-Format</dd>
+		
+		<dt class="optional">UART Parameter konfigurieren <span class="property-type">boolean</span></dt>
+		<dd>UART-Konfiguration de-/aktivieren (s. o.)</dd>
+		
+		<!--
+			<dt>Control-Port <span class="property-type">number</span></dt>
+			<dd>TCP-(Control-)Port des Com-Servers (Standard: 9094)</dd>
+		-->
+		
+		<dt>Baudrate <span class="property-type">select</span></dt>
+		<dd>UART-Konfiguration (Standard: 9.600)</dd>
+		
+		<dt>Parity <span class="property-type">select</span></dt>
+		<dd>UART-Konfiguration (Standard: NONE)</dd>
+		
+		<dt>Data Bits <span class="property-type">select</span></dt>
+		<dd>UART-Konfiguration (Standard: 8)</dd>
+		
+		<dt>Stop Bits <span class="property-type">select</span></dt>
+		<dd>UART-Konfiguration (Standard: 1)</dd>
+		
+		<dt class="optional">Passwort <span class="property-type">password</span></dt>
+		<dd>Passwort für Controlport (Standard: "")</dd>
+				
+		<!-- 
+			<dt class="optional">EEPROM updaten <span class="property-type">boolean</span></dt>
+			<dd>
+				Falls aktiviert, werden die Änderungen in den nichtflüchtigen Speicher übernommen
+				und bleiben auch bei einem Neustart des Com-Servers erhalten.
+			</dd> 
+		-->
+	</dl>
+</script>

@@ -1,0 +1,21 @@
+{
+    "config": {
+        "label": {
+            "name": "Name",
+            "protocol": "Protokoll",
+            "host": "Host",
+            "port": "Port",
+            "password": "Passwort"
+        }
+    },
+    "logging": {
+        "portinfos": {
+            "loaded": "Port-Informationen geladen.",
+            "invalid": "Ungültige Port-Informationen empfangen.",
+            "failed": "Port-Informationen Laden fehlgeschlagen."
+        },
+        "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__).",
+        "set-failed-statuscode": "Fehler beim Setzen des Outputs #__number__ auf __value__ (StatusCode: __statusCode__).",
+        "set-failed-error": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Error: __errMsg__)"
+    }
+}

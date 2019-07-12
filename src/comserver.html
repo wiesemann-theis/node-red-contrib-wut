@@ -1,0 +1,172 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Com-Server', {
+        category: 'WuT',
+        color: '#009fe3',
+        defaults: {
+            name: { value: '' },
+            host: { value: '', required: true, validate: RED.validators.regex(/^[a-z0-9\-\.]+$/i) },
+            port: { value: 8000, required: true, validate: RED.validators.number() },
+            format: { value: 'string' },
+            encoding: { value: 'utf8' },
+            delimiter: { value: '' },
+            sendDelimiter: { value: false },
+            setuart: { value: false },
+            configport: { value: 9094, validate: RED.validators.number() }, // NOTE: this parameter currently has no GUI element!
+            baudrate: { value: 3, validate: RED.validators.number() },
+            parity: { value: 0, validate: RED.validators.number() },
+            databits: { value: 8, validate: RED.validators.number() },
+            stopbits: { value: 1, validate: RED.validators.number() },
+            permupdate: { value: false } // NOTE: this parameter currently has no GUI element!
+        },
+        credentials: { password: { type: 'password' } },
+        inputs: 1,
+        outputs: 1,
+        icon: 'wutlogo.png',
+        label: function () {
+            const portLabel = +this.port === 8000 ? '' : ':' + this.port; // do not display default port
+            return this.name || 'Com-Server ' + (this.host || '') + portLabel;
+        },
+        labelStyle: function () {
+            return this.name ? 'node_label_italic' : '';
+        },
+        oneditprepare: function () {
+            $('#node-input-format').change(function () {
+                if (this.value === 'string') {
+                    $('#string-details-wrapper').show();
+                } else {
+                    $('#string-details-wrapper').hide();
+                }
+            });
+            $('#node-input-setuart').change(function () {
+                if (this.checked) {
+                    $('#uart-wrapper').show();
+                } else {
+                    $('#uart-wrapper').hide();
+                }
+            });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Com-Server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="config.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]config.label.name" />
+    </div>
+
+	<div class="form-row">
+		<label for="node-input-host"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.host"></label>
+		<input type="text" id="node-input-host" data-i18n="[placeholder]config.label.host" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-port"><i class="fa fa-fw fa-dot-circle-o"></i> <span data-i18n="config.label.port"></label>
+		<input type="text" id="node-input-port" data-i18n="[placeholder]config.label.port" />
+    </div>
+    
+    <div class="form-row">
+        <label for=""node-input-format"><i class="fa fa-fw fa-sign-out"></i> <span data-i18n="config.label.format"></span></label>
+        <select id="node-input-format">
+            <option value="string" data-i18n="config.format.string"></option>
+            <option value="buffer" data-i18n="config.format.buffer"></option>
+        </select>
+    </div>
+
+    <div id="string-details-wrapper">
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <label for="node-input-delimiter" data-i18n="config.label.delimiter"></label>
+            <input type="text" id="node-input-delimiter" style="width:120px;" />
+        </div>
+
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-sendDelimiter" style="display: inline-block; width: auto; vertical-align: top;" />
+            <span data-i18n="config.label.send-delimiter"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-encoding"><i class="fa fa-fw fa-exchange"></i> <span data-i18n="config.label.encoding"></span></label>
+        <select id="node-input-encoding">
+            <option>utf8</option>
+            <option>latin1</option>
+        </select>
+    </div>
+    
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-setuart" style="display: inline-block; width: auto; vertical-align: top;" />
+        <span data-i18n="config.label.setuart">
+    </div>
+    
+    <div id="uart-wrapper">
+        <div class="form-row hidden">
+            <!-- Hidden (for now). Maybe to be enabled in future releases... -->
+            <label for="node-input-configport"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.configport"></label>
+            <input type="text" id="node-input-configport" />
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-baudrate"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.baudrate"></label>
+            <select id="node-input-baudrate">
+                <option value="11">230,4k</option>
+                <option value="14">153,6k</option>
+                <option value="15">115,2k</option>
+                <option value="0">57.600</option>
+                <option value="1">38.400</option>
+                <option value="2">19.200</option>
+                <option value="3">9.600</option>
+                <option value="5">4.800</option>
+                <option value="6">2.400</option>
+                <option value="7">1.200</option>
+                <option value="8">600</option>
+                <option value="9">300</option>
+                <option value="10">150</option>
+                <option value="16">110</option>
+                <option value="12">75</option>
+                <option value="13">50</option>
+            </select>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-parity"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.parity"></label>
+            <select id="node-input-parity">
+                <option value="0">NONE</option>
+                <option value="3">EVEN</option>
+                <option value="1">ODD</option>
+                <option value="7">SPACE</option>
+                <option value="5">MARK</option>
+            </select>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-databits"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.databits"></label>
+            <select id="node-input-databits">
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+            </select>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-stopbits"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.stopbits"></label>
+            <select id="node-input-stopbits">
+                <option>1</option>
+                <option>2</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-password"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.password"></label>
+            <input type="password" id="node-input-password" />
+        </div>
+        
+        <div class="form-row hidden">
+            <!-- Hidden (for now). Maybe to be enabled in future releases... -->
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-permupdate" style="display: inline-block; width: auto; vertical-align: top;" />
+            <label for="node-input-permupdate" style="width: 70%;"><span data-i18n="config.label.permupdate"></span></label>
+        </div>
+    </div>
+</script>

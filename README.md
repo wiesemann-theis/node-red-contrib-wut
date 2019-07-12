@@ -1,2 +1,31 @@
 # node-red-contrib-wut
-Integrate Wiesemann &amp; Theis products - like Com-Servers, Web-IOs or Web-Thermometers - into Node-RED.
+
+Integrate [Wiesemann & Theis](https://www.wut.de/) products - like Com-Servers, Web-IOs or Web-Thermometers - into Node-RED.
+
+The package currently provides the following nodes:
+
+- Com-Server (handle both incoming and outgoing serial communication through [Com-Servers](https://www.wut.de/e-58665-ww-daus-000.php))
+- Digital IN (display input values of [Digital Web-IOs](https://www.wut.de/e-50www-10-inus-000.php))
+- Digital OUT (display and possibly set output values of [Digital Web-IOs](https://www.wut.de/e-50www-10-inus-000.php))
+- Analog IN (display input values of [Analog Web-IOs](https://www.wut.de/e-5764w-10-inus-000.php) or [Web-Thermometers](https://www.wut.de/e-5760w-10-inus-000.php))
+
+## Installation
+
+You can either use the Node-RED editor's `Menu - Manage palette` option and search for `node-red-contrib-wut`, or run the following command in your Node-RED user directory (typically `~/.node-red`):
+
+    npm i node-red-contrib-wut
+
+Once you have restarted your Node-RED instance you should have the WuT nodes available.
+
+## Usage
+
+For detailed information about the nodes and their configuration please look at the nodes' help texts at the Node-RED editor.
+
+Please note that Web-IOs and Web-Thermometers don't allow http access by default.
+To access these devices through Node-RED, please ensure that the "allow http requests" option in the "communication paths -> web API" section of the web configuration is enabled.
+
+To visualize your data, you might for example use the nodes provided by the [node-red-dashboard project](https://flows.nodered.org/node/node-red-dashboard).
+
+## License
+
+see [LICENSE file](LICENSE)

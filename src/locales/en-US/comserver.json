@@ -1,0 +1,46 @@
+{
+    "config": {
+        "label": {
+            "host": "Host",
+            "port": "Port",
+            "format": "Output",
+            "delimiter": "delimiter",
+            "send-delimiter": "send delimiter",
+            "encoding": "Encoding",
+            "name": "Name",
+            "setuart": "configure UART parameters",
+            "configport": "Control Port",
+            "baudrate": "Baudrate",
+            "parity": "Parity",
+            "databits": "Data Bits",
+            "stopbits": "Stop Bits",
+            "password": "Password",
+            "permupdate": "save with EEPROM update"
+        },
+        "format": {
+            "string": "String",
+            "buffer": "Buffer"
+        }
+    },
+    "status": {
+        "connecting": "connecting",
+        "connected": "connected",
+        "disconnected": "disconnected",
+        "unknown": "unknown status"
+    },
+    "logging": {
+        "config": {
+            "success": "Successfully transmitted configuration parameters. Closing connection.",
+            "invaliddata": "Invalid configuration parameters received. Transmission possibly failed. Closing connection.",
+            "passworderror": "Configuration failed due to invalid password. Closing connection.",
+            "unexpecteddata": "Unexpected data received from control port. Closing connection."
+        },
+        "connection": {
+            "established": "Connection to __host__:__port__ established",
+            "lost": "Connection to __host__:__port__ lost",
+            "force-destroy": "Connection to __host__:__port__ destroyed"
+        },
+        "input-failed": "Processing input data failed. Probably no connection yet or connection lost.",
+        "invalid-config": "Invalid configuration (host __host__, port __port__)."
+    }
+}

@@ -1,0 +1,80 @@
+<script type="text/javascript">
+	const nodeType = 'Digital IN';
+	const defaultClampCount = 12;
+	const portinfoType = 2;
+
+	let labels = {}; // { webio-id-1: [label1, label2,...], webio-id-2: [...], ...}
+
+	// workaround to get custom input labels for Web-IOs
+	RED.comms.subscribe("wut/portlabels/#", function (topic, msg) {
+		const webioId = topic.split("/")[2];
+		if (webioId && msg) {
+			labels[webioId] = msg[portinfoType] || [];
+		} else {
+			console.warn('Invalid portlabels message received', topic, msg);
+		}
+	});
+
+	RED.nodes.registerType(nodeType, {
+		category: 'WuT',
+		color: '#009fe3',
+		defaults: {
+			name: { value: '' },
+			webio: { value: '', type: 'Web-IO' },
+			number: { value: 0, required: true, validate: RED.validators.number() }
+		},
+		outputs: 1,
+		icon: "wutlogo.png",
+		label: function () {
+			return this.name || (labels[this.webio] || [])[this.number] || nodeType;
+		},
+		labelStyle: function () {
+			return this.name ? 'node_label_italic' : '';
+		},
+		oneditprepare: function () {
+			let lastWebio = null;
+			let lastNumber = this.number;
+
+			$('#node-input-webio').change(function () {
+				const tempWebio = $(this).val();
+				if (tempWebio !== lastWebio) {
+					lastWebio = tempWebio;
+					$('#node-input-number').children('option').remove(); // remove all clamp options
+					let tempLabels = labels[tempWebio] || [];
+					if (!tempLabels.length) {
+						for (let i = 0; i < defaultClampCount; ++i) {
+							tempLabels.push(null); // to ensure IE compatibility (tempLabels = new Array(defaultClampCount).fill(null);)
+						}						
+					}
+					for (let i = 0; i < tempLabels.length; ++i) { // add new options according to label list
+						const label = tempLabels[i] || i;
+						$('#node-input-number').append($('<option></option>').attr('value', i).text(label));
+					}
+					// finally, restore selection
+					const selection = $('#node-input-number').val(lastNumber);
+					if (!selection.length) {
+						$('#node-input-number').val(''); // clear selection (e. g. if a non-existing clamp was selected before)
+					}
+				}
+			});
+			$('#node-input-number').change(function () {
+				lastNumber = $(this).val() || lastNumber;
+			});
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="Digital IN">
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="config.label.name"></span></label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]config.label.name" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-webio"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.webio"></span></label>
+		<input type="text" id="node-input-webio" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-number"><i class="fa fa-fw fa-dot-circle-o"></i> <span data-i18n="config.label.clamp"></span></label>
+		<select id="node-input-number"></select>
+	</div>
+</script>

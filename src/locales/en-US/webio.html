@@ -1,0 +1,36 @@
+<script type="text/x-red" data-help-name="Web-IO">
+
+	<p>Configuration for a connection to a <a href="https://www.wut.de/e-57www-10-inus-000.php" target="_blank">Wiesemann & Theis Web-IO</a>.</p>
+	<p>This (config) node implements all required background communication to access the Web-IO's in- and outputs.</p>
+	<p>
+		NOTE: You can only access the device if the "allow HTTP requests" option in the "communication paths -> web API" section of the web configuration is enabled!
+		Also, if the device has switchable outputs, each one of them has to be enabled individually.
+	</p>
+
+	<h3>Configuration</h3>
+	<dl class="message-properties">		
+		<dt class="optional">Name <span class="property-type">string</span></dt>
+		<dd>Custom name for the Node-RED node</dd>
+		
+		<dt>Protocol <span class="property-type">select</span></dt>
+		<dd>Access via HTTP or HTTPS</dd>
+		
+		<dt>Host <span class="property-type">string</span></dt>
+		<dd>Web-IO address / hostname</dd>
+			
+		<dt>Port <span class="property-type">number</span></dt>
+		<dd>Web-IO http(s) port (default: 80 / 443)</dd>
+		
+		<dt class="optional">Password <span class="property-type">password</span></dt>
+		<dd>Password for http(s) access (default: "")</dd>
+	</dl>
+
+	<h3>References</h3>
+	<ul>
+		<li><a href="https://www.wut.de/e-wwwww-ww-hpus-000.php" target="_blank">Wiesemann & Theis GmbH</a></li>
+		<li><a href="https://www.wut.de/e-57www-10-inus-000.php" target="_blank">Web-IO Overview</a></li>
+		<li><a href="https://www.wut.de/e-50www-10-inus-000.php" target="_blank">Web-IO Digital</a></li>
+		<li><a href="https://www.wut.de/e-5764w-10-inus-000.php" target="_blank">Web-IO Analog</a></li>
+	</ul>
+
+</script>

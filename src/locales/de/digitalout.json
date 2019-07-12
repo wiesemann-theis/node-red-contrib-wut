@@ -1,0 +1,26 @@
+{
+    "config": {
+        "label": {
+            "name": "Name",
+            "webio": "Web-IO",
+            "clamp": "Klemme"
+        }
+    },
+    "status": {
+        "not-initialized": "Initialisierung...",
+        "not-supported": "Gerätetyp unbekannt",
+        "not-reachable": "Gerät nicht erreichbar",
+        "connectedON": "verbunden: AN",
+        "connectedOFF": "verbunden: AUS",
+        "invalid-clamp": "ungültige Klemme",
+        "no-value": "kein Messwert",
+        "pw-required": "Passwort erforderlich",
+        "access-disabled": "Zugriff nicht freigeschaltet",
+        "invalid-config": "Ungültige Konfiguration",
+        "unknown": "Unbekannter Status"
+    },
+    "logging": {
+        "invalid-webio": "Ungültige Web-IO Konfiguration.",
+        "input-failed": "Verarbeitung von Eingabedaten fehlgeschlagen. Vermutlich kein gültiger Payload (true/false) oder ungültige Web-IO Konfiguration."
+    }
+}
