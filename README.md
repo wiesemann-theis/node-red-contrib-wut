@@ -11,11 +11,15 @@ The package currently provides the following nodes:
 
 ## Installation
 
-You can either use the Node-RED editor's `Menu - Manage palette` option and search for `node-red-contrib-wut`, or run the following command in your Node-RED user directory (typically `~/.node-red`):
+The easiest way to install the WuT nodes is to use the Node-RED editor's `Menu -> Manage palette` option.
+In the `Install` tab you can search for the `node-red-contrib-wut` package and click `install`.
+Once the installation is complete the nodes will available straight away (no Node-RED restart required).
+
+Alternatively, you can run the following command in your Node-RED user directory (typically `~/.node-red`):
 
     npm i node-red-contrib-wut
 
-Once you have restarted your Node-RED instance you should have the WuT nodes available.
+The WuT nodes will then be available after you have restarted your Node-RED instance.
 
 ## Usage
 
