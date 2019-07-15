@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.0.2
+
+### Fixed
+
+- Node-RED homepage didn't list all nodes
+
 ## 1.0.1
 
 first npm release

@@ -1,8 +1,7 @@
 const { STATUS, STATUS_MSG } = require('./util');
-const nodeName = 'Analog IN';
 
 module.exports = RED => {
-	RED.nodes.registerType(nodeName, function (config) {
+	RED.nodes.registerType('Analog IN', function (config) {
 		RED.nodes.createNode(this, config);
 
 		const sendStatus = (status) => {
@@ -14,7 +13,7 @@ module.exports = RED => {
 		if (webio && webio.emitter) {
 			let value;
 			let unit = '';
-			const topic = config.name || nodeName;
+			const topic = config.name || 'Analog IN';
 
 			sendStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 

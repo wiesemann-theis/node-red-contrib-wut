@@ -1,15 +1,14 @@
 const { STATUS, STATUS_MSG } = require('./util');
-const nodeName = 'Digital IN';
 
 module.exports = RED => {
-	RED.nodes.registerType(nodeName, function (config) {
+	RED.nodes.registerType('Digital IN', function (config) {
 		RED.nodes.createNode(this, config);
 
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
 			let value;
 			let isValidClamp = true;
-			const topic = config.name || nodeName;
+			const topic = config.name || 'Digital IN';
 
 			this.status(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
