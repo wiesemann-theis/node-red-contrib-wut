@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"repository": "github:wiesemann-theis/node-red-contrib-wut",
 	"homepage": "https://www.wut.de/",
-	"keywords": ["node-red"],
+	"keywords": ["node-red", "web-io"],
 	"dependencies": {},
 	"devDependencies": {},
 	"node-red": {
