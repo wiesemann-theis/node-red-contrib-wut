@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.1
+
+first npm release
+
 ## 1.0.0
 
 ### Added
