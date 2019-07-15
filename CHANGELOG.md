@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.0
+
+Renamed package from `node-red-contrib-wut` to `@wiesemann-theis/node-red-contrib-wut` (npm org scoped package).
+
 ## 1.0.2
 
 ### Fixed

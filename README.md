@@ -1,4 +1,4 @@
-# node-red-contrib-wut
+# @wiesemann-theis/node-red-contrib-wut
 
 Integrate [Wiesemann & Theis](https://www.wut.de/) products - like Com-Servers, Web-IOs or Web-Thermometers - into Node-RED.
 
@@ -12,12 +12,12 @@ The package currently provides the following nodes:
 ## Installation
 
 The easiest way to install the WuT nodes is to use the Node-RED editor's `Menu -> Manage palette` option.
-In the `Install` tab you can search for the `node-red-contrib-wut` package and click `install`.
+In the `Install` tab you can search for the `@wiesemann-theis/node-red-contrib-wut` package and click `install`.
 Once the installation is complete the nodes will available straight away (no Node-RED restart required).
 
 Alternatively, you can run the following command in your Node-RED user directory (typically `~/.node-red`):
 
-    npm i node-red-contrib-wut
+    npm i @wiesemann-theis/node-red-contrib-wut
 
 The WuT nodes will then be available after you have restarted your Node-RED instance.
 
