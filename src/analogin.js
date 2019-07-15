@@ -14,8 +14,16 @@ module.exports = RED => {
 			let value;
 			let unit = '';
 			const topic = config.name || 'Analog IN';
+			const portinfoType = '1';
+			let clampLabels = [];
 
 			sendStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
+
+			webio.emitter.addListener('webioLabels', labels => {
+				clampLabels = labels[portinfoType] || [];
+				isValidClamp = !clampLabels.length || config.number < clampLabels.length;
+				this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number - 1] || config.number });
+			});
 
 			webio.emitter.addListener('webioGet', (type, values, status) => {
 				if (type === 'single') {
@@ -40,13 +48,14 @@ module.exports = RED => {
 
 					if (tmpValue !== value) {
 						value = tmpValue;
-						this.send({ topic: topic, payload: value, unit: unit });
+						this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number - 1] || config.number });
 					}
 				}
 			});
 
 			this.on('close', () => {
 				webio.emitter.removeAllListeners('webioGet');
+				webio.emitter.removeAllListeners('webioLabels');
 				RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
 			});
 		} else {

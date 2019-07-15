@@ -1,20 +1,30 @@
 # CHANGELOG
 
+## unreleased
+
+### Added
+
+- msg.clampName parameter for Web-IO output messages
+
+## 1.1.1
+
+updated readme and changelog
+
 ## 1.1.0
 
-Renamed package from `node-red-contrib-wut` to `@wiesemann-theis/node-red-contrib-wut` (npm org scoped package).
+renamed package from `node-red-contrib-wut` to `@wiesemann-theis/node-red-contrib-wut` (npm org scoped package)
 
 ## 1.0.2
 
-### Fixed
-
-- Node-RED homepage didn't list all nodes
+fixed node names to get all nodes listed on the Node-RED homepage
 
 ## 1.0.1
 
-first npm release
+first npm release (deprecated -> npm package `node-red-contrib-wut` doesn't exist anymore (see v1.1.0))
 
 ## 1.0.0
+
+Initial (public) release
 
 ### Added
 

@@ -9,15 +9,16 @@ module.exports = RED => {
 			let value;
 			let isValidClamp = true;
 			const topic = config.name || 'Digital OUT';
+			const portinfoType = '3';
+			const portinfoType2 = '5';
+			let clampLabels = [];
 
 			this.status(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			webio.emitter.addListener('webioLabels', labels => {
-				let temp = (labels || [])[3];
-				if (!temp || !temp.length) {
-					temp = (labels || [])[5];
-				}
-				isValidClamp = !temp || !temp.length || config.number < temp.length;
+				clampLabels = labels[portinfoType] || labels[portinfoType2] || [];
+				isValidClamp = !clampLabels.length || config.number < clampLabels.length;
+				this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
 			});
 			webio.emitter.addListener('webioGet', (type, mask, status) => {
 				if (type === 'output') {
@@ -32,7 +33,7 @@ module.exports = RED => {
 
 					if (tmpValue !== value) {
 						value = tmpValue;
-						this.send({ topic: topic, payload: value });
+						this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
 					}
 				}
 			});
