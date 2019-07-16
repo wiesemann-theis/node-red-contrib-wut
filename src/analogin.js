@@ -20,7 +20,8 @@ module.exports = RED => {
 			sendStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			webio.emitter.addListener('webioLabels', labels => {
-				clampLabels = labels[portinfoType] || [];
+				clampLabels = labels[portinfoType] || {};
+				// isValidClamp = !!clampLabels[config.number];
 				this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number - 1] || config.number });
 			});
 
@@ -29,7 +30,7 @@ module.exports = RED => {
 					let tmpValue = null;
 
 					if (status === STATUS.OK && values[config.number - 1] !== undefined) {
-						let match = values[config.number - 1].match(/^(-?\d+,?\d*)\D*.*$/);
+						let match = values[config.number - 1].match(/^(-?\d+,?\d*).*$/);
 						if (match !== null) {
 							tmpValue = parseFloat(match[1].replace(',', '.'));
 							// workaround to generate parameterized status messages (this.status(...) does not support dynamic parameters (yet)!)
@@ -39,7 +40,7 @@ module.exports = RED => {
 							sendStatus({ fill: 'red', shape: 'dot', text: 'status.no-value' });
 						}
 
-						match = values[config.number - 1].match(/^[-,\d]+(\D*.*)$/);
+						match = values[config.number - 1].match(/^[-,\d]+\s?(.*)$/);
 						unit = match !== null ? match[1] : '';
 					} else {
 						sendStatus(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);

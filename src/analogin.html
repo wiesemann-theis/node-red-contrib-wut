@@ -8,7 +8,7 @@
 	RED.comms.subscribe("wut/portlabels/#", function (topic, msg) {
 		const webioId = topic.split("/")[2];
 		if (webioId && msg) {
-			labels[webioId] = msg[portinfoType] || [];
+			labels[webioId] = msg[portinfoType];
 		} else {
 			console.warn('Invalid portlabels message received', topic, msg);
 		}
@@ -64,18 +64,21 @@
 				if (tempWebio !== lastWebio) {
 					lastWebio = tempWebio;
 					$('#node-input-number').children('option').remove(); // remove all clamp options
-					let tempLabels = labels[tempWebio];
-					if (!tempLabels) {
-						tempLabels = [];
-						for (let i = 0; i < defaultClampCount; ++i) {
-							tempLabels.push(null); // to ensure IE compatibility (tempLabels = new Array(defaultClampCount).fill(null);)
+
+					let labelData = labels[tempWebio];
+					if (!labelData) { // generate default data
+						labelData = {};
+						for (let i = 1; i <= defaultClampCount; ++i) { // NOTE: analog clamp numbers are 1 based (digital are 0 based!)
+							labelData[i] = i;
 						}
 					}
-					for (let i = 0; i < tempLabels.length; ++i) { // add new options according to label list
-						// NOTE: analog clamp numbers are 1 based (digital are 0 based!)
-						const label = tempLabels[i] ? `${i + 1}: ${tempLabels[i]}` : (i + 1);
-						$('#node-input-number').append($('<option></option>').attr('value', i + 1).text(label));
+					const slotNumbers = Object.keys(labelData).sort(function (a, b) { return (+a - +b); });
+					for (let i = 0; i < slotNumbers.length; ++i) { // add new options according to label list
+						const slot = +slotNumbers[i];
+						const label = +labelData[slot] !== slot ? (slot + ': ' + labelData[slot]) : slot;
+						$('#node-input-number').append($('<option></option>').attr('value', slot).text(label));
 					}
+
 					// finally, restore selection
 					const selection = $('#node-input-number').val(lastNumber);
 					if (!selection.length) {

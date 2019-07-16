@@ -99,9 +99,18 @@ module.exports = RED => {
 
 				for (let i = 1; i <= 6; ++i) { // iterate over defined software interface ids
 					const relevantEntries = details.filter(line => +line[5] === i || (+line[5] > 6 && +line[6] === i)); // if line[5] is unknown, fall back to line[6]
-					const labels = relevantEntries.map(line => line[3] || line[1] || '');
-					tempLabels[i] = labels;
-					swInterfaces[i] = relevantEntries.length > 0;
+					swInterfaces[i] = relevantEntries.length > 0; // flag which software interfaces the web-io provides -> corresponding data needs to be polled and published
+
+					const typeLabels = {};
+					for (let k = 0; k < relevantEntries.length; ++k) {
+						const entry = relevantEntries[k];
+						let slot = +entry[8] || 0;
+						if (typeLabels[slot]) {
+							node.warn(RED._('logging.portinfos.doublet-index', { index: slot, type: i }));
+						}
+						typeLabels[slot] = entry[3] || entry[1] || ''; // label = individually configured name OR official clamp name OR ''
+					}
+					tempLabels[i] = typeLabels;
 				}
 
 				if (JSON.stringify(portlabels) !== JSON.stringify(tempLabels)) {

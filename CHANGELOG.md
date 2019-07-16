@@ -9,6 +9,7 @@
 ### Changed
 
 - identify device type based on /portinfo (instead of /version)
+- analyze slot information from /portinfo
 - display clamp index in clamp selection config dialog
 - error handling improved
 

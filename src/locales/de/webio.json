@@ -12,7 +12,8 @@
         "portinfos": {
             "loaded": "Port-Informationen geladen.",
             "invalid": "Ungültige Port-Informationen empfangen.",
-            "failed": "Port-Informationen Laden fehlgeschlagen."
+            "failed": "Port-Informationen Laden fehlgeschlagen.",
+            "doublet-index": "Port-Informationen Warnung: Der Slot-Index __index__ ist für den Typ __type__ mehrfach vergeben."
         },
         "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__).",
         "set-failed-invaliddata": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Ungültige Daten empfangen: __data__).",
