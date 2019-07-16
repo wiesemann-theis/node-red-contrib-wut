@@ -186,7 +186,11 @@ module.exports = RED => {
 						// NOTE: short timeouts because /portinfo resets TCP connection
 						setStateHandlerTimeout(50);  // proceed with next state
 					}, err => {
-						sendErrorStatus(STATUS.NOT_REACHABLE);
+						if (err.statusCode === 404) { // /portinfo not supported?
+							machineState = MACHINE_STATES.NOT_SUPPORTED;
+						} else {
+							sendErrorStatus(STATUS.NOT_REACHABLE);
+						}
 						setStateHandlerTimeout(pollingInterval);
 					});
 					break;

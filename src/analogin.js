@@ -21,12 +21,11 @@ module.exports = RED => {
 
 			webio.emitter.addListener('webioLabels', labels => {
 				clampLabels = labels[portinfoType] || [];
-				isValidClamp = !clampLabels.length || config.number < clampLabels.length;
 				this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number - 1] || config.number });
 			});
 
 			webio.emitter.addListener('webioGet', (type, values, status) => {
-				if (type === 'single') {
+				if (type === 'single' && values) {
 					let tmpValue = null;
 
 					if (status === STATUS.OK && values[config.number - 1] !== undefined) {

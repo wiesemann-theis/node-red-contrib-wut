@@ -39,8 +39,9 @@
 				if (tempWebio !== lastWebio) {
 					lastWebio = tempWebio;
 					$('#node-input-number').children('option').remove(); // remove all clamp options
-					let tempLabels = labels[tempWebio] || [];
-					if (!tempLabels.length) {
+					let tempLabels = labels[tempWebio];
+					if (!tempLabels) {
+						tempLabels = [];
 						for (let i = 0; i < defaultClampCount; ++i) {
 							tempLabels.push(null); // to ensure IE compatibility (tempLabels = new Array(defaultClampCount).fill(null);)
 						}

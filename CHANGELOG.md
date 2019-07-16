@@ -10,6 +10,7 @@
 
 - identify device type based on /portinfo (instead of /version)
 - display clamp index in clamp selection config dialog
+- error handling improved
 
 ## 1.1.1
 

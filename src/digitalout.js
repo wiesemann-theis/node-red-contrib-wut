@@ -16,11 +16,14 @@ module.exports = RED => {
 			this.status(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			webio.emitter.addListener('webioLabels', labels => {
-				clampLabels = labels[portinfoType] || labels[portinfoType2] || [];
-				isValidClamp = !clampLabels.length || config.number < clampLabels.length;
+				clampLabels = labels[portinfoType] || [];
+				if (!clampLabels.length) {
+					clampLabels = labels[portinfoType2] || [];
+				}
+				isValidClamp = config.number < clampLabels.length;
 				this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
 			});
-			
+
 			webio.emitter.addListener('webioGet', (type, mask, status) => {
 				if (type === 'output') {
 					let tmpValue = null;
