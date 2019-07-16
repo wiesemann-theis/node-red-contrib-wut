@@ -61,7 +61,13 @@ module.exports = RED => {
 					let data = '';
 					response.on('data', chunk => data += chunk);
 
-					response.on('end', () => resolve({ data, statusCode: response.statusCode }));
+					response.on('end', () => {
+						if (response.statusCode === 200) {
+							resolve(data);
+						} else {
+							reject({ statusCode: response.statusCode, message: `http statusCode ${response.statusCode}` });
+						}
+					});
 				}).on('error', err => reject(err));
 			});
 		}
@@ -173,8 +179,8 @@ module.exports = RED => {
 			}
 		}
 		const getPortinfos = () => {
-			httpGetHelper('/portinfo').then(result => {
-				onPortinfosReceived(result.data);
+			httpGetHelper('/portinfo').then(data => {
+				onPortinfosReceived(data);
 				setPortinfosTimeout(portinfosInterval);
 			}, err => {
 				node.warn(RED._('logging.portinfos.failed'));
@@ -192,8 +198,8 @@ module.exports = RED => {
 		const stateHandler = () => {
 			switch (machineState) {
 				case MACHINE_STATES.INITIALIZING:
-					httpGetHelper('/version').then(result => {
-						onVersionReceived(result.data);
+					httpGetHelper('/version').then(data => {
+						onVersionReceived(data);
 						// NOTE: short timeouts because /version resets TCP connection
 						// -> call /portinfo AFTER next stateHandler because it will also reset TCP connection
 						setStateHandlerTimeout(50);  // proceed with next state
@@ -206,19 +212,21 @@ module.exports = RED => {
 
 				case MACHINE_STATES.POLLING:
 					const path = isDigital ? `/allout?PW=${pw}&` : `/single`;
-					httpGetHelper(path).then(result => {
-						if (result.statusCode === 200) {
-							onDeviceDataReceived(result.data);
-						} else if (result.statusCode === 403) {
-							sendErrorStatus(STATUS.PW_REQUIRED);
-						} else if (result.statusCode === 404) {
-							sendErrorStatus(STATUS.NOT_ENABLED);
-						} else {
-							sendErrorStatus(STATUS.UNKNOWN);
-						}
+					httpGetHelper(path).then(data => {
+						onDeviceDataReceived(data);
 						setStateHandlerTimeout(pollingInterval);
 					}, err => {
-						sendErrorStatus(STATUS.NOT_REACHABLE);
+						let status = STATUS.NOT_REACHABLE;
+						if (err.statusCode !== undefined) {
+							if (err.statusCode === 403) {
+								status = STATUS.PW_REQUIRED;
+							} else if (err.statusCode === 404) {
+								status = STATUS.NOT_ENABLED;
+							} else {
+								status = STATUS.UNKNOWN;
+							}
+						}
+						sendErrorStatus(status);
 						setStateHandlerTimeout(pollingInterval);
 					});
 					break;
@@ -237,15 +245,20 @@ module.exports = RED => {
 		node.emitter.addListener('webioSet', (type, number, value) => {
 			if (type === 'output') {
 				const path = `/outputaccess${number}?PW=${pw}&State=${!value ? 'OFF' : 'ON'}&`;
-				httpGetHelper(path).then(result => {
-					const match = (result.data || '').match(/output;([0-9a-f]+)$/i);
-					if (match && result.statusCode === 200) {
+				httpGetHelper(path).then(data => {
+					const match = (data || '').match(/output;([0-9a-f]+)$/i);
+					if (match) {
 						sendGetData('output', parseInt(match[1], 16)); // confirm successful setting by emitting new value
 					} else {
-						node.warn(RED._('logging.set-failed-statuscode', { number, value, statusCode: result.statusCode }));
+						node.warn(RED._('logging.set-failed-invaliddata', { number, value, data }));
 					}
-
-				}, err => node.error(RED._('logging.set-failed-error', { number, value, errMsg: err.message })));
+				}, err => {
+					if (err.statusCode) {
+						node.warn(RED._('logging.set-failed-statuscode', { number, value, statusCode: err.statusCode }));
+					} else {
+						node.error(RED._('logging.set-failed-error', { number, value, errMsg: err.message }));
+					}
+				});
 			}
 		});
 
