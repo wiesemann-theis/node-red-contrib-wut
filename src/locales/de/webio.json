@@ -17,6 +17,7 @@
         "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__).",
         "set-failed-invaliddata": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Ungültige Daten empfangen: __data__).",
         "set-failed-statuscode": "Fehler beim Setzen des Outputs #__number__ auf __value__ (StatusCode: __statusCode__).",
-        "set-failed-error": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Error: __errMsg__)"
+        "set-failed-error": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Error: __errMsg__)",
+        "invalid-data": "Ungültige Daten empfangen (URL: __url__, Daten: __data__)."
     }
 }

@@ -17,6 +17,7 @@
         "invalid-config": "Invalid configuration (host __host__, port __port__).",
         "set-failed-invaliddata": "Setting output #__number__ to __value__ failed (invalid response data: __data__).",
         "set-failed-statuscode": "Setting output #__number__ to __value__ failed with statusCode __statusCode__.",
-        "set-failed-error": "Setting output #__number__ to __value__ failed with error: __errMsg__"
+        "set-failed-error": "Setting output #__number__ to __value__ failed with error: __errMsg__",
+        "invalid-data": "Invalid data received (URL: __url__, Data: __data__)."
     }
 }

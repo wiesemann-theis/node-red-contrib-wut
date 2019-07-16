@@ -33,7 +33,7 @@ module.exports = RED => {
 		const pw = node.credentials.password;
 		let machineState = MACHINE_STATES.INITIALIZING;
 		let portlabels = null;
-		let isDigital = true;
+		let swInterfaces = {};
 		let isActive = true;
 
 		node.emitter = new EventEmitter();
@@ -94,19 +94,18 @@ module.exports = RED => {
 			}
 
 			if (isValid) {
-				const temp = {};
-				if (details && details.length) {
-					const alltypes = details.map(line => +line[5] || -1);
-					const types = Array.from(new Set(alltypes)).sort(); // unique and sorted array 
-					for (let i = 0; i < types.length; ++i) {
-						const type = types[i];
-						const relevantEntries = details.filter(line => +line[5] === type);
-						const labels = relevantEntries.map(line => line[3] || line[1] || '');
-						temp[type] = labels;
-					}
+				swInterfaces = {};
+				const tempLabels = {};
+
+				for (let i = 1; i <= 6; ++i) { // iterate over defined software interface ids
+					const relevantEntries = details.filter(line => +line[5] === i || (+line[5] > 6 && +line[6] === i)); // if line[5] is unknown, fall back to line[6]
+					const labels = relevantEntries.map(line => line[3] || line[1] || '');
+					tempLabels[i] = labels;
+					swInterfaces[i] = relevantEntries.length > 0;
 				}
-				if (JSON.stringify(portlabels) !== JSON.stringify(temp)) {
-					portlabels = temp;
+
+				if (JSON.stringify(portlabels) !== JSON.stringify(tempLabels)) {
+					portlabels = tempLabels;
 					node.emitter.emit('webioLabels', portlabels);
 					RED.comms.publish("wut/portlabels/" + node.id, portlabels, true); // workaround to publish infos to web client
 					node.log(RED._('logging.portinfos.loaded'));
@@ -116,37 +115,8 @@ module.exports = RED => {
 			}
 		}
 
-		const onVersionReceived = (data) => {
-			const match = data.match(/^(\d+\.\d+)\s/m) || [];
-			const version = parseFloat(match[1]);
-			switch (version) {
-				case 12.18:	// #57634
-				case 12.33:	// #57630
-				case 13.33:	// #57730
-				case 13.35:	// #57734
-				case 13.36:	// #57737
-					machineState = MACHINE_STATES.POLLING;
-					isDigital = true;
-					break;
-
-				case 12.15:	// #57610
-				case 12.17:	// #57613
-				case 12.37:	// #57618
-				case 13.1:	// #57713
-				case 13.3:	// #57715
-				case 13.5:	// #57718
-					machineState = MACHINE_STATES.POLLING;
-					isDigital = false;
-					break;
-
-				default:
-					machineState = MACHINE_STATES.NOT_SUPPORTED;
-					break;
-			}
-		}
-
-		const onDeviceDataReceived = (data) => {
-			if (isDigital) {
+		const onAlloutDataReceived = (data) => {
+			if (data) {
 				let match = data.match(/input;([0-9a-f]+)/i) || [];
 				sendGetData('input', parseInt(match[1], 16));
 
@@ -157,17 +127,22 @@ module.exports = RED => {
 				const counters = (match && match[1]) ? match[1].split(';').map(s => parseInt(s, 10)) : null;
 				sendGetData('counter', counters);
 			} else {
-				let parts = null;
-				if (data.match(/;?((-?\d+,?\d*)|(-{4})).*$/) !== null) {
-					parts = data.split(';');
+				node.warn(RED._('logging.invalid-data', { url: '/allout', data }));
+			}
+		}
 
-					// possibly remove IP address and system name from data array
-					if (parts[0].match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) !== null) {
-						parts.shift();
-						parts.shift();
-					}
+		const onSingleDataReceived = (data) => {
+			if (data && data.match(/;?((-?\d+,?\d*)|(-{4})).*$/) !== null) {
+				const parts = data.split(';');
+
+				// possibly remove IP address and system name from data array
+				if (parts[0].match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) !== null) {
+					parts.shift();
+					parts.shift();
 				}
 				sendGetData('single', parts);
+			} else {
+				node.warn(RED._('logging.invalid-data', { url: '/single', data }));
 			}
 		}
 
@@ -198,12 +173,18 @@ module.exports = RED => {
 		const stateHandler = () => {
 			switch (machineState) {
 				case MACHINE_STATES.INITIALIZING:
-					httpGetHelper('/version').then(data => {
-						onVersionReceived(data);
-						// NOTE: short timeouts because /version resets TCP connection
-						// -> call /portinfo AFTER next stateHandler because it will also reset TCP connection
+					httpGetHelper('/portinfo').then(data => {
+						onPortinfosReceived(data);
+
+						if (Object.keys(swInterfaces).length) {
+							machineState = MACHINE_STATES.POLLING;
+							setPortinfosTimeout(portinfosInterval); // start updating the portinfos periodically
+						} else {
+							machineState = MACHINE_STATES.NOT_SUPPORTED;
+						}
+
+						// NOTE: short timeouts because /portinfo resets TCP connection
 						setStateHandlerTimeout(50);  // proceed with next state
-						setPortinfosTimeout(100); // get portinfos only if /version request was successful
 					}, err => {
 						sendErrorStatus(STATUS.NOT_REACHABLE);
 						setStateHandlerTimeout(pollingInterval);
@@ -211,11 +192,21 @@ module.exports = RED => {
 					break;
 
 				case MACHINE_STATES.POLLING:
-					const path = isDigital ? `/allout?PW=${pw}&` : `/single`;
-					httpGetHelper(path).then(data => {
-						onDeviceDataReceived(data);
+					const requests = [];
+
+					if (swInterfaces[1] || swInterfaces[6]) {
+						const req = httpGetHelper('/single').then(data => onSingleDataReceived(data));
+						requests.push(req);
+					}
+
+					if (swInterfaces[2] || swInterfaces[3] || swInterfaces[4] || swInterfaces[5]) {
+						const req = httpGetHelper(`/allout?PW=${pw}&`).then(data => onAlloutDataReceived(data));
+						requests.push(req);
+					}
+
+					Promise.all(requests).then(() => {
 						setStateHandlerTimeout(pollingInterval);
-					}, err => {
+					}, err => { // if > 0 requests failed -> set error status based on first rejected promise
 						let status = STATUS.NOT_REACHABLE;
 						if (err.statusCode !== undefined) {
 							if (err.statusCode === 403) {

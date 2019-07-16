@@ -8,6 +8,7 @@
 
 ### Changed
 
+- identify device type based on /portinfo (instead of /version)
 - display clamp index in clamp selection config dialog
 
 ## 1.1.1
