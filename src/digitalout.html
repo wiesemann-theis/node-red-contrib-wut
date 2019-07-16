@@ -48,7 +48,7 @@
 						}
 					}
 					for (let i = 0; i < tempLabels.length; ++i) { // add new options according to label list
-						const label = tempLabels[i] || i;
+						const label = tempLabels[i] ? `${i}: ${tempLabels[i]}` : i;
 						$('#node-input-number').append($('<option></option>').attr('value', i).text(label));
 					}
 					// finally, restore selection

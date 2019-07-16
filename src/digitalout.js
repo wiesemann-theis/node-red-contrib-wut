@@ -20,6 +20,7 @@ module.exports = RED => {
 				isValidClamp = !clampLabels.length || config.number < clampLabels.length;
 				this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
 			});
+			
 			webio.emitter.addListener('webioGet', (type, mask, status) => {
 				if (type === 'output') {
 					let tmpValue = null;

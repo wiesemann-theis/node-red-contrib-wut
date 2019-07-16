@@ -6,6 +6,10 @@
 
 - msg.clampName parameter for Web-IO output messages
 
+### Changed
+
+- display clamp index in clamp selection config dialog
+
 ## 1.1.1
 
 updated readme and changelog

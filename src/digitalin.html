@@ -43,10 +43,10 @@
 					if (!tempLabels.length) {
 						for (let i = 0; i < defaultClampCount; ++i) {
 							tempLabels.push(null); // to ensure IE compatibility (tempLabels = new Array(defaultClampCount).fill(null);)
-						}						
+						}
 					}
 					for (let i = 0; i < tempLabels.length; ++i) { // add new options according to label list
-						const label = tempLabels[i] || i;
+						const label = tempLabels[i] ? `${i}: ${tempLabels[i]}` : i;
 						$('#node-input-number').append($('<option></option>').attr('value', i).text(label));
 					}
 					// finally, restore selection
