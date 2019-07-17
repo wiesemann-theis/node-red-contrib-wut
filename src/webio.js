@@ -247,7 +247,7 @@ module.exports = RED => {
 		stateHandler();
 
 		node.emitter.addListener('webioSet', (type, number, value) => {
-			if (type === 'output') {
+			if (type === 'digitalout') {
 				const path = `/outputaccess${number}?PW=${pw}&State=${!value ? 'OFF' : 'ON'}&`;
 				httpGetHelper(path).then(data => {
 					const match = (data || '').match(/output;([0-9a-f]+)$/i);

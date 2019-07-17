@@ -9,9 +9,15 @@ module.exports = RED => {
 			if (JSON.stringify(status) !== lastStatusString) {
 				lastStatusString = JSON.stringify(status);
 				this.status(status);
-				RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
+				RED.comms.publish('wut/i18n-status/analogin/' + this.id, null, false); // publish empty message to "delete" retained message
 			}
-		}
+		};
+		const sendI18nStatus = (i18nStatus) => {
+			if (JSON.stringify(i18nStatus) !== lastStatusString) {
+				lastStatusString = JSON.stringify(i18nStatus);
+				RED.comms.publish("wut/i18n-status/analogin/" + this.id, i18nStatus, true);
+			}
+		};
 
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
@@ -34,13 +40,12 @@ module.exports = RED => {
 				if (type === 'single') {
 					let tmpValue = null;
 
-					if (status === STATUS.OK && values && values[config.number - 1] !== undefined) {
+					if (status === STATUS.OK && isValidClamp && values && values[config.number - 1] !== undefined) {
 						let match = values[config.number - 1].match(/^(-?\d+,?\d*).*$/);
 						if (match !== null) {
 							tmpValue = parseFloat(match[1].replace(',', '.'));
 							// workaround to generate parameterized status messages (this.status(...) does not support dynamic parameters (yet)!)
-							const i18nStatus = { fill: 'green', shape: 'dot', text: 'status.connected', params: { value: values[config.number - 1] } };
-							RED.comms.publish("wut/i18n-status/" + this.id, i18nStatus, true);
+							sendI18nStatus({ fill: 'green', shape: 'dot', text: 'status.connected', params: { value: values[config.number - 1] } });
 						} else {
 							sendStatus({ fill: 'red', shape: 'dot', text: 'status.no-value' });
 						}
@@ -63,7 +68,7 @@ module.exports = RED => {
 			this.on('close', () => {
 				webio.emitter.removeAllListeners('webioGet');
 				webio.emitter.removeAllListeners('webioLabels');
-				RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
+				RED.comms.publish('wut/i18n-status/analogin/' + this.id, null, false); // publish empty message to "delete" retained message
 			});
 		} else {
 			this.warn(RED._('logging.invalid-webio'));

@@ -4,13 +4,13 @@ module.exports = RED => {
 	RED.nodes.registerType('Digital OUT', function (config) {
 		RED.nodes.createNode(this, config);
 
+		let isValidClamp = true;
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
 			const topic = config.name || 'Digital OUT';
 			const portinfoType = '3';
 			const portinfoType2 = '5';
 			let value;
-			let isValidClamp = true;
 			let clampLabels = [];
 
 			let lastStatusString = '';
@@ -59,10 +59,14 @@ module.exports = RED => {
 		}
 
 		this.on('input', msg => {
-			if (webio && webio.emitter && typeof msg.payload === 'boolean') {
-				webio.emitter.emit('webioSet', 'output', config.number, msg.payload);
+			if (isValidClamp) {
+				if (webio && webio.emitter && typeof msg.payload === 'boolean') {
+					webio.emitter.emit('webioSet', 'digitalout', config.number, msg.payload);
+				} else {
+					this.warn(RED._('logging.input-failed'));
+				}
 			} else {
-				this.warn(RED._('logging.input-failed'));
+				this.warn(RED._('logging.input-invalid-clamp', { index: config.number }));
 			}
 		});
 	});

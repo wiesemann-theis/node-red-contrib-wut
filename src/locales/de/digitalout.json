@@ -21,6 +21,7 @@
     },
     "logging": {
         "invalid-webio": "Ungültige Web-IO Konfiguration.",
-        "input-failed": "Verarbeitung von Eingabedaten fehlgeschlagen. Vermutlich kein gültiger Payload (true/false) oder ungültige Web-IO Konfiguration."
+        "input-failed": "Verarbeitung von Eingabedaten fehlgeschlagen. Vermutlich kein gültiger Payload (true/false) oder ungültige Web-IO-Konfiguration.",
+        "input-invalid-clamp": "Eingabedaten für ungültige(!) Klemme __index__ ignoriert."
     }
 }

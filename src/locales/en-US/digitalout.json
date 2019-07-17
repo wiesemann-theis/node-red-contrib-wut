@@ -21,6 +21,7 @@
     },
     "logging": {
         "invalid-webio": "Invalid Web-IO configuration.",
-        "input-failed": "Processing input data failed. Probably no boolean payload or invalid Web-IO configuration."
+        "input-failed": "Processing input data failed. Probably no boolean payload or invalid Web-IO / clamp configuration.",
+        "input-invalid-clamp": "Ignored input data for invalid(!) clamp __index__."
     }
 }

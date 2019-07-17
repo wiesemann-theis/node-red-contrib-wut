@@ -2,7 +2,7 @@
 	const defaultClampCount = 8;
 	const portinfoType = '1';
 
-	let labels = {}; // { webio-id-1: [label1, label2,...], webio-id-2: [...], ...}
+	let labels = {}; // { webio-id-1: { slot1: label1, slot2: label2,...}, webio-id-2: {...}, ...}
 
 	// workaround to get custom input labels for Web-IOs
 	RED.comms.subscribe("wut/portlabels/#", function (topic, msg) {
@@ -20,9 +20,9 @@
 		if (nodes.length || new Date() - startTime > 10000) {
 			clearInterval(startupTimer);
 			// workaround to generate parameterized status messages (this.status(...) does not support dynamic parameters (yet)!)
-			RED.comms.subscribe("wut/i18n-status/#", function (topic, msg) {
+			RED.comms.subscribe("wut/i18n-status/analogin/#", function (topic, msg) {
 				if (msg && msg.text) {
-					const id = topic.split("/")[2];
+					const id = topic.split("/")[3];
 					const node = RED.nodes.node(id);
 					if (node) {
 						msg.text = node._(msg.text.toString(), msg.params || {});

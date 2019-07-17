@@ -2,7 +2,7 @@
 	const defaultClampCount = 12;
 	const portinfoType = '2';
 
-	let labels = {}; // { webio-id-1: [label1, label2,...], webio-id-2: [...], ...}
+	let labels = {};// { webio-id-1: { slot1: label1, slot2: label2,...}, webio-id-2: {...}, ...}
 
 	// workaround to get custom input labels for Web-IOs
 	RED.comms.subscribe("wut/portlabels/#", function (topic, msg) {
