@@ -6,13 +6,21 @@ module.exports = RED => {
 
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
-			let value;
-			let isValidClamp = true;
 			const topic = config.name || 'Digital IN';
 			const portinfoType = '2';
+			let value;
+			let isValidClamp = true;
 			let clampLabels = [];
 
-			this.status(STATUS_MSG[STATUS.NOT_INITIALIZED]);
+			let lastStatusString = '';
+			const setStatus = (status) => {
+				if (JSON.stringify(status) !== lastStatusString) {
+					lastStatusString = JSON.stringify(status);
+					this.status(status);
+				}
+			}
+
+			setStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			webio.emitter.addListener('webioLabels', labels => {
 				clampLabels = labels[portinfoType] || {};
@@ -26,15 +34,17 @@ module.exports = RED => {
 
 					if (status === STATUS.OK && isValidClamp) {
 						tmpValue = ((mask >> config.number) & 1) === 1;
-						this.status({ fill: 'green', shape: 'dot', text: tmpValue ? 'status.connectedON' : 'status.connectedOFF' });
+						setStatus({ fill: 'green', shape: 'dot', text: tmpValue ? 'status.connectedON' : 'status.connectedOFF' });
 					} else {
-						this.status(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
+						setStatus(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
 					}
 
 					if (tmpValue !== value) {
 						value = tmpValue;
 						this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
 					}
+				} else if (!isValidClamp && status === STATUS.OK) {
+					setStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
 				}
 			});
 

@@ -4,32 +4,37 @@ module.exports = RED => {
 	RED.nodes.registerType('Analog IN', function (config) {
 		RED.nodes.createNode(this, config);
 
+		let lastStatusString = '';
 		const sendStatus = (status) => {
-			this.status(status);
-			RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
+			if (JSON.stringify(status) !== lastStatusString) {
+				lastStatusString = JSON.stringify(status);
+				this.status(status);
+				RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
+			}
 		}
 
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
-			let value;
-			let unit = '';
 			const topic = config.name || 'Analog IN';
 			const portinfoType = '1';
+			let value;
+			let unit = '';
+			let isValidClamp = true;
 			let clampLabels = [];
 
 			sendStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			webio.emitter.addListener('webioLabels', labels => {
 				clampLabels = labels[portinfoType] || {};
-				// isValidClamp = !!clampLabels[config.number];
+				isValidClamp = !!clampLabels[config.number];
 				this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number - 1] || config.number });
 			});
 
 			webio.emitter.addListener('webioGet', (type, values, status) => {
-				if (type === 'single' && values) {
+				if (type === 'single') {
 					let tmpValue = null;
 
-					if (status === STATUS.OK && values[config.number - 1] !== undefined) {
+					if (status === STATUS.OK && values && values[config.number - 1] !== undefined) {
 						let match = values[config.number - 1].match(/^(-?\d+,?\d*).*$/);
 						if (match !== null) {
 							tmpValue = parseFloat(match[1].replace(',', '.'));
@@ -50,6 +55,8 @@ module.exports = RED => {
 						value = tmpValue;
 						this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number - 1] || config.number });
 					}
+				} else if (!isValidClamp && status === STATUS.OK) {
+					sendStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
 				}
 			});
 

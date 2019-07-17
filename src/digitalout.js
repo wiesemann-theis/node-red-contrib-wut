@@ -6,14 +6,22 @@ module.exports = RED => {
 
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
-			let value;
-			let isValidClamp = true;
 			const topic = config.name || 'Digital OUT';
 			const portinfoType = '3';
 			const portinfoType2 = '5';
+			let value;
+			let isValidClamp = true;
 			let clampLabels = [];
 
-			this.status(STATUS_MSG[STATUS.NOT_INITIALIZED]);
+			let lastStatusString = '';
+			const setStatus = (status) => {
+				if (JSON.stringify(status) !== lastStatusString) {
+					lastStatusString = JSON.stringify(status);
+					this.status(status);
+				}
+			}
+
+			setStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			webio.emitter.addListener('webioLabels', labels => {
 				clampLabels = labels[portinfoType] || labels[portinfoType2] || {};
@@ -27,15 +35,17 @@ module.exports = RED => {
 
 					if (status === STATUS.OK && isValidClamp) {
 						tmpValue = ((mask >> config.number) & 1) === 1;
-						this.status({ fill: 'green', shape: 'dot', text: tmpValue ? 'status.connectedON' : 'status.connectedOFF' });
+						setStatus({ fill: 'green', shape: 'dot', text: tmpValue ? 'status.connectedON' : 'status.connectedOFF' });
 					} else {
-						this.status(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
+						setStatus(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
 					}
 
 					if (tmpValue !== value) {
 						value = tmpValue;
 						this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
 					}
+				} else if (!isValidClamp && status === STATUS.OK) {
+					setStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
 				}
 			});
 
@@ -49,10 +59,8 @@ module.exports = RED => {
 		}
 
 		this.on('input', msg => {
-			if (webio && webio.emitter) {
-				if (typeof msg.payload === 'boolean') {
-					webio.emitter.emit('webioSet', 'output', config.number, msg.payload);
-				}
+			if (webio && webio.emitter && typeof msg.payload === 'boolean') {
+				webio.emitter.emit('webioSet', 'output', config.number, msg.payload);
 			} else {
 				this.warn(RED._('logging.input-failed'));
 			}
