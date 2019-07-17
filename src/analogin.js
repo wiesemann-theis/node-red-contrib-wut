@@ -33,7 +33,7 @@ module.exports = RED => {
 			webio.emitter.addListener('webioLabels', labels => {
 				clampLabels = labels[portinfoType] || {};
 				isValidClamp = !!clampLabels[config.number];
-				this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number - 1] || config.number });
+				this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number] || config.number });
 			});
 
 			webio.emitter.addListener('webioGet', (type, values, status) => {
@@ -58,7 +58,7 @@ module.exports = RED => {
 
 					if (tmpValue !== value) {
 						value = tmpValue;
-						this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number - 1] || config.number });
+						this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number] || config.number });
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
 					sendStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)

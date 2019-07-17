@@ -50,7 +50,7 @@
 		outputs: 1,
 		icon: "wutlogo.png",
 		label: function () {
-			return this.name || (labels[this.webio] || [])[this.number - 1] || 'Analog IN';
+			return this.name || (labels[this.webio] || [])[this.number] || 'Analog IN';
 		},
 		labelStyle: function () {
 			return this.name ? 'node_label_italic' : '';
