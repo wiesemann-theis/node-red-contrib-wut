@@ -1,5 +1,5 @@
 const { EventEmitter } = require('events');
-const { STATUS } = require('./util');
+const { STATUS } = require('./util/status');
 
 const MACHINE_STATES = Object.freeze({
 	INITIALIZING: -1,

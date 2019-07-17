@@ -1,4 +1,4 @@
-const { STATUS, STATUS_MSG } = require('./util');
+const { STATUS, STATUS_MSG } = require('./util/status');
 
 module.exports = RED => {
 	RED.nodes.registerType('Analog IN', function (config) {
