@@ -247,13 +247,24 @@ module.exports = RED => {
 		stateHandler();
 
 		node.emitter.addListener('webioSet', (type, number, value) => {
-			if (type === 'digitalout') {
-				const path = `/outputaccess${number}?PW=${pw}&State=${!value ? 'OFF' : 'ON'}&`;
+			if (type === 'digitalout' || type === 'analogout') {
+				if (type === 'digitalout') {
+					value = !value ? 'OFF' : 'ON';
+				}
+				const path = `/outputaccess${number}?PW=${pw}&State=${value}&`;
 				httpGetHelper(path).then(data => {
-					const match = (data || '').match(/output;([0-9a-f]+)$/i);
-					if (match) {
-						sendGetData('output', parseInt(match[1], 16)); // confirm successful setting by emitting new value
+					let match = null;
+					if (type === 'digitalout') {
+						match = (data || '').match(/output;([0-9a-f]+)$/i);
+						if (match) {
+							sendGetData('output', parseInt(match[1], 16)); // confirm successful setting by emitting new value							
+						}
 					} else {
+						match = (data || '').match(/output\d;-?\d+,?\d*\s.*$/i);
+						// don't emit value because it is the IS and not TO-BE value
+					}
+
+					if (!match) {
 						node.warn(RED._('logging.set-failed-invaliddata', { number, value, data }));
 					}
 				}, err => {

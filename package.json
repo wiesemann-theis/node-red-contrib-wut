@@ -15,6 +15,7 @@
 	"node-red": {
 		"nodes": {
 			"analog-in": "src/analogin.js",
+			"analog-out": "src/analogout.js",
 			"digital-in": "src/digitalin.js",
 			"digital-out": "src/digitalout.js",
 			"web-io": "src/webio.js",

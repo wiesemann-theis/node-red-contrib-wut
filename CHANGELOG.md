@@ -4,6 +4,7 @@
 
 ### Added
 
+- Analog OUT node added
 - msg.clampName parameter for Web-IO output messages
 
 ### Changed
