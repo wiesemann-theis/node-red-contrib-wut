@@ -2,12 +2,13 @@ const { STATUS, STATUS_MSG } = require('./util/status');
 
 module.exports = RED => {
 	RED.nodes.registerType('Digital IN', function (config) {
+		const topic = config.name || 'Digital IN';
+		const portinfoType = '2';
+		
 		RED.nodes.createNode(this, config);
 
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
-			const topic = config.name || 'Digital IN';
-			const portinfoType = '2';
 			let value;
 			let isValidClamp = true;
 			let clampLabels = [];
