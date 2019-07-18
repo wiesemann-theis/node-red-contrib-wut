@@ -34,7 +34,7 @@ module.exports = RED => {
 		let machineState = MACHINE_STATES.INITIALIZING;
 		let portlabels = null;
 		let swInterfaces = {};
-		let portdata = null; // currently used for analog measurement ranges
+		let portdata = {}; // currently used for analog measurement ranges
 		let isActive = true;
 
 		node.emitter = new EventEmitter();
@@ -117,20 +117,25 @@ module.exports = RED => {
 							const gradient = parseFloat(entry[12]);
 							const minimum = parseFloat(entry[13]);
 							if (!isNaN(minimum) && !isNaN(gradient)) {
-								typeData[slot] = { min: minimum, max: gradient * 100 + minimum, unit: entry[4] };
+								const min = +(minimum.toFixed(2));
+								const max = +((gradient * 100 + minimum).toFixed(2));
+								typeData[slot] = { min, max, unit: entry[4] };
 							} else {
 								node.warn(RED._('logging.portinfos.invalid-measurement-range', { slot, type: i, gradient, minimum }));
 							}
 						}
 					}
 					tempLabels[i] = typeLabels;
-					tempData[i] = typeData;
+					if (Object.keys(typeData).length) {
+						tempData[i] = typeData;
+					}
 				}
 
 				if (JSON.stringify(portdata) !== JSON.stringify(tempData)) {
 					portdata = tempData;
 					node.emitter.emit('webioData', portdata);
 					RED.comms.publish("wut/portdata/" + node.id, portdata, true); // workaround to publish infos to web client
+					node.log(RED._('logging.portinfos.ranges-loaded'));
 				}
 
 				if (JSON.stringify(portlabels) !== JSON.stringify(tempLabels)) {

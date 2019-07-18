@@ -1,4 +1,30 @@
 <script type="text/javascript">
+	// handle i18n-status messages here (handling it in analogin, analogout,... would be redundant -> and there are no i18n-status messages if there is no webio!)
+	const startTime = new Date();
+	const startupTimer = setInterval(function () {
+		const nodes = RED.nodes.filterNodes({}) || [];
+		if (nodes.length || new Date() - startTime > 10000) {
+			clearInterval(startupTimer);
+			// workaround to generate parameterized status messages (this.status(...) does not support dynamic parameters (yet)!)
+			RED.comms.subscribe("wut/i18n-status/#", function (topic, msg) {
+				if (msg && msg.text) {
+					const id = topic.split("/")[2];
+					const node = RED.nodes.node(id);
+					if (node) {
+						msg.text = node._(msg.text.toString(), msg.params || {});
+						node.status = msg;
+						node.dirty = true;
+						RED.view.redraw();
+					} else {
+						console.warn('Invalid i18n-status message received. Cannot find node with id ' + id);
+					}
+				} else {
+					console.warn('Invalid i18n-status message received. Message is empty or invalid:', msg);
+				}
+			});
+		}
+	}, 300); // subscribe only when nodes have been loaded (or 10s timeout) -> otherwise retained messages might not be processed correctly because node is not available yet
+
 	RED.nodes.registerType('Web-IO', {
 		category: 'config',
 		defaults: {

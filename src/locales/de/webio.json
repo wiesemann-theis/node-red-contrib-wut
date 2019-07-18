@@ -14,7 +14,8 @@
             "invalid": "Ungültige Port-Informationen empfangen.",
             "failed": "Port-Informationen Laden fehlgeschlagen.",
             "doublet-slot": "Port-Informationen Warnung: Der Slot-Index __slot__ ist für den Typ __type__ mehrfach vergeben.",
-            "invalid-measurement-range": "Port-Informationen Warnung: Ungültiger Messwertebereich für Slot __slot__ (Typ __type__) empfangen (Steigung __gradient__, Minimum __minimum__)."
+            "invalid-measurement-range": "Port-Informationen Warnung: Ungültiger Messwertebereich für Slot __slot__ (Typ __type__) empfangen (Steigung __gradient__, Minimum __minimum__).",
+            "ranges-loaded": "Analoge Wertebereiche geladen."
         },
         "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__).",
         "set-failed-invaliddata": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Ungültige Daten empfangen: __data__).",

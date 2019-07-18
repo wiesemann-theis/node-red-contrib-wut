@@ -12,13 +12,13 @@ module.exports = RED => {
 			if (JSON.stringify(status) !== lastStatusString) {
 				lastStatusString = JSON.stringify(status);
 				this.status(status);
-				RED.comms.publish('wut/i18n-status/analogout/' + this.id, null, false); // publish empty message to "delete" retained message
+				RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
 			}
 		};
 		const sendI18nStatus = (i18nStatus) => {
 			if (JSON.stringify(i18nStatus) !== lastStatusString) {
 				lastStatusString = JSON.stringify(i18nStatus);
-				RED.comms.publish("wut/i18n-status/analogout/" + this.id, i18nStatus, true);
+				RED.comms.publish("wut/i18n-status/" + this.id, i18nStatus, true);
 			}
 		};
 
@@ -79,7 +79,7 @@ module.exports = RED => {
 				webio.emitter.removeAllListeners('webioGet');
 				webio.emitter.removeAllListeners('webioLabels');
 				webio.emitter.removeAllListeners('webioData');
-				RED.comms.publish('wut/i18n-status/analogout/' + this.id, null, false); // publish empty message to "delete" retained message
+				RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
 			});
 		} else {
 			this.warn(RED._('logging.invalid-webio'));

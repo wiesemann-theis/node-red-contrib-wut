@@ -4,51 +4,20 @@
 
 	let labels = {}; // { webio-id-1: { slot1: label1, slot2: label2,...}, webio-id-2: {...}, ...}
 	let ranges = {}; // { webio-id-1: { slot1: { min: 0, max: 10, unit: 'V' }, slot2: {...}, ...}, webio-id-2: {...}, ...}
-
-	// workaround to get custom input labels for Web-IOs
-	RED.comms.subscribe("wut/portlabels/#", function (topic, msg) {
+	
+	RED.comms.subscribe("wut/#", function (topic, msg) {
 		const webioId = topic.split("/")[2];
-		if (webioId && msg) {
-			labels[webioId] = msg[portinfoType];
+		const type = topic.split('/')[1];
+		if (webioId && type && msg) {
+			if (type === 'portlabels') {
+				labels[webioId] = msg[portinfoType];
+			} else if (type === 'portdata') {
+				ranges[webioId] = msg[portinfoType];
+			} // else: other types are not relevant here
 		} else {
-			console.warn('Invalid portlabels message received', topic, msg);
+			console.warn('Invalid RED.comms message received', topic, msg);
 		}
 	});
-
-	// workaround to get custom measurement ranges for Web-IOs
-	RED.comms.subscribe("wut/portdata/#", function (topic, msg) {
-		const webioId = topic.split("/")[2];
-		if (webioId && msg) {
-			ranges[webioId] = msg[portinfoType];
-		} else {
-			console.warn('Invalid portdata message received', topic, msg);
-		}
-	});
-
-	const startTime = new Date();
-	const startupTimer = setInterval(function () {
-		const nodes = RED.nodes.filterNodes({}) || [];
-		if (nodes.length || new Date() - startTime > 10000) {
-			clearInterval(startupTimer);
-			// workaround to generate parameterized status messages (this.status(...) does not support dynamic parameters (yet)!)
-			RED.comms.subscribe("wut/i18n-status/analogout/#", function (topic, msg) {
-				if (msg && msg.text) {
-					const id = topic.split("/")[3];
-					const node = RED.nodes.node(id);
-					if (node) {
-						msg.text = node._(msg.text.toString(), msg.params || {});
-						node.status = msg;
-						node.dirty = true;
-						RED.view.redraw();
-					} else {
-						console.warn('Invalid i18n-status message received. Cannot find node with id ' + id);
-					}
-				} else {
-					console.warn('Invalid i18n-status message received. Message is empty or invalid:', msg);
-				}
-			});
-		}
-	}, 300); // subscribe only when nodes have been loaded (or 10s timeout) -> otherwise retained messages might not be processed correctly because node is not available yet
 
 	RED.nodes.registerType('Analog OUT', {
 		category: 'WuT',
