@@ -5,10 +5,19 @@
 	<h3>Outputs</h3>
 	<dl class="message-properties">
 		<dt>Payload <span class="property-type">number</span></dt>
-		<dd>Measured (analog) value</dd>
+		<dd>Current (analog) input value</dd>
+
+		<dt>ClampName <span class="property-type">string</span></dt>
+		<dd>Input clamp name</dd>
 		
 		<dt>Unit <span class="property-type">string</span></dt>
 		<dd>Measurement unit</dd>
+		
+		<dt class="optional">Min <span class="property-type">number</span></dt>
+		<dd>Minimal input value (only for some device types)</dd>
+		
+		<dt class="optional">Max <span class="property-type">number</span></dt>
+		<dd>Maximal input value (only for some device types)</dd>
 	</dl>
 
 	<h3>Details</h3>
