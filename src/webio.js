@@ -34,6 +34,7 @@ module.exports = RED => {
 		let machineState = MACHINE_STATES.INITIALIZING;
 		let portlabels = null;
 		let swInterfaces = {};
+		let portdata = null; // currently used for analog measurement ranges
 		let isActive = true;
 
 		node.emitter = new EventEmitter();
@@ -95,6 +96,7 @@ module.exports = RED => {
 
 			if (isValid) {
 				swInterfaces = {};
+				const tempData = {};
 				const tempLabels = {};
 
 				for (let i = 1; i <= 6; ++i) { // iterate over defined software interface ids
@@ -102,15 +104,33 @@ module.exports = RED => {
 					swInterfaces[i] = relevantEntries.length > 0; // flag which software interfaces the web-io provides -> corresponding data needs to be polled and published
 
 					const typeLabels = {};
+					const typeData = {};
 					for (let k = 0; k < relevantEntries.length; ++k) {
 						const entry = relevantEntries[k];
-						let slot = +entry[8] || 0;
+						const slot = +entry[8] || 0;
 						if (typeLabels[slot]) {
-							node.warn(RED._('logging.portinfos.doublet-index', { index: slot, type: i }));
+							node.warn(RED._('logging.portinfos.doublet-slot', { slot, type: i }));
 						}
 						typeLabels[slot] = entry[3] || entry[1] || ''; // label = individually configured name OR official clamp name OR ''
+
+						if (entry[12] && entry[13]) { // data is only available for analog devices and portinfo version 1.1
+							const gradient = parseFloat(entry[12]);
+							const minimum = parseFloat(entry[13]);
+							if (!isNaN(minimum) && !isNaN(gradient)) {
+								typeData[slot] = { min: minimum, max: gradient * 100 + minimum, unit: entry[4] };
+							} else {
+								node.warn(RED._('logging.portinfos.invalid-measurement-range', { slot, type: i, gradient, minimum }));
+							}
+						}
 					}
 					tempLabels[i] = typeLabels;
+					tempData[i] = typeData;
+				}
+
+				if (JSON.stringify(portdata) !== JSON.stringify(tempData)) {
+					portdata = tempData;
+					node.emitter.emit('webioData', portdata);
+					RED.comms.publish("wut/portdata/" + node.id, portdata, true); // workaround to publish infos to web client
 				}
 
 				if (JSON.stringify(portlabels) !== JSON.stringify(tempLabels)) {

@@ -4,7 +4,7 @@ module.exports = RED => {
 	RED.nodes.registerType('Analog IN', function (config) {
 		const topic = config.name || 'Analog IN';
 		const portinfoType = '1';
-		
+
 		RED.nodes.createNode(this, config);
 
 		let lastStatusString = '';
@@ -28,13 +28,20 @@ module.exports = RED => {
 			let unit = '';
 			let isValidClamp = true;
 			let clampLabels = [];
+			let clampData = null;
 
 			sendStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			webio.emitter.addListener('webioLabels', labels => {
 				clampLabels = labels[portinfoType] || {};
 				isValidClamp = !!clampLabels[config.number];
-				this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number] || config.number });
+				const msg = { topic, payload: value, unit, clampName: clampLabels[config.number] || config.number };
+				Object.assign(msg, clampData);
+				this.send(msg);
+			});
+
+			webio.emitter.addListener('webioData', data => {
+				clampData = (data[portinfoType] || {})[config.number];
 			});
 
 			webio.emitter.addListener('webioGet', (type, values, status) => {
@@ -59,7 +66,9 @@ module.exports = RED => {
 
 					if (tmpValue !== value) {
 						value = tmpValue;
-						this.send({ topic: topic, payload: value, unit: unit, clampName: clampLabels[config.number] || config.number });
+						const msg = { topic, payload: value, unit, clampName: clampLabels[config.number] || config.number };
+						Object.assign(msg, clampData);
+						this.send(msg);
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
 					sendStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
@@ -69,6 +78,7 @@ module.exports = RED => {
 			this.on('close', () => {
 				webio.emitter.removeAllListeners('webioGet');
 				webio.emitter.removeAllListeners('webioLabels');
+				webio.emitter.removeAllListeners('webioData');
 				RED.comms.publish('wut/i18n-status/analogin/' + this.id, null, false); // publish empty message to "delete" retained message
 			});
 		} else {

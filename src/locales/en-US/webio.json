@@ -13,7 +13,8 @@
             "loaded": "Port information loaded.",
             "invalid": "Invalid port information received.",
             "failed": "Loading port information failed.",
-            "doublet-index": "Port information warning: slot index __index__ is assigned multiple times for type __type__"
+            "doublet-slot": "Port information warning: Slot index __slot__ is assigned multiple times for type __type__",
+            "invalid-measurement-range": "Port information warning: Invalid measurement range for slot __slot__ (type __type__) received (gradient __gradient__, minimum __minimum__)."
         },
         "invalid-config": "Invalid configuration (host __host__, port __port__).",
         "set-failed-invaliddata": "Setting output #__number__ to __value__ failed (invalid response data: __data__).",

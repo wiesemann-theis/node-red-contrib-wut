@@ -3,6 +3,7 @@
 	const portinfoType = '6';
 
 	let labels = {}; // { webio-id-1: { slot1: label1, slot2: label2,...}, webio-id-2: {...}, ...}
+	let ranges = {}; // { webio-id-1: { slot1: { min: 0, max: 10, unit: 'V' }, slot2: {...}, ...}, webio-id-2: {...}, ...}
 
 	// workaround to get custom input labels for Web-IOs
 	RED.comms.subscribe("wut/portlabels/#", function (topic, msg) {
@@ -11,6 +12,16 @@
 			labels[webioId] = msg[portinfoType];
 		} else {
 			console.warn('Invalid portlabels message received', topic, msg);
+		}
+	});
+
+	// workaround to get custom measurement ranges for Web-IOs
+	RED.comms.subscribe("wut/portdata/#", function (topic, msg) {
+		const webioId = topic.split("/")[2];
+		if (webioId && msg) {
+			ranges[webioId] = msg[portinfoType];
+		} else {
+			console.warn('Invalid portdata message received', topic, msg);
 		}
 	});
 
@@ -60,6 +71,16 @@
 			let lastWebio = null;
 			let lastNumber = this.number;
 
+			const updateRange = function () {
+				const range = (ranges[lastWebio] || {})[lastNumber];
+				if (range) {
+					$('#measurement-range-wrapper').removeClass('hidden');
+					$('#measurement-range').text(range.min + ' ' + range.unit + ' ... ' + range.max + ' ' + range.unit);
+				} else {
+					$('#measurement-range-wrapper').addClass('hidden');
+				}
+			}
+
 			$('#node-input-webio').change(function () {
 				const tempWebio = $(this).val();
 				if (tempWebio !== lastWebio) {
@@ -85,10 +106,13 @@
 					if (!selection.length) {
 						$('#node-input-number').val(''); // clear selection (e. g. if a non-existing clamp was selected before)
 					}
+
+					updateRange();
 				}
 			});
 			$('#node-input-number').change(function () {
 				lastNumber = $(this).val() || lastNumber;
+				updateRange();
 			});
 		}
 	});
@@ -106,5 +130,10 @@
 	<div class="form-row">
 		<label for="node-input-number"><i class="fa fa-fw fa-dot-circle-o"></i> <span data-i18n="config.label.clamp"></span></label>
 		<select id="node-input-number"></select>
+	</div>
+	<div class="form-row" id="measurement-range-wrapper">
+		<label for="measurement-range"></label>
+		<span data-i18n="config.label.range"></span>
+		<span id="measurement-range"></span>
 	</div>
 </script>

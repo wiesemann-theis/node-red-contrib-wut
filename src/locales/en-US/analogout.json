@@ -3,7 +3,8 @@
         "label": {
             "name": "Name",
             "webio": "Web-IO",
-            "clamp": "Clamp"
+            "clamp": "Clamp",
+            "range": "Value range:"
         }
     },
     "status": {
