@@ -5,8 +5,25 @@
             "protocol": "Protocol",
             "host": "Host",
             "port": "Port",
-            "password": "Password"
+            "password": "Password",
+            "webio": "Web-IO",
+            "clamp": "Clamp",
+            "range": "Value range:"
         }
+    },
+    "status": {
+        "not-initialized": "initializing...",
+        "not-supported": "unknown device type",
+        "not-reachable": "disconnected",
+        "connectedON": "connected: ON",
+        "connectedOFF": "connected: OFF",
+        "connected": "connected: __value__",
+        "invalid-clamp": "invalid clamp",
+        "no-value": "no data available",
+        "pw-required": "password required",
+        "access-disabled": "access not enabled",
+        "invalid-config": "invalid configuration",
+        "unknown": "unknown status"
     },
     "logging": {
         "portinfos": {
@@ -21,6 +38,9 @@
         "set-failed-invaliddata": "Setting output #__number__ to __value__ failed (invalid response data: __data__).",
         "set-failed-statuscode": "Setting output #__number__ to __value__ failed with statusCode __statusCode__.",
         "set-failed-error": "Setting output #__number__ to __value__ failed with error: __errMsg__",
-        "invalid-data": "Invalid data received (URL: __url__, Data: __data__)."
+        "invalid-data": "Invalid data received (URL: __url__, Data: __data__).",
+        "invalid-webio": "Invalid Web-IO configuration.",
+        "input-failed": "Processing input data failed. Probably invalid payload or invalid Web-IO / clamp configuration.",
+        "input-invalid-clamp": "Ignored input data for invalid(!) clamp __index__."
     }
 }

@@ -15,6 +15,7 @@
 - display clamp index in clamp selection config dialog
 - error handling improved
 - event handling improved
+- resolved redundancies in web-io i18n/locales files
 
 ## 1.1.1
 

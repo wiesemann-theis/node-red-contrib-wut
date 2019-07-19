@@ -8,21 +8,21 @@ module.exports = RED => {
 
 		RED.nodes.createNode(this, config);
 
+		let lastStatusString = '';
+		const sendWebioStatus = (status) => {
+			if (JSON.stringify(status) !== lastStatusString) {
+				lastStatusString = JSON.stringify(status);
+				RED.comms.publish('wut/webio-i18n-status/' + this.id, status, true);
+			}
+		}
+
 		let isValidClamp = true;
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
 			let value;
 			let clampLabels = [];
 
-			let lastStatusString = '';
-			const setStatus = (status) => {
-				if (JSON.stringify(status) !== lastStatusString) {
-					lastStatusString = JSON.stringify(status);
-					this.status(status);
-				}
-			}
-
-			setStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
+			sendWebioStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			webio.emitter.addListener('webioLabels', labels => {
 				clampLabels = labels[portinfoType] || labels[portinfoType2] || {};
@@ -36,9 +36,9 @@ module.exports = RED => {
 
 					if (status === STATUS.OK && isValidClamp) {
 						tmpValue = ((mask >> config.number) & 1) === 1;
-						setStatus({ fill: 'green', shape: 'dot', text: tmpValue ? 'status.connectedON' : 'status.connectedOFF' });
+						sendWebioStatus({ fill: 'green', shape: 'dot', text: tmpValue ? 'status.connectedON' : 'status.connectedOFF' });
 					} else {
-						setStatus(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
+						sendWebioStatus(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
 					}
 
 					if (tmpValue !== value) {
@@ -46,12 +46,12 @@ module.exports = RED => {
 						this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
-					setStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
+					sendWebioStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
 				}
 			});
 		} else {
-			this.warn(RED._('logging.invalid-webio'));
-			this.status(STATUS_MSG[STATUS.INVALID_CONFIG]);
+			this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.invalid-webio'));
+			sendWebioStatus(STATUS_MSG[STATUS.INVALID_CONFIG]);
 		}
 
 		this.on('input', msg => {
@@ -59,10 +59,10 @@ module.exports = RED => {
 				if (webio && webio.emitter && typeof msg.payload === 'boolean') {
 					webio.emitter.emit('webioSet', 'digitalout', config.number, msg.payload);
 				} else {
-					this.warn(RED._('logging.input-failed'));
+					this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.input-failed'));
 				}
 			} else {
-				this.warn(RED._('logging.input-invalid-clamp', { index: config.number }));
+				this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.input-invalid-clamp', { index: config.number }));
 			}
 		});
 	});

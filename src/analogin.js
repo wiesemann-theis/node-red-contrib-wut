@@ -8,17 +8,10 @@ module.exports = RED => {
 		RED.nodes.createNode(this, config);
 
 		let lastStatusString = '';
-		const sendStatus = (status) => {
+		const sendWebioStatus = (status) => {
 			if (JSON.stringify(status) !== lastStatusString) {
 				lastStatusString = JSON.stringify(status);
-				this.status(status);
-				RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
-			}
-		};
-		const sendI18nStatus = (i18nStatus) => {
-			if (JSON.stringify(i18nStatus) !== lastStatusString) {
-				lastStatusString = JSON.stringify(i18nStatus);
-				RED.comms.publish("wut/i18n-status/" + this.id, i18nStatus, true);
+				RED.comms.publish('wut/webio-i18n-status/' + this.id, status, true);
 			}
 		};
 
@@ -30,7 +23,7 @@ module.exports = RED => {
 			let clampLabels = [];
 			let clampData = null;
 
-			sendStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
+			sendWebioStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			webio.emitter.addListener('webioLabels', labels => {
 				clampLabels = labels[portinfoType] || {};
@@ -52,16 +45,15 @@ module.exports = RED => {
 						let match = values[config.number - 1].match(/^(-?\d+,?\d*).*$/);
 						if (match !== null) {
 							tmpValue = parseFloat(match[1].replace(',', '.'));
-							// workaround to generate parameterized status messages (this.status(...) does not support dynamic parameters (yet)!)
-							sendI18nStatus({ fill: 'green', shape: 'dot', text: 'status.connected', params: { value: values[config.number - 1] } });
+							sendWebioStatus({ fill: 'green', shape: 'dot', text: 'status.connected', params: { value: values[config.number - 1] } });
 						} else {
-							sendStatus({ fill: 'red', shape: 'dot', text: 'status.no-value' });
+							sendWebioStatus({ fill: 'red', shape: 'dot', text: 'status.no-value' });
 						}
 
 						match = values[config.number - 1].match(/^[-,\d]+\s?(.*)$/);
 						unit = match !== null ? match[1] : '';
 					} else {
-						sendStatus(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
+						sendWebioStatus(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
 					}
 
 					if (tmpValue !== value) {
@@ -71,16 +63,12 @@ module.exports = RED => {
 						this.send(msg);
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
-					sendStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
+					sendWebioStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
 				}
 			});
-
-			this.on('close', () => {
-				RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
-			});
 		} else {
-			this.warn(RED._('logging.invalid-webio'));
-			sendStatus(STATUS_MSG[STATUS.INVALID_CONFIG]);
+			this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.invalid-webio'));
+			sendWebioStatus(STATUS_MSG[STATUS.INVALID_CONFIG]);
 		}
 	});
 }
