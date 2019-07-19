@@ -26,6 +26,7 @@
         "connecting": "Verbindung wird hergestellt",
         "connected": "Verbindung hergestellt",
         "disconnected": "Verbindung getrennt",
+        "invalid-config": "Ungültige Konfiguration",
         "unknown": "Unbekannter Status"
     },
     "logging": {

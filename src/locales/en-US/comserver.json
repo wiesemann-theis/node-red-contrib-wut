@@ -26,6 +26,7 @@
         "connecting": "connecting",
         "connected": "connected",
         "disconnected": "disconnected",
+        "invalid-config": "invalid configuration",
         "unknown": "unknown status"
     },
     "logging": {

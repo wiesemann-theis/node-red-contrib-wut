@@ -142,7 +142,8 @@ module.exports = RED => {
         if (host && port) {
             setupTcpConnection();
         } else {
-            node.error(RED._('logging.input-config', { host, port }));
+            node.error(RED._('logging.invalid-config', { host, port }));
+            node.status({ fill: 'red', shape: 'dot', text: 'status.invalid-config' });
         }
 
         node.on("input", (msg) => {
