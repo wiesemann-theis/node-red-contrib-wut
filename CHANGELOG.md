@@ -14,6 +14,7 @@
 - analyze slot information from /portinfo
 - display clamp index in clamp selection config dialog
 - error handling improved
+- event handling improved
 
 ## 1.1.1
 

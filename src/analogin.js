@@ -76,9 +76,6 @@ module.exports = RED => {
 			});
 
 			this.on('close', () => {
-				webio.emitter.removeAllListeners('webioGet');
-				webio.emitter.removeAllListeners('webioLabels');
-				webio.emitter.removeAllListeners('webioData');
 				RED.comms.publish('wut/i18n-status/' + this.id, null, false); // publish empty message to "delete" retained message
 			});
 		} else {

@@ -49,11 +49,6 @@ module.exports = RED => {
 					setStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
 				}
 			});
-
-			this.on('close', () => {
-				webio.emitter.removeAllListeners('webioGet');
-				webio.emitter.removeAllListeners('webioLabels');
-			});
 		} else {
 			this.warn(RED._('logging.invalid-webio'));
 			this.status(STATUS_MSG[STATUS.INVALID_CONFIG]);

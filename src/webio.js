@@ -32,7 +32,7 @@ module.exports = RED => {
 
 		const pw = node.credentials.password;
 		let machineState = MACHINE_STATES.INITIALIZING;
-		let portlabels = null;
+		let portlabels = {};
 		let swInterfaces = {};
 		let portdata = {}; // currently used for analog measurement ranges
 		let isActive = true;
@@ -40,17 +40,22 @@ module.exports = RED => {
 		node.emitter = new EventEmitter();
 
 		// Helper functions
+		let lastGetData = {};
+		const emitGetData = (category, value, status) => {
+			node.emitter.emit('webioGet', category, value, status);
+			lastGetData[category] = { value, status };
+		}
 		const sendErrorStatus = (status) => {
-			node.emitter.emit('webioGet', 'counter', null, status);
-			node.emitter.emit('webioGet', 'input', null, status);
-			node.emitter.emit('webioGet', 'output', null, status);
-			node.emitter.emit('webioGet', 'single', null, status);
+			emitGetData('counter', null, status);
+			emitGetData('input', null, status);
+			emitGetData('output', null, status);
+			emitGetData('single', null, status);
 		};
 		const sendGetData = (category, value) => {
 			if (value || value === 0) {
-				node.emitter.emit('webioGet', category, value, STATUS.OK);
+				emitGetData(category, value, STATUS.OK);
 			} else {
-				node.emitter.emit('webioGet', category, null, STATUS.NO_VALUE);
+				emitGetData(category, null, STATUS.NO_VALUE);
 			}
 		};
 		let pendingRequest;
@@ -269,6 +274,7 @@ module.exports = RED => {
 			}
 		};
 		sendErrorStatus(STATUS.NOT_INITIALIZED); // initial status
+		lastGetData = {}; // reset lastGetData (initial status doesn't have to be transmitted to new listeners)
 		stateHandler();
 
 		node.emitter.addListener('webioSet', (type, number, value) => {
@@ -302,9 +308,29 @@ module.exports = RED => {
 			}
 		});
 
+		node.emitter.addListener('newListener', event => {
+			// emit data again if a new listener is registered with a delay (for whatever reason)
+			if (event === 'webioLabels' && Object.keys(portlabels).length) {
+				setTimeout(() => node.emitter.emit('webioLabels', portlabels), 10); // NOTE: immediate response might not be received!
+			} else if (event === 'webioData' && Object.keys(portdata).length) {
+				setTimeout(() => node.emitter.emit('webioData', portdata), 10); // NOTE: immediate response might not be received!
+			} else if (event === 'webioGet' && Object.keys(lastGetData).length) {
+				setTimeout(() => {
+					for (let key in lastGetData) {
+						const data = lastGetData[key];
+						if (data.status !== STATUS.NOT_INITIALIZED) {
+							emitGetData(key, data.value, data.status);
+						}
+					}
+				}, 10); // NOTE: immediate response might not be received!
+			}
+		});
+
+
 		node.on('close', () => {
 			isActive = false; // to handle old pending requests correctly
-			node.emitter.removeAllListeners('webioSet');
+			
+			node.emitter.removeAllListeners(); // centrally remove all listeners (across all clamp nodes)
 
 			if (pendingRequest && !pendingRequest.res) {
 				pendingRequest.abort();
