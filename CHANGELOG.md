@@ -1,10 +1,10 @@
 # CHANGELOG
 
-## unreleased
+## 1.2.0
 
 ### Added
 
-- Analog OUT node added
+- Analog OUT node
 - msg.clampName parameter for Web-IO output messages
 - display measurement value ranges for analog clamps (in config dialog + as parameters in output messages)
 
