@@ -27,7 +27,9 @@ module.exports = RED => {
 			webio.emitter.addListener('webioLabels', labels => {
 				clampLabels = labels[portinfoType] || labels[portinfoType2] || {};
 				isValidClamp = !!clampLabels[config.number];
-				this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
+				if (value !== undefined) {
+					this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
+				}
 			});
 
 			webio.emitter.addListener('webioGet', (type, mask, status) => {

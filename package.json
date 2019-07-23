@@ -14,11 +14,11 @@
 	"devDependencies": {},
 	"node-red": {
 		"nodes": {
+			"web-io": "src/webio.js",
 			"analog-in": "src/analogin.js",
 			"analog-out": "src/analogout.js",
 			"digital-in": "src/digitalin.js",
 			"digital-out": "src/digitalout.js",
-			"web-io": "src/webio.js",
 			"com-server": "src/comserver.js"
 		}
 	}

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Unreleased
+
+### Fixed
+
+- prevent empty messages on startup
+
 ## 1.2.0
 
 ### Added
