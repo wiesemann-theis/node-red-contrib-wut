@@ -38,6 +38,11 @@
 		credentials: { password: { type: 'password' } },
 		label: function () {
 			return this.name || this.host + ":" + this.port;
+		},
+		oneditprepare: function () {
+			$.getJSON(`wut/devices/webio`, resp => {
+				console.log(resp);
+			});
 		}
 	});
 </script>

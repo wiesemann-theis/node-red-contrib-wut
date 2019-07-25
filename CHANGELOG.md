@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Auto-discovery / W&T broadcast feature (work in progress)
+
 ### Fixed
 
 - prevent empty messages on startup

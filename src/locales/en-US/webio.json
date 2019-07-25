@@ -41,6 +41,7 @@
         "invalid-data": "Invalid data received (URL: __url__, Data: __data__).",
         "invalid-webio": "Invalid Web-IO configuration.",
         "input-failed": "Processing input data failed. Probably invalid payload or invalid Web-IO / clamp configuration.",
-        "input-invalid-clamp": "Ignored input data for invalid(!) clamp __index__."
+        "input-invalid-clamp": "Ignored input data for invalid(!) clamp __index__.",
+        "wut-broadcast-failed": "Finding W&T devices failed: __msg__"
     }
 }
