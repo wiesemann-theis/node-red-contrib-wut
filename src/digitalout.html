@@ -55,12 +55,8 @@
 						const label = +labelData[slot] !== slot ? (slot + ': ' + labelData[slot]) : slot;
 						$('#node-input-number').append($('<option></option>').attr('value', slot).text(label));
 					}
-
-					// finally, restore selection
-					const selection = $('#node-input-number').val(lastNumber);
-					if (!selection.length) {
-						$('#node-input-number').val(''); // clear selection (e. g. if a non-existing clamp was selected before)
-					}
+					
+					$('#node-input-number').val(lastNumber); // finally, restore selection
 				}
 			});
 			$('#node-input-number').change(function () {
