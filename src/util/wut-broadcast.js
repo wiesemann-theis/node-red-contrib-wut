@@ -143,7 +143,8 @@ async function findWutDevices(clearCache) {
             closeSocket(socket).catch(err => console.warn('W&T broadcast: closing socket failed', err.message));
             throw e; // re-throw exception -> like Promise.reject
         }
-        cachedData = responses;
+        const mapIp = (ip) => ip.replace(/(\d+)/g, d => ('000' + d).slice(-3));
+        cachedData = responses.sort((a, b) => mapIp(a.ip) > mapIp(b.ip) ? 1 : -1); // sort by ip
         cacheTimestamp = new Date();
     }
     return cachedData;

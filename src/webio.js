@@ -11,9 +11,9 @@ const MACHINE_STATES = Object.freeze({
 module.exports = RED => {
     RED.httpAdmin.get("/wut/devices/webio", RED.auth.needsPermission('wut.read'), function (req, res) {
         wutBroadcast().then(data => {
-            const mapIp = (ip) => ip.replace(/(\d+)/g, d => ('000' + d).slice(-3));
-            data = data.sort((a, b) => mapIp(a.ip) > mapIp(b.ip) ? 1 : -1); // sort by ip
-            res.json(data);
+            // only return web-ios (no com-servers or other devices)
+            const webios = data.filter(d => d.port && d.productid && d.productid.startsWith('57'));
+            res.json(webios);
         }, err => {
             console.warn(RED._('logging.wut-broadcast-failed', { msg: err.message }));
             res.json(null)
