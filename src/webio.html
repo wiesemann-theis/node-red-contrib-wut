@@ -33,16 +33,74 @@
 			host: { value: '', required: true, validate: RED.validators.regex(/^[a-z0-9\-\.]+$/i) },
 			port: { value: 80, required: true, validate: RED.validators.number() },
 			pollingIntervalSec: { value: 1, validate: RED.validators.number() }, // no corresponding input element (yet)
-			portinfoIntervalSec: { value: 60, validate: RED.validators.number() } // no corresponding input element (yet)
+			portinfoIntervalSec: { value: 60, validate: RED.validators.number() }, // no corresponding input element (yet)
+			manualConfig: { value: false },
+			device: { value: null }
 		},
 		credentials: { password: { type: 'password' } },
 		label: function () {
 			return this.name || this.host + ":" + this.port;
 		},
+		oneditsave: function () {
+			this.device = $('#node-config-input-device').val(); // because empty/invalid values are not saved automatically
+		},
 		oneditprepare: function () {
-			$.getJSON(`wut/devices/webio`, resp => {
-				console.log(resp);
+			let isDiscovering = false;
+			let isManualConfig = this.manualConfig;
+			let lastDeviceId = this.device;
+			let allDevices = [];
+			const node = this;
+
+			const discoverDevices = function () {
+				isDiscovering = true;
+				$('#btn-discover-devices').prop('disabled', true);
+				$('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-spinner fa-spin');
+				$.getJSON(`wut/devices/webio`, function (data) {
+					isDiscovering = false;
+					$('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-search');
+					$('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
+					if (data) {
+						allDevices = data;
+						$('#node-config-input-device').children('option').remove(); // remove all clamp options
+
+						for (let i = 0; i < data.length; ++i) {
+							const device = data[i];
+							const label = `${device.ip}:${device.port} (${device.mac})`;
+							$('#node-config-input-device').append($('<option></option>').attr('value', device.id).text(label));
+						}
+
+						$('#node-config-input-device').val(lastDeviceId); // finally, restore selection
+					}
+				});
+			};
+
+			$('#node-config-input-device').change(function () {
+				const selectedId = $(this).val();
+				lastDeviceId = selectedId || lastDeviceId;
+				const device = allDevices.find(d => d.id === selectedId);
+				if (device) {
+					$('#node-config-input-host').val(device.ip || '').trigger('change');
+					$('#node-config-input-protocol').val(device.httpsEnabled ? 'https' : 'http').trigger('change');
+					$('#node-config-input-port').val(device.port || '').trigger('change');
+				}
 			});
+
+			$('#node-config-input-manualConfig').change(function () {
+				isManualConfig = this.checked;
+				$('.manual-config-input').prop('disabled', !isManualConfig);
+				$('#node-config-input-device').prop('disabled', isManualConfig);
+				$('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
+				if (!isManualConfig) {
+					$('#node-config-input-device').trigger('change');
+				}
+			});
+
+			$('#btn-discover-devices').click(function (e) {
+				e.preventDefault();
+				discoverDevices();
+			});
+
+			discoverDevices(); // initially discover devices
 		}
 	});
 </script>
@@ -53,19 +111,37 @@
 		<input type="text" id="node-config-input-name" data-i18n="[placeholder]config.label.name" />
 	</div>
 	<div class="form-row">
+		<label for="node-config-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
+		<div style="display: inline-block; width: 70%;">
+			<div style="display: flex;">
+				<select id="node-config-input-device" style="flex-grow: 1; margin-right: 7px;"></select>
+				<button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
+					<i class="fa fa-fw fa-search"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+    <div class="form-row">
+		<label>&nbsp;</label>
+		<label for="node-config-input-manualConfig" style="width: 70%;">
+			<input type="checkbox" id="node-config-input-manualConfig" style="display: inline-block; width: auto; vertical-align: top;" />
+			<span data-i18n="config.label.manual-config">
+		</label>
+	</div>
+	<div class="form-row">
+		<label for="node-config-input-host"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.host"></label>
+		<input type="text" id="node-config-input-host" class="manual-config-input" data-i18n="[placeholder]config.label.host" />
+	</div>
+	<div class="form-row">
 		<label for="node-config-input-protocol"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.protocol"></label>
-		<select id="node-config-input-protocol">
+		<select id="node-config-input-protocol" class="manual-config-input" style="width: 70%">
 			<option value="http">HTTP</option>
 			<option value="https">HTTPS</option>
 		</select>
 	</div>
 	<div class="form-row">
-		<label for="node-config-input-host"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.host"></label>
-		<input type="text" id="node-config-input-host" data-i18n="[placeholder]config.label.host" />
-	</div>
-	<div class="form-row">
 		<label for="node-config-input-port"><i class="fa fa-fw fa-dot-circle-o"></i> <span data-i18n="config.label.port"></label>
-		<input type="text" id="node-config-input-port" data-i18n="[placeholder]config.label.port" />
+		<input type="text" id="node-config-input-port" class="manual-config-input" data-i18n="[placeholder]config.label.port" />
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-password"><i class="fa fa-fw fa-unlock-alt"></i> <span data-i18n="config.label.password"></label>

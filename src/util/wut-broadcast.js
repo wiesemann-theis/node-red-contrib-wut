@@ -3,7 +3,7 @@ const dgram = require('dgram');
 const broadcastMsg = 'Version 1.04';
 const broadcastPort = 8513;
 const broadcastAddress = '255.255.255.255';
-const broadcastTimeout = 2000;
+const broadcastTimeout = 1000;
 
 const cacheTimeoutSec = 5 * 60; // 5 min
 
@@ -118,23 +118,20 @@ function parseGisData(buffer) {
 
 async function findWutDevices(clearCache) {
     if (!cachedData || clearCache || new Date() - cacheTimestamp > cacheTimeoutSec * 1000) {
-        const responses = {};
+        const responses = [];
         let socket = null;
         try {
             socket = await createSocket();
 
             socket.on('message', (msg, src) => {
                 if (src.port === broadcastPort) {
-                    if (!responses[src.address]) {
-                        const infos = parseGisData(msg, src.address);
-                        if (infos) {
-                            infos.ip = src.address;
-                            responses[src.address] = infos;
-                        } else {
-                            console.warn('W&T broadcast: invalid GIS data received from ' + src.address);
-                        }
+                    const infos = parseGisData(msg, src.address);
+                    if (infos) {
+                        infos.ip = src.address;
+                        infos.id = `${infos.ip}:${infos.port} (${infos.mac})`;
+                        responses.push(infos);
                     } else {
-                        console.warn('W&T broadcast: duplicate GIS data received from ' + src.address);
+                        console.warn('W&T broadcast: invalid GIS data received from ' + src.address);
                     }
                 }
             });

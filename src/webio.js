@@ -10,10 +10,9 @@ const MACHINE_STATES = Object.freeze({
 
 module.exports = RED => {
     RED.httpAdmin.get("/wut/devices/webio", RED.auth.needsPermission('wut.read'), function (req, res) {
-
-        console.log('request received');
         wutBroadcast().then(data => {
-            console.log('response ready');
+            const mapIp = (ip) => ip.replace(/(\d+)/g, d => ('000' + d).slice(-3));
+            data = data.sort((a, b) => mapIp(a.ip) > mapIp(b.ip) ? 1 : -1); // sort by ip
             res.json(data);
         }, err => {
             console.warn(RED._('logging.wut-broadcast-failed', { msg: err.message }));

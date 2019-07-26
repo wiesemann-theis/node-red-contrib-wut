@@ -8,7 +8,10 @@
             "password": "Passwort",
             "webio": "Web-IO",
             "clamp": "Klemme",
-            "range": "Wertebereich:"
+            "range": "Wertebereich:",
+            "device": "Gerät",
+            "manual-config": "Verbindungsparameter manuell eingeben",
+            "tooltip-discover": "Suche Geräte im Netzwerk"
         }
     },
     "status": {

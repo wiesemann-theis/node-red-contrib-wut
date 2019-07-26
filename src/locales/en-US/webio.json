@@ -8,7 +8,10 @@
             "password": "Password",
             "webio": "Web-IO",
             "clamp": "Clamp",
-            "range": "Value range:"
+            "range": "Value range:",
+            "device": "Device",
+            "manual-config": "enter connection parameters manually",
+            "tooltip-discover": "search for devices in network"
         }
     },
     "status": {
