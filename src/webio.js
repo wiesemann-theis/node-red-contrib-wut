@@ -12,7 +12,7 @@ module.exports = RED => {
     RED.httpAdmin.get("/wut/devices/webio", RED.auth.needsPermission('wut.read'), function (req, res) {
         wutBroadcast().then(data => {
             // only return web-ios (no com-servers or other devices)
-            const webios = data.filter(d => d.port && d.productid && d.productid.startsWith('57'));
+            const webios = data.filter(d => d.portinfoAvailable);
             res.json(webios);
         }, err => {
             console.warn(RED._('logging.wut-broadcast-failed', { msg: err.message }));

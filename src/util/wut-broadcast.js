@@ -1,6 +1,6 @@
 const dgram = require('dgram');
 
-const broadcastMsg = 'Version 1.04';
+const broadcastMsg = 'Version 1.04\u0000';
 const broadcastPort = 8513;
 const broadcastAddress = '255.255.255.255';
 const broadcastTimeout = 1000;
@@ -14,8 +14,7 @@ function createSocket() {
     return new Promise((resolve, reject) => {
         const socket = dgram.createSocket('udp4');
         socket.on('error', (err) => reject(err));
-        socket.on('listening', () => resolve(socket));
-        socket.bind();
+        socket.bind(() => resolve(socket));
     });
 }
 
@@ -79,6 +78,7 @@ function parseGisData(buffer) {
                             case 14: // system flags
                                 response.httpsSupport = !!(rawData[2] & 0x1);
                                 response.httpsEnabled = !!(rawData[2] & 0x2);
+                                response.portinfoAvailable = !!(rawData[1] & 0x1);
                                 break;
                             case 15: response.prodname = rawData.toString(); break;
                             case 16: response.softname = rawData.toString(); break;
@@ -109,6 +109,7 @@ function parseGisData(buffer) {
                     response.productid = parseInt(Buffer.from(buffer.slice(96, 102)).reverse().toString('hex'), 16).toString().substr(7, 5);
                     response.httpsSupport = !!(buffer[94] & 0x1);
                     response.httpsEnabled = !!(buffer[94] & 0x2);
+                    response.portinfoAvailable = !!(buffer[93] & 0x1);
                 }
             }
         }
