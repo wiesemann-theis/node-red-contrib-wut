@@ -1,4 +1,5 @@
 const dgram = require('dgram');
+const os = require('os');
 
 const broadcastMsg = 'Version 1.04\u0000';
 const broadcastPort = 8513;
@@ -10,11 +11,11 @@ const cacheTimeoutSec = 5 * 60; // 5 min
 let cachedData = null;
 let cacheTimestamp = 0;
 
-function createSocket() {
+function createSocket(address) {
     return new Promise((resolve, reject) => {
         const socket = dgram.createSocket('udp4');
         socket.on('error', (err) => reject(err));
-        socket.bind(() => resolve(socket));
+        socket.bind(0, address, () => resolve(socket));
     });
 }
 
@@ -26,6 +27,13 @@ function closeSocket(socket) {
             resolve(); // no socket passed -> nothing to close
         }
     });
+}
+
+async function closeSockets(sockets) {
+    sockets = sockets || [];
+    for (let i = 0; i < sockets.length; ++i) {
+        await closeSocket(sockets[i]);
+    }
 }
 
 function sendBroadcast(socket) {
@@ -120,28 +128,38 @@ function parseGisData(buffer) {
 async function findWutDevices(clearCache) {
     if (!cachedData || clearCache || new Date() - cacheTimestamp > cacheTimeoutSec * 1000) {
         const responses = [];
-        let socket = null;
+        let sockets = [];
         try {
-            socket = await createSocket();
+            const rawList = [].concat(...Object.values(os.networkInterfaces()));
+            const ifaces = rawList.filter(d => d.family === 'IPv4' && !d.internal);
+            if (!ifaces.length) {
+                ifaces.push({ address: '0.0.0.0' });
+            }
 
-            socket.on('message', (msg, src) => {
-                if (src.port === broadcastPort) {
-                    const infos = parseGisData(msg, src.address);
-                    if (infos) {
-                        infos.ip = src.address;
-                        infos.id = `${infos.ip}:${infos.port} (${infos.mac})`;
-                        responses.push(infos);
-                    } else {
-                        console.warn('W&T broadcast: invalid GIS data received from ' + src.address);
+            for (let i = 0; i < ifaces.length; ++i) {
+                let socket = await createSocket(ifaces[i].address);
+                sockets.push(socket);
+
+                socket.on('message', (msg, src) => {
+                    if (src.port === broadcastPort) {
+                        const infos = parseGisData(msg, src.address);
+                        if (infos) {
+                            infos.ip = src.address;
+                            infos.id = `${infos.ip}:${infos.port} (${infos.mac})`;
+                            responses.push(infos);
+                        } else {
+                            console.warn('W&T broadcast: invalid GIS data received from ' + src.address);
+                        }
                     }
-                }
-            });
+                });
 
-            await sendBroadcast(socket);
+                await sendBroadcast(socket);
+            }
+
             await timeout(broadcastTimeout); // wait for responses
-            await closeSocket(socket);
+            await closeSockets(sockets);
         } catch (e) {
-            closeSocket(socket).catch(err => console.warn('W&T broadcast: closing socket failed', err.message));
+            await closeSockets(sockets).catch(err => console.warn('W&T broadcast: closing socket failed', err.message));
             throw e; // re-throw exception -> like Promise.reject
         }
         const mapIp = (ip) => ip.replace(/(\d+)/g, d => ('000' + d).slice(-3));

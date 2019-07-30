@@ -16,10 +16,9 @@ module.exports = RED => {
             res.json(webios);
         }, err => {
             console.warn(RED._('logging.wut-broadcast-failed', { msg: err.message }));
-            res.json(null)
+            res.json(null);
         });
     });
-
 
     RED.nodes.registerType('Web-IO', function (config) {
         RED.nodes.createNode(this, config);
