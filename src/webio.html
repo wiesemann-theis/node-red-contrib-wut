@@ -67,11 +67,12 @@
 			let allDevices = [];
 			const node = this;
 
-			const discoverDevices = function () {
+			const discoverDevices = function (clearCache) {
 				isDiscovering = true;
 				$('#btn-discover-devices').prop('disabled', true);
 				$('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-spinner fa-spin');
-				$.getJSON('wut/devices/webio', function (data) {
+				const url = 'wut/devices/webio?nodeId=' + node.id + (clearCache ? '&clearCache=true' : '');
+				$.getJSON(url, function (data) {
 					isDiscovering = false;
 					$('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-search');
 					$('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
@@ -129,10 +130,10 @@
 
 			$('#btn-discover-devices').click(function (e) {
 				e.preventDefault();
-				discoverDevices();
+				discoverDevices(true); // re-discover devices (clear cache!)
 			});
 
-			discoverDevices(); // initially discover devices
+			discoverDevices(false); // initially discover devices (cached data is ok)
 		}
 	});
 </script>

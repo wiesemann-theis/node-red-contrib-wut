@@ -10,12 +10,15 @@ const MACHINE_STATES = Object.freeze({
 
 module.exports = RED => {
     RED.httpAdmin.get("/wut/devices/webio", RED.auth.needsPermission('wut.read'), function (req, res) {
-        wutBroadcast().then(data => {
+        const node = RED.nodes.getNode(req.query.nodeId) || console; // for logging: try to identify node for logging; use console as default
+        node.log(RED._('logging.wut-broadcast-started'));
+        wutBroadcast(req.query.clearCache === 'true').then(data => {
+            node.log(RED._('logging.wut-broadcast-finished', { count: data.length }));
             // only return web-ios (no com-servers or other devices)
             const webios = data.filter(d => d.portinfoAvailable);
             res.json(webios);
         }, err => {
-            console.warn(RED._('logging.wut-broadcast-failed', { msg: err.message }));
+            node.warn(RED._('logging.wut-broadcast-failed', { msg: err.message }));
             res.json(null);
         });
     });
