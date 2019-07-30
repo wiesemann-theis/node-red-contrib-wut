@@ -3,6 +3,10 @@
 	<p>Configuration for a connection to a <a href="https://www.wut.de/e-57www-10-inus-000.php" target="_blank">Wiesemann & Theis Web-IO</a>.</p>
 	<p>This (config) node implements all required background communication to access the Web-IO's in- and outputs.</p>
 	<p>
+		There is an automatically generated list of all Web-IOs available in your network.
+		You can either choose a device from that list or enter the connection parameters manually (e. g. if the network scan is blocked by a firewall).
+	</p>
+	<p>
 		NOTE: You can only access the device if the "allow HTTP requests" option in the "communication paths -> web API" section of the web configuration is enabled!
 		Also, if the device has switchable outputs, each one of them has to be enabled individually.
 	</p>
@@ -11,6 +15,11 @@
 	<dl class="message-properties">		
 		<dt class="optional">Name <span class="property-type">string</span></dt>
 		<dd>Custom name for the Node-RED node</dd>
+
+		<dt>Device <span class="property-type">select</span></dt>
+		<dd>List of all available Web-IOs</dd>
+		<dd>Trigger new network scan</dd>
+		<dd>En-/disable manual configuration</dd>
 		
 		<dt>Protocol <span class="property-type">select</span></dt>
 		<dd>Access via HTTP or HTTPS</dd>

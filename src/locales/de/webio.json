@@ -11,7 +11,7 @@
             "range": "Wertebereich:",
             "device": "Gerät",
             "manual-config": "Verbindungsparameter manuell eingeben",
-            "tooltip-discover": "Suche Geräte im Netzwerk",
+            "tooltip-discover": "Geräte im Netzwerk suchen",
             "productid": "Artikel-Nr.:",
             "prodname": "Gerätetyp:",
             "sysname": "Systemname:"
