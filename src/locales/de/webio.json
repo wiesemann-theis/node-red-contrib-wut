@@ -12,6 +12,7 @@
             "device": "Gerät",
             "manual-config": "Verbindungsparameter manuell eingeben",
             "tooltip-discover": "Geräte im Netzwerk suchen",
+            "tooltip-webconfig": "Web-Konfiguration öffnen",
             "productid": "Artikel-Nr.:",
             "prodname": "Gerätetyp:",
             "sysname": "Systemname:"

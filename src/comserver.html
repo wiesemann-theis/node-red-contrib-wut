@@ -1,3 +1,11 @@
+<style>
+    .comserver-checkbox {
+        display: inline-block;
+        width: auto !important;
+        vertical-align: top !important;
+    }
+</style>
+
 <script type="text/javascript">
     RED.nodes.registerType('Com-Server', {
         category: 'WuT',
@@ -65,7 +73,7 @@
     
     <div class="form-row">
         <label for=""node-input-format"><i class="fa fa-fw fa-sign-out"></i> <span data-i18n="config.label.format"></span></label>
-        <select id="node-input-format">
+        <select id="node-input-format" style="width: 70%;">
             <option value="string" data-i18n="config.format.string"></option>
             <option value="buffer" data-i18n="config.format.buffer"></option>
         </select>
@@ -74,20 +82,22 @@
     <div id="string-details-wrapper">
         <div class="form-row">
             <label>&nbsp;</label>
-            <label for="node-input-delimiter" data-i18n="config.label.delimiter"></label>
-            <input type="text" id="node-input-delimiter" style="width:120px;" />
+            <label for="node-input-delimiter" style="width: 70%; display: inline-flex; align-items: center;">
+                <span data-i18n="config.label.delimiter" style="margin-right: 5px;"></span>
+                <input type="text" id="node-input-delimiter" style="flex-grow: 1;" />
+            </label>
         </div>
 
         <div class="form-row">
             <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-sendDelimiter" style="display: inline-block; width: auto; vertical-align: top;" />
+            <input type="checkbox" id="node-input-sendDelimiter" class="comserver-checkbox" />
             <span data-i18n="config.label.send-delimiter"></span>
         </div>
     </div>
 
     <div class="form-row">
         <label for="node-input-encoding"><i class="fa fa-fw fa-exchange"></i> <span data-i18n="config.label.encoding"></span></label>
-        <select id="node-input-encoding">
+        <select id="node-input-encoding" style="width: 70%;">
             <option>utf8</option>
             <option>latin1</option>
         </select>
@@ -95,7 +105,7 @@
     
     <div class="form-row">
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-setuart" style="display: inline-block; width: auto; vertical-align: top;" />
+        <input type="checkbox" id="node-input-setuart" class="comserver-checkbox" />
         <span data-i18n="config.label.setuart">
     </div>
     
@@ -108,7 +118,7 @@
 
         <div class="form-row">
             <label for="node-input-baudrate"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.baudrate"></label>
-            <select id="node-input-baudrate">
+            <select id="node-input-baudrate" style="width: 70%;">
                 <option value="11">230,4k</option>
                 <option value="14">153,6k</option>
                 <option value="15">115,2k</option>
@@ -130,7 +140,7 @@
         
         <div class="form-row">
             <label for="node-input-parity"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.parity"></label>
-            <select id="node-input-parity">
+            <select id="node-input-parity" style="width: 70%;">
                 <option value="0">NONE</option>
                 <option value="3">EVEN</option>
                 <option value="1">ODD</option>
@@ -141,7 +151,7 @@
         
         <div class="form-row">
             <label for="node-input-databits"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.databits"></label>
-            <select id="node-input-databits">
+            <select id="node-input-databits" style="width: 70%;">
                 <option>5</option>
                 <option>6</option>
                 <option>7</option>
@@ -151,7 +161,7 @@
         
         <div class="form-row">
             <label for="node-input-stopbits"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.stopbits"></label>
-            <select id="node-input-stopbits">
+            <select id="node-input-stopbits" style="width: 70%;">
                 <option>1</option>
                 <option>2</option>
             </select>
@@ -165,8 +175,10 @@
         <div class="form-row hidden">
             <!-- Hidden (for now). Maybe to be enabled in future releases... -->
             <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-permupdate" style="display: inline-block; width: auto; vertical-align: top;" />
-            <label for="node-input-permupdate" style="width: 70%;"><span data-i18n="config.label.permupdate"></span></label>
+            <label for="node-input-permupdate" style="width: 70%;">
+                <input type="checkbox" id="node-input-permupdate" class="comserver-checkbox" />
+                <span data-i18n="config.label.permupdate">
+            </label>
         </div>
     </div>
 </script>

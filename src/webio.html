@@ -1,13 +1,36 @@
 <style>
-	.flex-row {
+	.webio-flex-container {
+		display: inline-flex;
+		width: 70%;
+	}
+
+	.webio-flex-container select,
+	.webio-flex-container input {
+		flex-grow: 1;
+		margin-right: 5px;
+	}
+
+	.webio-flex-container-column {
+		display: inline-flex;
+		width: 70%;
+		flex-direction: column;
+	}
+
+	.webio-flex-container-column>div {
 		display: flex;
 		align-items: center;
 		margin: 6px 0px;
 	}
 
-	.flex-row>*:first-child {
+	.webio-flex-container-column>div>*:first-child {
 		white-space: nowrap;
 		margin-right: 5px;
+	}
+
+	.webio-checkbox {
+		display: inline-block;
+		width: auto !important;
+		vertical-align: top !important;
 	}
 </style>
 
@@ -133,6 +156,16 @@
 				discoverDevices(true); // re-discover devices (clear cache!)
 			});
 
+			$('#btn-webconfig').click(function (e) {
+				e.preventDefault();
+				const protocol = $('#node-config-input-protocol').val();
+				const host = $('#node-config-input-host').val();
+				const port = $('#node-config-input-port').val();
+				if (protocol && host && port) {
+					window.open(protocol + '://' + host + ':' + port, '_blank');
+				}
+			});
+
 			discoverDevices(false); // initially discover devices (cached data is ok)
 		}
 	});
@@ -145,29 +178,32 @@
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
-		<div style="display: inline-block; width: 70%;">
-			<div style="display: flex;">
-				<select id="node-config-input-device" style="flex-grow: 1; margin-right: 7px;"></select>
-				<button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
-					<i class="fa fa-fw fa-search"></i>
-				</button>
-			</div>
+		<div class="webio-flex-container">
+			<select id="node-config-input-device" style="width: 70%;"></select>
+			<button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
+				<i class="fa fa-fw fa-search"></i>
+			</button>
 		</div>
 	</div>
     <div class="form-row">
 		<label>&nbsp;</label>
 		<label for="node-config-input-manualConfig" style="width: 70%;">
-			<input type="checkbox" id="node-config-input-manualConfig" style="display: inline-block; width: auto; vertical-align: top;" />
+			<input type="checkbox" id="node-config-input-manualConfig" class="webio-checkbox" />
 			<span data-i18n="config.label.manual-config">
 		</label>
 	</div>
 	<div class="form-row">
-		<label for="node-config-input-host"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.host"></label>
-		<input type="text" id="node-config-input-host" class="manual-config-input" data-i18n="[placeholder]config.label.host" />
+		<label for="node-config-input-host"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.host"></label>		
+		<div class="webio-flex-container">
+			<input type="text" id="node-config-input-host" class="manual-config-input" data-i18n="[placeholder]config.label.host" />
+			<button id="btn-webconfig" class="editor-button" data-i18n="[title]config.label.tooltip-webconfig">
+				<i class="fa fa-fw fa-external-link"></i>
+			</button>
+		</div>
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-protocol"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.protocol"></label>
-		<select id="node-config-input-protocol" class="manual-config-input" style="width: 70%">
+		<select id="node-config-input-protocol" class="manual-config-input" style="width: 70%;">
 			<option value="http">HTTP</option>
 			<option value="https">HTTPS</option>
 		</select>
@@ -183,21 +219,19 @@
 	<div id="webio-details-wrapper">
 		<div class="form-row">
 			<label for="webio-details-productid"></label>
-			<div style="display: inline-block; width: 70%">
-				<div style="display: flex; flex-direction: column;">
-					<div class="flex-row">
-						<span data-i18n="config.label.productid"></span>
-						<a href="https://www.wut.de/" target="_blank" id="webio-details-productid"></a>
-					</div>
-					<div class="flex-row">
-						<span data-i18n="config.label.prodname"></span>
-						<span id="webio-details-prodname"></span>
-					</div>
-					<div class="flex-row">
-						<span data-i18n="config.label.sysname"></span>
-						<span id="webio-details-sysname"></span>
-					</div>
-				</div>				
+			<div class="webio-flex-container-column">
+				<div>
+					<span data-i18n="config.label.productid"></span>
+					<a href="https://www.wut.de/" target="_blank" id="webio-details-productid"></a>
+				</div>
+				<div>
+					<span data-i18n="config.label.prodname"></span>
+					<span id="webio-details-prodname"></span>
+				</div>
+				<div>
+					<span data-i18n="config.label.sysname"></span>
+					<span id="webio-details-sysname"></span>
+				</div>
 			</div>
 		</div>
 	</div>

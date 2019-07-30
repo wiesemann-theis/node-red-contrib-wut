@@ -4,8 +4,13 @@
 
 ### Added
 
-- Auto-discovery / W&T broadcast feature (work in progress)
-- Device details for Web-IO config node
+- auto-discovery / W&T broadcast feature (work in progress)
+- device details for Web-IO config node
+- button in Web-IO config to open web config application
+
+### Changed
+
+- minor layout adjustments
 
 ### Fixed
 

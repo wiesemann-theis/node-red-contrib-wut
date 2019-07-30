@@ -12,6 +12,7 @@
             "device": "Device",
             "manual-config": "enter connection parameters manually",
             "tooltip-discover": "search for devices in network",
+            "tooltip-webconfig": "open web config application",
             "productid": "Article no.:",
             "prodname": "Device type:",
             "sysname": "System name:"
