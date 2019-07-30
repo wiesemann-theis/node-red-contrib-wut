@@ -5,6 +5,7 @@
 ### Added
 
 - Auto-discovery / W&T broadcast feature (work in progress)
+- Device details for Web-IO config node
 
 ### Fixed
 

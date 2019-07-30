@@ -1,3 +1,16 @@
+<style>
+	.flex-row {
+		display: flex;
+		align-items: center;
+		margin: 6px 0px;
+	}
+
+	.flex-row>*:first-child {
+		white-space: nowrap;
+		margin-right: 5px;
+	}
+</style>
+
 <script type="text/javascript">
 	// handle webio-i18n-status messages here (handling it in analogin, analogout,... would be redundant -> and there are no webio-i18n-status messages if there is no webio!)
 	const startTime = new Date();
@@ -42,6 +55,9 @@
 			return this.name || this.host + ":" + this.port;
 		},
 		oneditsave: function () {
+			if ($('#node-config-input-manualConfig').is(':checked')) { // delete device parameter on manual configuration
+				$('#node-config-input-device').val('');
+			}
 			this.device = $('#node-config-input-device').val(); // because empty/invalid values are not saved automatically
 		},
 		oneditprepare: function () {
@@ -49,26 +65,32 @@
 			let isManualConfig = this.manualConfig;
 			let lastDeviceId = this.device;
 			let allDevices = [];
+			const node = this;
 
 			const discoverDevices = function () {
 				isDiscovering = true;
 				$('#btn-discover-devices').prop('disabled', true);
 				$('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-spinner fa-spin');
-				$.getJSON(`wut/devices/webio`, function (data) {
+				$.getJSON('wut/devices/webio', function (data) {
 					isDiscovering = false;
 					$('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-search');
 					$('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
 					if (data) {
-						allDevices = data; 
+						allDevices = data;
+						console.log(data);
 						$('#node-config-input-device').children('option').remove(); // remove all clamp options
 
 						for (let i = 0; i < data.length; ++i) {
 							const device = data[i];
-							const label = `${device.ip}:${device.port} (${device.mac})`;
+							const label = device.ip + ':' + device.port + ' (' + device.mac + ')';
 							$('#node-config-input-device').append($('<option></option>').attr('value', device.id).text(label));
 						}
 
-						$('#node-config-input-device').val(lastDeviceId); // finally, restore selection
+						if (!lastDeviceId) {
+							const matches = allDevices.filter(function (d) { return d.ip === node.host && +d.port === +node.port && node.protocol === (d.httpsEnabled ? 'https' : 'http'); });
+							lastDeviceId = (matches[0] || {}).id;
+						}
+						$('#node-config-input-device').val(lastDeviceId).trigger('change'); // finally, restore selection
 					}
 				});
 			};
@@ -76,11 +98,20 @@
 			$('#node-config-input-device').change(function () {
 				const selectedId = $(this).val();
 				lastDeviceId = selectedId || lastDeviceId;
-				const device = allDevices.find(d => d.id === selectedId);
+				const device = allDevices.filter(function (d) { return d.id === selectedId; })[0];
 				if (device) { // set host, protocol and port values
 					$('#node-config-input-host').val(device.ip || '').trigger('change');
 					$('#node-config-input-protocol').val(device.httpsEnabled ? 'https' : 'http').trigger('change');
 					$('#node-config-input-port').val(device.port || '').trigger('change');
+				}
+				if (device && !isManualConfig) { // set product details
+					$('#webio-details-wrapper').removeClass('hidden');
+					const productid = device.productid || '';
+					$('#webio-details-productid').html(productid).attr('href', 'https://www.wut.de/' + productid);
+					$('#webio-details-prodname').html(device.prodname || '');
+					$('#webio-details-sysname').html(device.sysname || '');
+				} else {
+					$('#webio-details-wrapper').addClass('hidden');
 				}
 			});
 
@@ -91,6 +122,8 @@
 				$('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
 				if (!isManualConfig) {
 					$('#node-config-input-device').trigger('change');
+				} else {
+					$('#webio-details-wrapper').addClass('hidden');
 				}
 			});
 
@@ -145,5 +178,26 @@
 	<div class="form-row">
 		<label for="node-config-input-password"><i class="fa fa-fw fa-unlock-alt"></i> <span data-i18n="config.label.password"></label>
 		<input type="password" id="node-config-input-password" data-i18n="[placeholder]config.label.password" />
+	</div>
+	<div id="webio-details-wrapper">
+		<div class="form-row">
+			<label for="webio-details-productid"></label>
+			<div style="display: inline-block; width: 70%">
+				<div style="display: flex; flex-direction: column;">
+					<div class="flex-row">
+						<span data-i18n="config.label.productid"></span>
+						<a href="https://www.wut.de/" target="_blank" id="webio-details-productid"></a>
+					</div>
+					<div class="flex-row">
+						<span data-i18n="config.label.prodname"></span>
+						<span id="webio-details-prodname"></span>
+					</div>
+					<div class="flex-row">
+						<span data-i18n="config.label.sysname"></span>
+						<span id="webio-details-sysname"></span>
+					</div>
+				</div>				
+			</div>
+		</div>
 	</div>
 </script>

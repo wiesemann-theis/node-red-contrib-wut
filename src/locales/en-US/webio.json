@@ -11,7 +11,10 @@
             "range": "Value range:",
             "device": "Device",
             "manual-config": "enter connection parameters manually",
-            "tooltip-discover": "search for devices in network"
+            "tooltip-discover": "search for devices in network",
+            "productid": "Article no.:",
+            "prodname": "Device type:",
+            "sysname": "System name:"
         }
     },
     "status": {
