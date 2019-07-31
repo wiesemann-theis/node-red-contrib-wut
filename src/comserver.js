@@ -157,7 +157,7 @@ module.exports = RED => {
         if (host && port) {
             setupTcpConnection();
         } else {
-            node.error(RED._('logging.invalid-config', { host, port }));
+            node.warn(RED._('logging.invalid-config', { host, port }));
             node.status({ fill: 'red', shape: 'dot', text: 'status.invalid-config' });
         }
 
@@ -166,7 +166,7 @@ module.exports = RED => {
                 const data = Buffer.isBuffer(msg.payload) ? msg.payload : Buffer.from('' + msg.payload, config.encoding || 'utf8');
                 tcpClient.write(data);
             } else {
-                node.error(RED._('logging.input-failed'));
+                node.warn(RED._('logging.input-failed'));
             }
         });
 

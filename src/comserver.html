@@ -11,7 +11,8 @@
     }
 
     .comserver-flex-container select,
-    .comserver-flex-container input {
+    .comserver-flex-container input,
+    .comserver-flex-container .select2-container {
         flex-grow: 1;
         margin-right: 5px;
     }
@@ -32,7 +33,30 @@
         white-space: nowrap;
         margin-right: 5px;
     }
+
+    /** select2 styles */
+    .select2-container>.selection>.select2-selection {
+        border-color: #ccc;
+        line-height: 34px;
+        height: 34px;
+    }
+
+    .select2-container>.selection>.select2-selection>.select2-selection__rendered {
+        line-height: 34px;
+        padding-left: 6px;
+    }
+
+    .select2-container>.selection>.select2-selection>.select2-selection__arrow {
+        height: 32px;
+    }
+
+    .select2-results>.select2-results__options {
+        max-height: 300px !important;
+    }
 </style>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
 
 <script type="text/javascript">
     RED.nodes.registerType('Com-Server', {
@@ -110,8 +134,8 @@
 
                         for (let i = 0; i < data.length; ++i) {
                             const device = data[i];
-                            const label = device.ip + ' (' + device.mac + ')';
-                            $('#node-input-device').append($('<option></option>').attr('value', device.id).text(label));
+                            device.text = device.ip + ' (' + device.mac + ')';
+                            $('#node-input-device').append($('<option></option>').attr('value', device.id).text(device.text).attr('data-data', JSON.stringify(device)));
                         }
 
                         if (!lastDeviceId) {
@@ -166,6 +190,41 @@
                 }
             });
 
+            $('body').on('keydown', function (event) {
+                if (event.keyCode === 13 && $(event.target).hasClass('select2-search__field')) {
+                    event.stopPropagation(); // blame: for some reason, this event causes an error in Node-RED core when propagated to window...
+                }
+            });
+
+            if ($(window).select2) {
+                setTimeout(function () {
+                    $('select.wt-select2:not(#node-input-device)').select2();
+                    $('#node-input-device').select2({
+                        templateResult: function (device) {
+                            let template = '<span>' + device.text + '<small>';
+                            if (device.prodname) {
+                                template += '<br>' + device.prodname;
+                            }
+                            if (device.productId) {
+                                template += device.prodname ? ' (#' + device.productId + ')' : '<br>' + node._('config.label.productid') + ' #' + device.productId;
+                            }
+                            if (device.sysname) {
+                                template += '<br>' + node._('config.label.sysname') + ' ' + device.sysname;
+                            }
+                            template += '</small></span>';
+                            return $(template);
+                        },
+                        matcher: function (params, data) {
+                            const searchBase = [data.text, data.prodname, data.sysname, data.productId].filter(Boolean).join('   ').toLowerCase();
+                            const searchString = $.trim(params.term).toLowerCase();
+                            return searchBase.indexOf(searchString) > -1 ? data : null;
+                        }
+                    });
+                }, 500);
+            } else {
+                console.warn('select2 is not available');
+            }
+
             discoverDevices(false); // initially discover devices (cached data is ok)
         }
     });
@@ -179,8 +238,8 @@
 
 	<div class="form-row">
 		<label for="node-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
-		<div class="comserver-flex-container">
-			<select id="node-input-device" style="width: 70%;"></select>
+		<div class="comserver-flex-container" id="device-selection-wrapper">
+			<select class="wt-select2" id="node-input-device"></select>
 			<button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
 				<i class="fa fa-fw fa-search"></i>
 			</button>
@@ -209,7 +268,7 @@
     
     <div class="form-row">
         <label for=""node-input-format"><i class="fa fa-fw fa-sign-out"></i> <span data-i18n="config.label.format"></span></label>
-        <select id="node-input-format" style="width: 70%;">
+        <select class="wt-select2" id="node-input-format" style="width: 70%;">
             <option value="string" data-i18n="config.format.string"></option>
             <option value="buffer" data-i18n="config.format.buffer"></option>
         </select>
@@ -235,7 +294,7 @@
 
     <div class="form-row">
         <label for="node-input-encoding"><i class="fa fa-fw fa-exchange"></i> <span data-i18n="config.label.encoding"></span></label>
-        <select id="node-input-encoding" style="width: 70%;">
+        <select class="wt-select2" id="node-input-encoding" style="width: 70%;">
             <option>utf8</option>
             <option>latin1</option>
         </select>
@@ -258,7 +317,7 @@
 
         <div class="form-row">
             <label for="node-input-baudrate"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.baudrate"></label>
-            <select id="node-input-baudrate" style="width: 70%;">
+            <select class="wt-select2" id="node-input-baudrate" style="width: 70%;">
                 <option value="11">230,4k</option>
                 <option value="14">153,6k</option>
                 <option value="15">115,2k</option>
@@ -280,7 +339,7 @@
         
         <div class="form-row">
             <label for="node-input-parity"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.parity"></label>
-            <select id="node-input-parity" style="width: 70%;">
+            <select class="wt-select2" id="node-input-parity" style="width: 70%;">
                 <option value="0">NONE</option>
                 <option value="3">EVEN</option>
                 <option value="1">ODD</option>
@@ -291,7 +350,7 @@
         
         <div class="form-row">
             <label for="node-input-databits"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.databits"></label>
-            <select id="node-input-databits" style="width: 70%;">
+            <select class="wt-select2" id="node-input-databits" style="width: 70%;">
                 <option>5</option>
                 <option>6</option>
                 <option>7</option>
@@ -301,7 +360,7 @@
         
         <div class="form-row">
             <label for="node-input-stopbits"><i class="fa fa-fw fa-gear"></i> <span data-i18n="config.label.stopbits"></label>
-            <select id="node-input-stopbits" style="width: 70%;">
+            <select class="wt-select2" id="node-input-stopbits" style="width: 70%;">
                 <option>1</option>
                 <option>2</option>
             </select>
