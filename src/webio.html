@@ -5,7 +5,8 @@
 	}
 
 	.webio-flex-container select,
-	.webio-flex-container input {
+	.webio-flex-container input,
+	.webio-flex-container .select2-container {
 		flex-grow: 1;
 		margin-right: 5px;
 	}
@@ -31,6 +32,26 @@
 		display: inline-block;
 		width: auto !important;
 		vertical-align: top !important;
+	}
+
+	/** select2 styles */
+	.select2-container>.selection>.select2-selection {
+		border-color: #ccc;
+		line-height: 34px;
+		height: 34px;
+	}
+
+	.select2-container>.selection>.select2-selection>.select2-selection__rendered {
+		line-height: 34px;
+		padding-left: 6px;
+	}
+
+	.select2-container>.selection>.select2-selection>.select2-selection__arrow {
+		height: 32px;
+	}
+
+	.select2-results>.select2-results__options {
+		max-height: 400px !important;
 	}
 </style>
 
@@ -105,8 +126,8 @@
 
 						for (let i = 0; i < data.length; ++i) {
 							const device = data[i];
-							const label = device.ip + ':' + device.port + ' (' + device.mac + ')';
-							$('#node-config-input-device').append($('<option></option>').attr('value', device.id).text(label));
+							device.text = device.ip + ':' + device.port + ' (' + device.mac + ')';
+							$('#node-config-input-device').append($('<option></option>').attr('value', device.id).text(device.text).attr('data-data', JSON.stringify(device)));
 						}
 
 						if (!lastDeviceId) {
@@ -165,6 +186,45 @@
 				}
 			});
 
+			$('body').on('keydown', function (event) {
+				if (event.keyCode === 13 && $(event.target).hasClass('select2-search__field')) {
+					event.stopPropagation(); // blame: for some reason, this event causes an error in Node-RED core when propagated to window...
+				}
+			});
+
+			function sanitize(htmlText) {
+				return $('<div>' + htmlText + '</div>').text();
+			}
+
+			if ($(window).select2) {
+				setTimeout(function () {
+					$('select.wt-select2:not(#node-config-input-device)').select2();
+					$('#node-config-input-device').select2({
+						templateResult: function (device) {
+							let template = '<span>' + sanitize(device.text) + '<small>';
+							if (device.prodname) {
+								template += '<br>' + sanitize(device.prodname);
+							}
+							if (device.productId) {
+								template += device.prodname ? ' (#' + sanitize(device.productId) + ')' : '<br>' + node._('config.label.productid') + ' #' + sanitize(device.productId);
+							}
+							if (device.sysname) {
+								template += '<br>' + node._('config.label.sysname') + ' ' + sanitize(device.sysname);
+							}
+							template += '</small></span>';
+							return $(template);
+						},
+						matcher: function (params, data) {
+							const searchBase = [data.text, data.prodname, data.sysname, data.productId].filter(Boolean).join('   ').toLowerCase();
+							const searchString = $.trim(params.term).toLowerCase();
+							return searchBase.indexOf(searchString) > -1 ? data : null;
+						}
+					});
+				}, 500);
+			} else {
+				console.warn('select2 is not available');
+			}
+
 			discoverDevices(false); // initially discover devices (cached data is ok)
 		}
 	});
@@ -178,7 +238,7 @@
 	<div class="form-row">
 		<label for="node-config-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
 		<div class="webio-flex-container">
-			<select id="node-config-input-device"></select>
+			<select class="wt-select2" id="node-config-input-device"></select>
 			<button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
 				<i class="fa fa-fw fa-search"></i>
 			</button>
@@ -202,7 +262,7 @@
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-protocol"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.protocol"></label>
-		<select id="node-config-input-protocol" class="manual-config-input" style="width: 70%;">
+		<select id="node-config-input-protocol" class="manual-config-input wt-select2" style="width: 70%;">
 			<option value="http">HTTP</option>
 			<option value="https">HTTPS</option>
 		</select>

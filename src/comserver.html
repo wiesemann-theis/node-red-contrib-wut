@@ -51,7 +51,7 @@
     }
 
     .select2-results>.select2-results__options {
-        max-height: 300px !important;
+        max-height: 400px !important;
     }
 </style>
 
@@ -196,20 +196,24 @@
                 }
             });
 
+            function sanitize(htmlText) {
+                return $('<div>' + htmlText + '</div>').text();
+            }
+
             if ($(window).select2) {
                 setTimeout(function () {
                     $('select.wt-select2:not(#node-input-device)').select2();
                     $('#node-input-device').select2({
                         templateResult: function (device) {
-                            let template = '<span>' + device.text + '<small>';
+                            let template = '<span>' + sanitize(device.text) + '<small>';
                             if (device.prodname) {
-                                template += '<br>' + device.prodname;
+                                template += '<br>' + sanitize(device.prodname);
                             }
                             if (device.productId) {
-                                template += device.prodname ? ' (#' + device.productId + ')' : '<br>' + node._('config.label.productid') + ' #' + device.productId;
+                                template += device.prodname ? ' (#' + sanitize(device.productId) + ')' : '<br>' + node._('config.label.productid') + ' #' + sanitize(device.productId);
                             }
                             if (device.sysname) {
-                                template += '<br>' + node._('config.label.sysname') + ' ' + device.sysname;
+                                template += '<br>' + node._('config.label.sysname') + ' ' + sanitize(device.sysname);
                             }
                             template += '</small></span>';
                             return $(template);
@@ -238,7 +242,7 @@
 
 	<div class="form-row">
 		<label for="node-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
-		<div class="comserver-flex-container" id="device-selection-wrapper">
+		<div class="comserver-flex-container">
 			<select class="wt-select2" id="node-input-device"></select>
 			<button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
 				<i class="fa fa-fw fa-search"></i>
