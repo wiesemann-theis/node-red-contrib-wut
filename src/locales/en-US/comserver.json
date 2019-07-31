@@ -2,7 +2,7 @@
     "config": {
         "label": {
             "host": "Host",
-            "port": "Port",
+            "port": "TCP Port",
             "format": "Output",
             "delimiter": "delimiter",
             "send-delimiter": "send delimiter",
@@ -15,7 +15,14 @@
             "databits": "Data Bits",
             "stopbits": "Stop Bits",
             "password": "Password",
-            "permupdate": "save with EEPROM update"
+            "permupdate": "save with EEPROM update",
+            "device": "Device",
+            "manual-config": "enter network address manually",
+            "tooltip-discover": "search for devices in network",
+            "tooltip-webconfig": "open web config application",
+            "productid": "Article no.:",
+            "prodname": "Device type:",
+            "sysname": "System name:"
         },
         "format": {
             "string": "String",
@@ -42,6 +49,9 @@
             "force-destroy": "Connection to __host__:__port__ destroyed"
         },
         "input-failed": "Processing input data failed. Probably no connection yet or connection lost.",
-        "invalid-config": "Invalid configuration (host __host__, port __port__)."
+        "invalid-config": "Invalid configuration (host __host__, port __port__).",
+        "wut-broadcast-started": "Searching for W&T Com-Servers in network...",
+        "wut-broadcast-finished": "Searching for W&T Com-Server finished (__count__ devices found).",
+        "wut-broadcast-failed": "Searching for W&T Com-Server failed: __msg__"
     }
 }

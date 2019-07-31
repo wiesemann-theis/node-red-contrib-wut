@@ -2,7 +2,7 @@
     "config": {
         "label": {
             "host": "Host",
-            "port": "Port",
+            "port": "TCP-Port",
             "format": "Ausgabe",
             "delimiter": "Trennzeichen",
             "send-delimiter": "Trennzeichen ausgeben",
@@ -15,7 +15,14 @@
             "databits": "Data Bits",
             "stopbits": "Stop Bits",
             "password": "Passwort",
-            "permupdate": "EEPROM updaten"
+            "permupdate": "EEPROM updaten",
+            "device": "Gerät",
+            "manual-config": "Netzwerkadresse manuell eingeben",
+            "tooltip-discover": "Geräte im Netzwerk suchen",
+            "tooltip-webconfig": "Web-Konfiguration öffnen",
+            "productid": "Artikel-Nr.:",
+            "prodname": "Gerätetyp:",
+            "sysname": "Systemname:"
         },
         "format": {
             "string": "String",
@@ -42,6 +49,9 @@
             "force-destroy": "Verbindung(saufbau) zu __host__:__port__ abgebrochen"
         },
         "input-failed": "Verarbeitung von Eingabedaten fehlgeschlagen. Vermutlich noch keine Verbindung oder Verbindung verloren.",
-        "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__)."
+        "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__).",
+        "wut-broadcast-started": "Suche nach W&T Com-Servern im Netzwerk...",
+        "wut-broadcast-finished": "Suche nach W&T Com-Servern beendet (__count__ Geräte gefunden).",
+        "wut-broadcast-failed": "Suche nach W&T Com-Servern fehlgeschlagen: __msg__"
     }
 }

@@ -23,6 +23,11 @@
 	</p>
 
 	<p>
+		There is an automatically generated list of all Com-Servers available in your network.
+		You can either choose a device from that list or enter the network address manually (e. g. if the network scan is blocked by a firewall).
+	</p>
+
+	<p>
 		For (Node-RED) output messages there are different formats ("string" (default), "buffer").
 		For the "string" format you can optionally specify a delimiter.
 		Incoming serial data will then be buffered and only sent out (as one message) when the delimiter is received.
@@ -53,10 +58,10 @@
 		<dt class="optional">Name <span class="property-type">string</span></dt>
 		<dd>Custom name for the Node-RED node</dd>
 		
-		<dt>Host <span class="property-type">string</span></dt>
-		<dd>Com-Server address / hostname</dd>
+		<dt>Device <span class="property-type">string</span></dt>
+		<dd>Com-Server address / hostname (device list based on network scan or manual configuration)</dd>
 			
-		<dt>Port <span class="property-type">number</span></dt>
+		<dt>TCP Port <span class="property-type">number</span></dt>
 		<dd>Com-Server TCP port (default: 8000)</dd>
 		
 		<dt>Output <span class="property-type">select</span></dt>

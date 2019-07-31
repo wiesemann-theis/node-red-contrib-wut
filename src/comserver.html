@@ -4,6 +4,34 @@
         width: auto !important;
         vertical-align: top !important;
     }
+
+    .comserver-flex-container {
+        display: inline-flex;
+        width: 70%;
+    }
+
+    .comserver-flex-container select,
+    .comserver-flex-container input {
+        flex-grow: 1;
+        margin-right: 5px;
+    }
+
+    .comserver-flex-container-column {
+        display: inline-flex;
+        width: 70%;
+        flex-direction: column;
+    }
+
+    .comserver-flex-container-column>div {
+        display: flex;
+        align-items: center;
+        margin: 6px 0px;
+    }
+
+    .comserver-flex-container-column>div>*:first-child {
+        white-space: nowrap;
+        margin-right: 5px;
+    }
 </style>
 
 <script type="text/javascript">
@@ -24,7 +52,9 @@
             parity: { value: 0, validate: RED.validators.number() },
             databits: { value: 8, validate: RED.validators.number() },
             stopbits: { value: 1, validate: RED.validators.number() },
-            permupdate: { value: false } // NOTE: this parameter currently has no GUI element!
+            permupdate: { value: false }, // NOTE: this parameter currently has no GUI element!
+            manualConfig: { value: false },
+            device: { value: null }
         },
         credentials: { password: { type: 'password' } },
         inputs: 1,
@@ -36,6 +66,12 @@
         },
         labelStyle: function () {
             return this.name ? 'node_label_italic' : '';
+        },
+        oneditsave: function () {
+            if ($('#node-input-manualConfig').is(':checked')) { // delete device parameter on manual configuration
+                $('#node-input-device').val('');
+            }
+            this.device = $('#node-input-device').val(); // because empty/invalid values are not saved automatically
         },
         oneditprepare: function () {
             $('#node-input-format').change(function () {
@@ -52,6 +88,85 @@
                     $('#uart-wrapper').hide();
                 }
             });
+
+            let isDiscovering = false;
+            let isManualConfig = this.manualConfig;
+            let lastDeviceId = this.device;
+            let allDevices = [];
+            const node = this;
+
+            const discoverDevices = function (clearCache) {
+                isDiscovering = true;
+                $('#btn-discover-devices').prop('disabled', true);
+                $('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-spinner fa-spin');
+                const url = 'wut/devices/comserver?nodeId=' + node.id + (clearCache ? '&clearCache=true' : '');
+                $.getJSON(url, function (data) {
+                    isDiscovering = false;
+                    $('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-search');
+                    $('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
+                    if (data) {
+                        allDevices = data;
+                        $('#node-input-device').children('option').remove(); // remove all clamp options
+
+                        for (let i = 0; i < data.length; ++i) {
+                            const device = data[i];
+                            const label = device.ip + ' (' + device.mac + ')';
+                            $('#node-input-device').append($('<option></option>').attr('value', device.id).text(label));
+                        }
+
+                        if (!lastDeviceId) {
+                            const matches = allDevices.filter(function (d) { return d.ip === node.host; });
+                            lastDeviceId = (matches[0] || {}).id;
+                        }
+                        $('#node-input-device').val(lastDeviceId).trigger('change'); // finally, restore selection
+                    }
+                });
+            };
+
+            $('#node-input-device').change(function () {
+                const selectedId = $(this).val();
+                lastDeviceId = selectedId || lastDeviceId;
+                const device = allDevices.filter(function (d) { return d.id === selectedId; })[0];
+                if (device) { // set host, protocol and port values
+                    $('#node-input-host').val(device.ip || '').trigger('change');
+                }
+                if (device && !isManualConfig) { // set product details
+                    $('#comserver-details-wrapper').removeClass('hidden');
+                    const productId = device.productId || '';
+                    $('#comserver-details-productid').html(productId).attr('href', 'https://www.wut.de/' + productId);
+                    $('#comserver-details-prodname').html(device.prodname || '');
+                    $('#comserver-details-sysname').html(device.sysname || '');
+                } else {
+                    $('#comserver-details-wrapper').addClass('hidden');
+                }
+            });
+
+            $('#node-input-manualConfig').change(function () {
+                isManualConfig = this.checked;
+                $('.manual-input').prop('disabled', !isManualConfig);
+                $('#node-input-device').prop('disabled', isManualConfig);
+                $('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
+                if (!isManualConfig) {
+                    $('#node-input-device').trigger('change');
+                } else {
+                    $('#comserver-details-wrapper').addClass('hidden');
+                }
+            });
+
+            $('#btn-discover-devices').click(function (e) {
+                e.preventDefault();
+                discoverDevices(true); // re-discover devices (clear cache!)
+            });
+
+            $('#btn-webconfig').click(function (e) {
+                e.preventDefault();
+                const host = $('#node-input-host').val();
+                if (host) {
+                    window.open('http://' + host, '_blank');
+                }
+            });
+
+            discoverDevices(false); // initially discover devices (cached data is ok)
         }
     });
 </script>
@@ -63,8 +178,29 @@
     </div>
 
 	<div class="form-row">
-		<label for="node-input-host"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.host"></label>
-		<input type="text" id="node-input-host" data-i18n="[placeholder]config.label.host" />
+		<label for="node-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
+		<div class="comserver-flex-container">
+			<select id="node-input-device" style="width: 70%;"></select>
+			<button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
+				<i class="fa fa-fw fa-search"></i>
+			</button>
+		</div>
+	</div>
+    <div class="form-row">
+		<label>&nbsp;</label>
+		<label for="node-input-manualConfig" style="width: 70%;">
+			<input type="checkbox" id="node-input-manualConfig" class="comserver-checkbox" />
+			<span data-i18n="config.label.manual-config">
+		</label>
+	</div>
+	<div class="form-row">
+		<label>&nbsp;</label>	
+		<div class="comserver-flex-container">
+			<input type="text" id="node-input-host" class="manual-input" data-i18n="[placeholder]config.label.host" />
+			<button id="btn-webconfig" class="editor-button" data-i18n="[title]config.label.tooltip-webconfig">
+				<i class="fa fa-fw fa-external-link"></i>
+			</button>
+		</div>
 	</div>
 	<div class="form-row">
 		<label for="node-input-port"><i class="fa fa-fw fa-dot-circle-o"></i> <span data-i18n="config.label.port"></label>
@@ -90,8 +226,10 @@
 
         <div class="form-row">
             <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-sendDelimiter" class="comserver-checkbox" />
-            <span data-i18n="config.label.send-delimiter"></span>
+            <label for="node-input-sendDelimiter" style="width: 70%;">
+                <input type="checkbox" id="node-input-sendDelimiter" class="comserver-checkbox" />
+                <span data-i18n="config.label.send-delimiter">
+            </label>
         </div>
     </div>
 
@@ -104,10 +242,12 @@
     </div>
     
     <div class="form-row">
-        <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-setuart" class="comserver-checkbox" />
-        <span data-i18n="config.label.setuart">
-    </div>
+		<label>&nbsp;</label>
+		<label for="node-input-setuart" style="width: 70%;">
+			<input type="checkbox" id="node-input-setuart" class="comserver-checkbox" />
+			<span data-i18n="config.label.setuart">
+		</label>
+	</div>
     
     <div id="uart-wrapper">
         <div class="form-row hidden">
@@ -181,4 +321,24 @@
             </label>
         </div>
     </div>
+	<div id="comserver-details-wrapper">
+        <hr/>
+		<div class="form-row">
+			<label for="comserver-details-productid"></label>
+			<div class="comserver-flex-container-column">
+				<div>
+					<span data-i18n="config.label.productid"></span>
+					<a href="https://www.wut.de/" target="_blank" id="comserver-details-productid"></a>
+				</div>
+				<div>
+					<span data-i18n="config.label.prodname"></span>
+					<span id="comserver-details-prodname"></span>
+				</div>
+				<div>
+					<span data-i18n="config.label.sysname"></span>
+					<span id="comserver-details-sysname"></span>
+				</div>
+			</div>
+		</div>
+	</div>
 </script>

@@ -101,7 +101,6 @@
 					$('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
 					if (data) {
 						allDevices = data;
-						console.log(data);
 						$('#node-config-input-device').children('option').remove(); // remove all clamp options
 
 						for (let i = 0; i < data.length; ++i) {
@@ -130,8 +129,8 @@
 				}
 				if (device && !isManualConfig) { // set product details
 					$('#webio-details-wrapper').removeClass('hidden');
-					const productid = device.productid || '';
-					$('#webio-details-productid').html(productid).attr('href', 'https://www.wut.de/' + productid);
+					const productId = device.productId || '';
+					$('#webio-details-productid').html(productId).attr('href', 'https://www.wut.de/' + productId);
 					$('#webio-details-prodname').html(device.prodname || '');
 					$('#webio-details-sysname').html(device.sysname || '');
 				} else {
@@ -217,6 +216,7 @@
 		<input type="password" id="node-config-input-password" data-i18n="[placeholder]config.label.password" />
 	</div>
 	<div id="webio-details-wrapper">
+		<hr/>
 		<div class="form-row">
 			<label for="webio-details-productid"></label>
 			<div class="webio-flex-container-column">

@@ -90,7 +90,7 @@ function parseGisData(buffer) {
                                 break;
                             case 15: response.prodname = rawData.toString(); break;
                             case 16: response.softname = rawData.toString(); break;
-                            case 19: response.productid = parseInt(Buffer.from(rawData).reverse().toString('hex'), 16).toString(); break;
+                            case 19: response.productId = parseInt(Buffer.from(rawData).reverse().toString('hex'), 16).toString(); break;
                         }
                         offset += (headLength + dataLength);
                     } else {
@@ -103,10 +103,11 @@ function parseGisData(buffer) {
             const minLength = portCountIndexes[version] + 2;
             isValid = buffer.length >= minLength && buffer.length === minLength + 10 * buffer.readUInt16LE(minLength - 2, minLength);
             if (isValid) {
+                response.portCount = buffer.readUInt16LE(minLength - 2, minLength);
                 if (version === '1.0') {
                     response.mac = buffer.slice(10, 10 + 6).toString('hex').match(/.{1,2}/g).join(':');
                 } else if (version === '1.1') {
-                    response.productid = buffer.slice(10, 18).toString('latin1').replace(/\0/g, '').substr(1);
+                    response.productId = buffer.slice(10, 18).toString('latin1').replace(/\0/g, '').substr(1);
                     response.mac = buffer.slice(26, 26 + 6).toString('hex').match(/.{1,2}/g).join(':');
                 } else if (version === '1.3') {
                     response.mac = buffer.slice(260, 260 + 6).toString('hex').match(/.{1,2}/g).join(':');
@@ -114,7 +115,7 @@ function parseGisData(buffer) {
                     response.sysname = buffer.slice(44, 44 + 48).toString('latin1').replace(/\0/g, '');
                     response.prodname = buffer.slice(104, 104 + 64).toString('latin1').replace(/\0/g, '');
                     response.softname = buffer.slice(168, 168 + 48).toString('latin1').replace(/\0/g, '');
-                    response.productid = parseInt(Buffer.from(buffer.slice(96, 102)).reverse().toString('hex'), 16).toString().substr(7, 5);
+                    response.productId = parseInt(Buffer.from(buffer.slice(96, 102)).reverse().toString('hex'), 16).toString().substr(7, 5);
                     response.httpsSupport = !!(buffer[94] & 0x1);
                     response.httpsEnabled = !!(buffer[94] & 0x2);
                     response.portinfoAvailable = !!(buffer[93] & 0x1);
@@ -145,7 +146,7 @@ async function findWutDevices(clearCache) {
                         const infos = parseGisData(msg, src.address);
                         if (infos) {
                             infos.ip = src.address;
-                            infos.id = `${infos.ip}:${infos.port} (${infos.mac})`;
+                            infos.id = `${infos.ip} (${infos.mac})`;
                             responses.push(infos);
                         } else {
                             console.warn('W&T broadcast: invalid GIS data received from ' + src.address);

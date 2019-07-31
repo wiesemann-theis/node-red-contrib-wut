@@ -1,5 +1,5 @@
 <script type="text/x-red" data-help-name="Com-Server">
-	<p>Anbindung eines <a href="https://www.wut.de/e-58665-ww-dade-000.php" target="_blank">Wiesemann & Theis Com-Server</a> an Node-RED.</p>
+	<p>Anbindung eines <a href="https://www.wut.de/e-58665-ww-dade-000.php" target="_blank">Wiesemann & Theis Com-Servers</a> an Node-RED.</p>
 	<p>Kann sowohl eingehende Daten über den Com-Server seriell ausgeben, als auch serielle Eingänge als Node-RED-Meldungen weiterleiten.</p>
 
 	<h3>Inputs</h3>
@@ -17,8 +17,15 @@
 	<h3>Details</h3>
 	<p>Dieser Knoten bietet die Möglichkeit, auf einen <a href="https://www.wut.de/e-58665-ww-dade-000.php" target="_blank">WuT Com-Server</a> bzw. dessen serielle Schnittstelle zuzugreifen.</p>
 
-	<p>Zum einen wird der <code>msg.payload</code> (String oder Buffer) aller eingehenden Node-RED-Meldungen auf der seriellen Schnittstelle ausgegeben.
-		Zum anderen werden alle auf der seriellen Schnittstelle eingehenden Daten als Node-RED-Meldungen ausgegeben.</p>
+	<p>
+		Zum einen wird der <code>msg.payload</code> (String oder Buffer) aller eingehenden Node-RED-Meldungen auf der seriellen Schnittstelle ausgegeben.
+		Zum anderen werden alle auf der seriellen Schnittstelle eingehenden Daten als Node-RED-Meldungen ausgegeben.
+	</p>
+
+	<p>
+		Für die Konfiguration steht zum einen eine Liste aller im Netzwerk verfügbaren Com-Server zur Verfügung.
+		Alternativ kann die Netzwerkadresse manuell eingegeben werden (z. B. wenn der Netzwerk-Scan von einer Firewall blockiert wird).
+	</p>
 	
 	<p>
 		Für die (Node-RED-)Ausgabe kann zwischen den Formaten "String" (Standard) und "Buffer" gewählt werden.
@@ -51,10 +58,10 @@
 		<dt class="optional">Name <span class="property-type">string</span></dt>
 		<dd>Bezeichnung des Node-RED-Knotens</dd>
 
-		<dt>Host <span class="property-type">string</span></dt>
-		<dd>Adresse / Hostname des Com-Servers</dd>
+		<dt>Gerät <span class="property-type">string</span></dt>
+		<dd>Adresse / Hostname des Com-Servers (Auswahl aus Liste nach Netzwerk-Scan oder manuelle Konfiguration)</dd>
 			
-		<dt>Port <span class="property-type">number</span></dt>
+		<dt>TCP-Port <span class="property-type">number</span></dt>
 		<dd>TCP-Port des Com-Servers (Standard: 8000)</dd>
 		
 		<dt>Ausgabe <span class="property-type">select</span></dt>
