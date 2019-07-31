@@ -123,6 +123,10 @@ function parseGisData(buffer) {
             }
         }
     }
+    if (response.sysname && response.mac) { // replace <wut1> tag in system names
+        const id = response.mac.replace(/:/g, '').substr(-6).toUpperCase();
+        response.sysname = response.sysname.replace('<wut1>', id);
+    }
     return isValid ? response : null;
 }
 
