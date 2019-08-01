@@ -73,24 +73,37 @@ module.exports = RED => {
                 emitGetData(category, null, STATUS.NO_VALUE);
             }
         };
-        let pendingRequest;
+        let pendingHttp;
+        let hasPendingRequest;
         const httpGetHelper = (path) => {
-            return new Promise((resolve, reject) => {
-                pendingRequest = http.get({ agent, path }, response => {
-                    response.setEncoding(JSON.stringify(response.headers).includes('utf-8') ? 'utf-8' : 'latin1');
+            if (hasPendingRequest && pendingHttp) {
+                return new Promise((resolve, reject) => {
+                    pendingHttp.finally(() => httpGetHelper(path).then(resolve, reject));
+                });
+            } else {
+                hasPendingRequest = true;
+                pendingHttp = new Promise((resolve, reject) => {
+                    http.get({ agent, path }, response => {
+                        response.setEncoding(JSON.stringify(response.headers).includes('utf-8') ? 'utf-8' : 'latin1');
 
-                    let data = '';
-                    response.on('data', chunk => data += chunk);
+                        let data = '';
+                        response.on('data', chunk => data += chunk);
 
-                    response.on('end', () => {
-                        if (response.statusCode === 200) {
-                            resolve(data);
-                        } else {
-                            reject({ statusCode: response.statusCode, message: `http statusCode ${response.statusCode}` });
-                        }
-                    });
-                }).on('error', err => reject(err));
-            });
+                        response.on('end', () => {
+                            if (response.statusCode === 200) {
+                                if (path.startsWith('/portinfo')) {
+                                    setTimeout(() => resolve(data), 100); // /portinfo will reset TCP connection!
+                                } else {
+                                    resolve(data);
+                                }
+                            } else {
+                                reject({ statusCode: response.statusCode, message: `http statusCode ${response.statusCode}` });
+                            }
+                        });
+                    }).on('error', err => reject(err));
+                });
+                return pendingHttp.finally(() => { hasPendingRequest = false; });
+            }
         }
 
         // callback helper functions
@@ -100,18 +113,21 @@ module.exports = RED => {
                 lines.pop(); // remove empty line at the end
             }
             const details = lines.map(line => line.split('|'));
+            let isValid = details[0];
 
-            const headerVersion = details[0][0];
-            const headerLength = +details[0][1] || 0;
+            if (isValid) {
+                const headerVersion = details[0][0];
+                const headerLength = +details[0][1] || 0;
 
-            let isValid = details[0] && headerLength + 1 === lines.length;
-            const flatInfos = details.reduce((acc, val) => acc.concat(val), []);
-            if (headerVersion === '1.0') {
-                isValid &= flatInfos.length === (2 + headerLength * 12);
-            } else if (headerVersion === '1.1') {
-                isValid &= flatInfos.length === (2 + headerLength * 14);
-            } else {
-                isValid = false;
+                isValid = headerLength + 1 === lines.length;
+                const flatInfos = details.reduce((acc, val) => acc.concat(val), []);
+                if (headerVersion === '1.0') {
+                    isValid &= flatInfos.length === (2 + headerLength * 12);
+                } else if (headerVersion === '1.1') {
+                    isValid &= flatInfos.length === (2 + headerLength * 14);
+                } else {
+                    isValid = false;
+                }
             }
 
             if (isValid) {
@@ -347,9 +363,7 @@ module.exports = RED => {
 
             node.emitter.removeAllListeners(); // centrally remove all listeners (across all clamp nodes)
 
-            if (pendingRequest && !pendingRequest.res) {
-                pendingRequest.abort();
-            }
+            agent.destroy();
 
             clearTimeout(stateHandlerTimeout);
             clearTimeout(getPortinfosTimeout);

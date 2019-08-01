@@ -15,6 +15,7 @@
 ### Fixed
 
 - prevent empty messages on startup
+- prevent http request failures due to tcp connection resets
 
 ## 1.2.0
 
