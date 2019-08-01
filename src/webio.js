@@ -32,6 +32,10 @@ module.exports = RED => {
             return;
         }
 
+        const pollingInterval = config.pollingIntervalSec * 1000 || 1000;
+        const portinfosInterval = config.portinfoIntervalSec * 1000 || 60000;
+        const httpTimeout = 3000;
+
         const http = require(config.protocol);
         const agent = new http.Agent({
             keepAlive: true,
@@ -41,9 +45,6 @@ module.exports = RED => {
             host: config.host,
             port: +config.port
         });
-
-        const pollingInterval = config.pollingIntervalSec * 1000 || 1000;
-        const portinfosInterval = config.portinfoIntervalSec * 1000 || 60000;
 
         const pw = node.credentials.password;
         let machineState = MACHINE_STATES.INITIALIZING;
@@ -77,13 +78,15 @@ module.exports = RED => {
         let hasPendingRequest;
         const httpGetHelper = (path) => {
             if (hasPendingRequest && pendingHttp) {
-                return new Promise((resolve, reject) => {
-                    pendingHttp.finally(() => httpGetHelper(path).then(resolve, reject));
+                return new Promise((res, rej) => {
+                    pendingHttp.finally(() => { // when pending request is finished, call method again
+                        setTimeout(() => httpGetHelper(path).then(res, rej), 50); // little timeout to ensure "hasPendingRequest" is reset
+                    });
                 });
             } else {
                 hasPendingRequest = true;
                 pendingHttp = new Promise((resolve, reject) => {
-                    http.get({ agent, path }, response => {
+                    http.get({ agent, path, timeout: httpTimeout }, response => {
                         response.setEncoding(JSON.stringify(response.headers).includes('utf-8') ? 'utf-8' : 'latin1');
 
                         let data = '';
@@ -100,9 +103,10 @@ module.exports = RED => {
                                 reject({ statusCode: response.statusCode, message: `http statusCode ${response.statusCode}` });
                             }
                         });
-                    }).on('error', err => reject(err));
+                    }).on('timeout', function () { this.abort(); }).on('error', err => reject(err));
                 });
-                return pendingHttp.finally(() => { hasPendingRequest = false; });
+                // second promise object to handle "hasPendingRequest" flag correctly
+                return new Promise((res, rej) => pendingHttp.then(res, rej).finally(() => { hasPendingRequest = false; }));
             }
         }
 
