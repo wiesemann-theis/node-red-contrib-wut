@@ -35,6 +35,12 @@
 	}
 
 	/** select2 styles */
+	.wt-select2-dropdown .wt-row {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
 	.select2-container>.selection>.select2-selection {
 		border-color: #ccc;
 		line-height: 34px;
@@ -201,18 +207,26 @@
 					$('select.wt-select2:not(#node-config-input-device)').select2();
 					$('#node-config-input-device').select2({
 						templateResult: function (device) {
-							let template = '<span>' + sanitize(device.text) + '<small>';
+							let template = '<div class="wt-select2-dropdown"><div class="wt-row">' + device.text + '</div>'
+							let title = device.text;
 							if (device.prodname) {
-								template += '<br>' + sanitize(device.prodname);
-							}
-							if (device.productId) {
-								template += device.prodname ? ' (#' + sanitize(device.productId) + ')' : '<br>' + node._('config.label.productid') + ' #' + sanitize(device.productId);
+								if (device.productId) {
+									template += '<div style="display: flex;"><small class="wt-row">' + sanitize(device.prodname) + '</small><small>&nbsp;(#' + device.productId + ')</small></div>';
+									title += '\n' + sanitize(device.prodname) + ' (#' + device.productId + ')';
+								} else {
+									template += '<div class="wt-row"><small>' + sanitize(device.prodname) + '</small></div>';
+									title += '\n' + sanitize(device.prodname);
+								}
+							} else if (device.productId) {
+								template += '<div class="wt-row"><small>' + node._('config.label.productid') + ' #' + device.productId + '</small></div>';
+								title += '\n' + node._('config.label.productid') + ' #' + device.productId;
 							}
 							if (device.sysname) {
-								template += '<br>' + node._('config.label.sysname') + ' ' + sanitize(device.sysname);
+								template += '<div class="wt-row"><small>' + node._('config.label.sysname') + ' ' + sanitize(device.sysname) + '</small></div>';
+								title += '\n' + node._('config.label.sysname') + ' ' + sanitize(device.sysname);
 							}
-							template += '</small></span>';
-							return $(template);
+							template += '</div>';
+							return $(template).attr('title', title);
 						},
 						matcher: function (params, data) {
 							const searchBase = [data.text, data.prodname, data.sysname, data.productId].filter(Boolean).join('   ').toLowerCase();
