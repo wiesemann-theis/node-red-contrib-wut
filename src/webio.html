@@ -169,9 +169,9 @@
 				if (device && !isManualConfig) { // set product details
 					$('#webio-details-wrapper').removeClass('hidden');
 					const productId = device.productId || '';
-					$('#webio-details-productid').html(productId).attr('href', 'https://www.wut.de/' + productId);
-					$('#webio-details-prodname').html(device.prodname || '');
-					$('#webio-details-sysname').html(device.sysname || '');
+					$('#webio-details-productid').text(productId).attr('href', 'https://www.wut.de/' + productId);
+					$('#webio-details-prodname').text(sanitize(device.prodname));
+					$('#webio-details-sysname').text(sanitize(device.sysname));
 				} else {
 					$('#webio-details-wrapper').addClass('hidden');
 				}
@@ -205,7 +205,7 @@
 			});
 
 			function sanitize(htmlText) {
-				return $('<div>' + htmlText + '</div>').text();
+				return $('<div>' + (htmlText || '').replace(/<br[ \/]*>/g, ' ') + '</div>').text();
 			}
 
 			if ($(window).select2) {
@@ -248,8 +248,8 @@
 								title += '\n' + node._('config.label.productid') + ' #' + device.productId;
 							}
 							if (device.sysname) {
-								template += '<div class="wt-row"><small>' + node._('config.label.sysname') + ' ' + sanitize(device.sysname) + '</small></div>';
-								title += '\n' + node._('config.label.sysname') + ' ' + sanitize(device.sysname);
+								template += '<div class="wt-row"><small>' + sanitize(device.sysname) + '</small></div>';
+								title += '\n' + sanitize(device.sysname);
 							}
 							template += '</div>';
 							return $(template).attr('title', title);

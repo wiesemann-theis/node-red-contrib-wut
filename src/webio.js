@@ -13,8 +13,7 @@ module.exports = RED => {
         const node = RED.nodes.getNode(req.query.nodeId) || console; // for logging: try to identify node for logging; use console as default
         node.log(RED._('logging.wut-broadcast-started'));
         wutBroadcast(req.query.clearCache === 'true').then(data => {
-            // only return web-ios (no com-servers or other devices)
-            const webios = data.filter(d => d.portinfoAvailable);
+            const webios = data.filter(d => d.portinfoAvailable); // only return web-ios (no com-servers or other devices)
             node.log(RED._('logging.wut-broadcast-finished', { count: webios.length }));
             res.json(webios);
         }, err => {

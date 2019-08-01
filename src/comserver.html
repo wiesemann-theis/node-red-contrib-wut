@@ -175,9 +175,9 @@
                 if (device && !isManualConfig) { // set product details
                     $('#comserver-details-wrapper').removeClass('hidden');
                     const productId = device.productId || '';
-                    $('#comserver-details-productid').html(productId).attr('href', 'https://www.wut.de/' + productId);
-                    $('#comserver-details-prodname').html(device.prodname || '');
-                    $('#comserver-details-sysname').html(device.sysname || '');
+                    $('#comserver-details-productid').text(productId).attr('href', 'https://www.wut.de/' + productId);
+                    $('#comserver-details-prodname').text(sanitize(device.prodname));
+                    $('#comserver-details-sysname').text(sanitize(device.sysname));
                 } else {
                     $('#comserver-details-wrapper').addClass('hidden');
                 }
@@ -209,7 +209,7 @@
             });
 
             function sanitize(htmlText) {
-                return $('<div>' + htmlText + '</div>').text();
+                return $('<div>' + (htmlText || '').replace(/<br[ \/]*>/g, ' ') + '</div>').text();
             }
 
             if ($(window).select2) {
@@ -252,8 +252,8 @@
                                 title += '\n' + node._('config.label.productid') + ' #' + device.productId;
                             }
                             if (device.sysname) {
-                                template += '<div class="wt-row"><small>' + node._('config.label.sysname') + ' ' + sanitize(device.sysname) + '</small></div>';
-                                title += '\n' + node._('config.label.sysname') + ' ' + sanitize(device.sysname);
+                                template += '<div class="wt-row"><small>' + sanitize(device.sysname) + '</small></div>';
+                                title += '\n' + sanitize(device.sysname);
                             }
                             template += '</div>';
                             return $(template).attr('title', title);
