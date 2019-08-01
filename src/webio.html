@@ -88,7 +88,13 @@
 		}
 	}, 300); // subscribe only when nodes have been loaded (or 10s timeout) -> otherwise retained messages might not be processed correctly because node is not available yet
 
-	RED.nodes.registerType('Web-IO', {
+	function onKeyDown(e) {
+        if (e.keyCode === 13 && $(e.target).hasClass('select2-search__field')) {
+            e.stopPropagation(); // blame: for some reason, this event causes an error in Node-RED core when propagated to window...
+        }
+    }
+
+    RED.nodes.registerType('Web-IO', {
 		category: 'config',
 		defaults: {
 			name: { value: '' },
@@ -109,6 +115,12 @@
 				$('#node-config-input-device').val('');
 			}
 			this.device = $('#node-config-input-device').val(); // because empty/invalid values are not saved automatically
+			$('body').off('keydown', onKeyDown);
+			$('body').off('keydown', '.select2.select2-container');
+		},
+		oneditcancel: function () {
+			$('body').off('keydown', onKeyDown);
+			$('body').off('keydown', '.select2.select2-container');
 		},
 		oneditprepare: function () {
 			let isDiscovering = false;
@@ -192,17 +204,31 @@
 				}
 			});
 
-			$('body').on('keydown', function (event) {
-				if (event.keyCode === 13 && $(event.target).hasClass('select2-search__field')) {
-					event.stopPropagation(); // blame: for some reason, this event causes an error in Node-RED core when propagated to window...
-				}
-			});
-
 			function sanitize(htmlText) {
 				return $('<div>' + htmlText + '</div>').text();
 			}
 
 			if ($(window).select2) {
+				$('body').on('keydown', onKeyDown);
+				$('body').on('keydown', '.select2.select2-container', function (e) {
+					const KEYS = { UP: 38, DOWN: 40 };
+					if (e.keyCode === KEYS.UP || (e.keyCode === KEYS.DOWN && !e.altKey)) {
+						e.preventDefault();
+						const select = $(this).siblings("select.wt-select2");
+						if (select && select.length) {
+							let newValue;
+							if (e.keyCode === KEYS.UP) {
+								newValue = select.find('option:selected').prevAll(":enabled").first().val();
+							} else {
+								newValue = select.find('option:selected').nextAll(":enabled").first().val();
+							}
+
+							if (newValue) {
+								select.val(newValue).trigger('change');
+							}
+						}
+					}
+				});
 				setTimeout(function () {
 					$('select.wt-select2:not(#node-config-input-device)').select2();
 					$('#node-config-input-device').select2({
