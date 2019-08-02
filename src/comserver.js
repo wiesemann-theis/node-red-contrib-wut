@@ -1,33 +1,10 @@
 const net = require('net');
-const fs = require('fs');
-const wutBroadcast = require('./util/wut-broadcast');
+const wutHttpAdmin = require('./util/wut-http-admin');
 
 module.exports = RED => {
     const reconnectTime = RED.settings.socketReconnectTime || 10000;
 
-    RED.httpAdmin.get("/wut/devices/comserver", RED.auth.needsPermission('wut.read'), function (req, res) {
-        const node = RED.nodes.getNode(req.query.nodeId) || console; // for logging: try to identify node for logging; use console as default
-        node.log(RED._('logging.wut-broadcast-started'));
-        wutBroadcast(req.query.clearCache === 'true').then(data => {
-            // only return com-servers (no web-ios or other devices)
-            const comservers = data.filter(d => d.productId && d.productId.startsWith('58'));
-            node.log(RED._('logging.wut-broadcast-finished', { count: comservers.length }));
-            res.json(comservers);
-        }, err => {
-            node.warn(RED._('logging.wut-broadcast-failed', { msg: err.message }));
-            res.json(null);
-        });
-    });
-
-    RED.httpAdmin.get("/wut/files/:filename", RED.auth.needsPermission('wut.read'), (req, res) => {
-        try {
-            const filepath = __dirname + '/webfiles/' + req.params.filename;
-            fs.accessSync(filepath);
-            res.sendFile(filepath);
-        } catch (e) {
-            res.sendStatus(404);
-        }
-    });
+    wutHttpAdmin.init(RED);
 
     RED.nodes.registerType('Com-Server', function (config) {
         RED.nodes.createNode(this, config);

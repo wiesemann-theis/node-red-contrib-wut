@@ -1,6 +1,6 @@
 const { EventEmitter } = require('events');
 const { STATUS } = require('./util/status');
-const wutBroadcast = require('./util/wut-broadcast');
+const wutHttpAdmin = require('./util/wut-http-admin');
 
 const MACHINE_STATES = Object.freeze({
     INITIALIZING: -1,
@@ -9,18 +9,7 @@ const MACHINE_STATES = Object.freeze({
 });
 
 module.exports = RED => {
-    RED.httpAdmin.get("/wut/devices/webio", RED.auth.needsPermission('wut.read'), function (req, res) {
-        const node = RED.nodes.getNode(req.query.nodeId) || console; // for logging: try to identify node for logging; use console as default
-        node.log(RED._('logging.wut-broadcast-started'));
-        wutBroadcast(req.query.clearCache === 'true').then(data => {
-            const webios = data.filter(d => d.portinfoAvailable); // only return web-ios (no com-servers or other devices)
-            node.log(RED._('logging.wut-broadcast-finished', { count: webios.length }));
-            res.json(webios);
-        }, err => {
-            node.warn(RED._('logging.wut-broadcast-failed', { msg: err.message }));
-            res.json(null);
-        });
-    });
+    wutHttpAdmin.init(RED);
 
     RED.nodes.registerType('Web-IO', function (config) {
         RED.nodes.createNode(this, config);

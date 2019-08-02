@@ -49,9 +49,6 @@
             "force-destroy": "Connection to __host__:__port__ destroyed"
         },
         "input-failed": "Processing input data failed. Probably no connection yet or connection lost.",
-        "invalid-config": "Invalid configuration (host __host__, port __port__).",
-        "wut-broadcast-started": "Searching for W&T Com-Servers in network...",
-        "wut-broadcast-finished": "Searching for W&T Com-Server finished (__count__ devices found).",
-        "wut-broadcast-failed": "Searching for W&T Com-Server failed: __msg__"
+        "invalid-config": "Invalid configuration (host __host__, port __port__)."
     }
 }

@@ -49,8 +49,8 @@
         "invalid-webio": "Ungültige Web-IO Konfiguration.",
         "input-failed": "Verarbeitung von Eingabedaten fehlgeschlagen. Vermutlich kein gültiger Payload oder ungültige Web-IO-Konfiguration.",
         "input-invalid-clamp": "Eingabedaten für ungültige(!) Klemme __index__ ignoriert.",
-        "wut-broadcast-started": "Suche nach W&T Web-IOs im Netzwerk...",
-        "wut-broadcast-finished": "Suche nach W&T Web-IOs beendet (__count__ Geräte gefunden).",
-        "wut-broadcast-failed": "Suche nach W&T Web-IOs fehlgeschlagen: __msg__"
+        "wut-broadcast-started": "Suche nach W&T Geräten im Netzwerk...",
+        "wut-broadcast-finished": "Suche nach W&T Geräten beendet (__count__ Geräte gefunden).",
+        "wut-broadcast-failed": "Suche nach W&T Geräten fehlgeschlagen: __msg__"
     }
 }

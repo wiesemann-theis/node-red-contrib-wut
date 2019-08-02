@@ -49,9 +49,6 @@
             "force-destroy": "Verbindung(saufbau) zu __host__:__port__ abgebrochen"
         },
         "input-failed": "Verarbeitung von Eingabedaten fehlgeschlagen. Vermutlich noch keine Verbindung oder Verbindung verloren.",
-        "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__).",
-        "wut-broadcast-started": "Suche nach W&T Com-Servern im Netzwerk...",
-        "wut-broadcast-finished": "Suche nach W&T Com-Servern beendet (__count__ Geräte gefunden).",
-        "wut-broadcast-failed": "Suche nach W&T Com-Servern fehlgeschlagen: __msg__"
+        "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__)."
     }
 }
