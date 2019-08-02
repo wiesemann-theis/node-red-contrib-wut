@@ -1,8 +1,7 @@
 <script type="text/javascript">
-	// load custom styles and scripts 
-	// this has to be added to all nodes because users COULD disable all but one node and it should still be working then...
+	// load custom styles and scripts (-> this covers all IN/OUT nodes because they are anyhow not valid if the webio node is disabled)
 	if (!window.wut) {
-		window.wut = { prepareWebioClamp: function () { } }; // dummy object to prevent multiple loading requests
+		window.wut = { initClampConfig: function () { } }; // dummy object to prevent multiple loading requests
 		$.getScript('/wut/files/wut.js').fail(function (jqxhr, settings, exception) { console.error('Loading wut.js failed.', exception); });
 		$.getScript('/wut/files/select2.min.js').fail(function (jqxhr, settings, exception) { console.error('Loading select2.min.js failed.', exception); });
 		$('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', '/wut/files/select2.min.css'));
@@ -37,12 +36,6 @@
 		}
 	}, 300); // subscribe only when nodes have been loaded (or 10s timeout) -> otherwise retained messages might not be processed correctly because node is not available yet
 
-	function onKeyDown(e) {
-		if (e.keyCode === 13 && $(e.target).hasClass('select2-search__field')) {
-			e.stopPropagation(); // blame: for some reason, this event causes an error in Node-RED core when propagated to window...
-		}
-	}
-
 	RED.nodes.registerType('Web-IO', {
 		category: 'config',
 		defaults: {
@@ -64,157 +57,13 @@
 				$('#node-config-input-device').val('');
 			}
 			this.device = $('#node-config-input-device').val(); // because empty/invalid values are not saved automatically
-			$('body').off('keydown', onKeyDown);
-			$('body').off('keydown', '.select2.select2-container');
+			wut.removeSelect2EventHandler();
 		},
 		oneditcancel: function () {
-			$('body').off('keydown', onKeyDown);
-			$('body').off('keydown', '.select2.select2-container');
+			wut.removeSelect2EventHandler();
 		},
 		oneditprepare: function () {
-			let isDiscovering = false;
-			let isManualConfig = this.manualConfig;
-			let lastDeviceId = this.device;
-			let allDevices = [];
-			const node = this;
-
-			const discoverDevices = function (clearCache) {
-				isDiscovering = true;
-				$('#btn-discover-devices').prop('disabled', true);
-				$('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-spinner fa-spin');
-				const url = 'wut/devices/webio?nodeId=' + node.id + (clearCache ? '&clearCache=true' : '');
-				$.getJSON(url, function (data) {
-					isDiscovering = false;
-					$('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-search');
-					$('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
-					if (data) {
-						allDevices = data;
-						$('#node-config-input-device').children('option').remove(); // remove all clamp options
-
-						for (let i = 0; i < data.length; ++i) {
-							const device = data[i];
-							device.text = device.ip + ':' + device.port + ' (' + device.mac + ')';
-							$('#node-config-input-device').append($('<option></option>').attr('value', device.id).text(device.text).attr('data-data', JSON.stringify(device)));
-						}
-
-						if (!lastDeviceId) {
-							const matches = allDevices.filter(function (d) { return d.ip === node.host && +d.port === +node.port && node.protocol === (d.httpsEnabled ? 'https' : 'http'); });
-							lastDeviceId = (matches[0] || {}).id;
-						}
-						$('#node-config-input-device').val(lastDeviceId).trigger('change'); // finally, restore selection
-					}
-				});
-			};
-
-			$('#node-config-input-device').change(function () {
-				const selectedId = $(this).val();
-				lastDeviceId = selectedId || lastDeviceId;
-				const device = allDevices.filter(function (d) { return d.id === selectedId; })[0];
-				if (device) { // set host, protocol and port values
-					$('#node-config-input-host').val(device.ip || '').trigger('change');
-					$('#node-config-input-protocol').val(device.httpsEnabled ? 'https' : 'http').trigger('change');
-					$('#node-config-input-port').val(device.port || '').trigger('change');
-				}
-				if (device && !isManualConfig) { // set product details
-					$('#webio-details-wrapper').removeClass('hidden');
-					const productId = device.productId || '';
-					$('#webio-details-productid').text(productId).attr('href', 'https://www.wut.de/' + productId);
-					$('#webio-details-prodname').text(sanitize(device.prodname));
-					$('#webio-details-sysname').text(sanitize(device.sysname));
-				} else {
-					$('#webio-details-wrapper').addClass('hidden');
-				}
-			});
-
-			$('#node-config-input-manualConfig').change(function () {
-				isManualConfig = this.checked;
-				$('.manual-config-input').prop('disabled', !isManualConfig);
-				$('#node-config-input-device').prop('disabled', isManualConfig);
-				$('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
-				if (!isManualConfig) {
-					$('#node-config-input-device').trigger('change');
-				} else {
-					$('#webio-details-wrapper').addClass('hidden');
-				}
-			});
-
-			$('#btn-discover-devices').click(function (e) {
-				e.preventDefault();
-				discoverDevices(true); // re-discover devices (clear cache!)
-			});
-
-			$('#btn-webconfig').click(function (e) {
-				e.preventDefault();
-				const protocol = $('#node-config-input-protocol').val();
-				const host = $('#node-config-input-host').val();
-				const port = $('#node-config-input-port').val();
-				if (protocol && host && port) {
-					window.open(protocol + '://' + host + ':' + port, '_blank');
-				}
-			});
-
-			function sanitize(htmlText) {
-				return $('<div>' + (htmlText || '').replace(/<br[ \/]*>/g, ' ') + '</div>').text();
-			}
-
-			if ($(window).select2) {
-				$('body').on('keydown', onKeyDown);
-				$('body').on('keydown', '.select2.select2-container', function (e) {
-					const KEYS = { UP: 38, DOWN: 40 };
-					if (e.keyCode === KEYS.UP || (e.keyCode === KEYS.DOWN && !e.altKey)) {
-						e.preventDefault();
-						const select = $(this).siblings("select.wut-select2");
-						if (select && select.length) {
-							let newValue;
-							if (e.keyCode === KEYS.UP) {
-								newValue = select.find('option:selected').prevAll(":enabled").first().val();
-							} else {
-								newValue = select.find('option:selected').nextAll(":enabled").first().val();
-							}
-
-							if (newValue) {
-								select.val(newValue).trigger('change');
-							}
-						}
-					}
-				});
-				setTimeout(function () {
-					$('select.wut-select2:not(#node-config-input-device)').select2();
-					$('#node-config-input-device').select2({
-						templateResult: function (device) {
-							let template = '<div class="wut-select2-dropdown"><div class="wut-row">' + device.text + '</div>'
-							let title = device.text;
-							if (device.prodname) {
-								if (device.productId) {
-									template += '<div style="display: flex;"><small class="wut-row">' + sanitize(device.prodname) + '</small><small>&nbsp;(#' + device.productId + ')</small></div>';
-									title += '\n' + sanitize(device.prodname) + ' (#' + device.productId + ')';
-								} else {
-									template += '<div class="wut-row"><small>' + sanitize(device.prodname) + '</small></div>';
-									title += '\n' + sanitize(device.prodname);
-								}
-							} else if (device.productId) {
-								template += '<div class="wut-row"><small>' + node._('config.label.productid') + ' #' + device.productId + '</small></div>';
-								title += '\n' + node._('config.label.productid') + ' #' + device.productId;
-							}
-							if (device.sysname) {
-								template += '<div class="wut-row"><small>' + sanitize(device.sysname) + '</small></div>';
-								title += '\n' + sanitize(device.sysname);
-							}
-							template += '</div>';
-							return $(template).attr('title', title);
-						},
-						matcher: function (params, data) {
-							const searchBase = [data.text, data.prodname, data.sysname, data.productId].filter(Boolean).join('   ').toLowerCase();
-							const searchString = $.trim(params.term).toLowerCase();
-							return searchBase.indexOf(searchString) > -1 ? data : null;
-						}
-					});
-				}, 500);
-			} else {
-				console.warn('select2 is not available');
-			}
-
-			discoverDevices(false); // initially discover devices (cached data is ok)
+			wut.initDeviceConfig(this);
 		}
 	});
 </script>
@@ -264,22 +113,22 @@
 		<label for="node-config-input-password"><i class="fa fa-fw fa-unlock-alt"></i> <span data-i18n="config.label.password"></label>
 		<input type="password" id="node-config-input-password" data-i18n="[placeholder]config.label.password" />
 	</div>
-	<div id="webio-details-wrapper">
+	<div id="device-details-wrapper">
 		<hr/>
 		<div class="form-row">
-			<label for="webio-details-productid"></label>
+			<label>&nbsp;</label>
 			<div class="wut-flex-container-column">
 				<div>
 					<span data-i18n="config.label.productid"></span>
-					<a href="https://www.wut.de/" target="_blank" id="webio-details-productid"></a>
+					<a href="https://www.wut.de/" target="_blank" id="device-details-productid"></a>
 				</div>
 				<div>
 					<span data-i18n="config.label.prodname"></span>
-					<span id="webio-details-prodname"></span>
+					<span id="device-details-prodname"></span>
 				</div>
 				<div>
 					<span data-i18n="config.label.sysname"></span>
-					<span id="webio-details-sysname"></span>
+					<span id="device-details-sysname"></span>
 				</div>
 			</div>
 		</div>
