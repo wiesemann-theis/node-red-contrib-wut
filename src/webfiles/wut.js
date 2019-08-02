@@ -221,6 +221,6 @@
     }
 
     $(document).ready(function () {
-        window.wut = { initClampConfig, initDeviceConfig };
+        window.wut = { initClampConfig: initClampConfig, initDeviceConfig: initDeviceConfig };
     });
 })(jQuery, window);

@@ -11,6 +11,7 @@
 ### Changed
 
 - minor layout adjustments
+- resolved redundancies
 
 ### Fixed
 
