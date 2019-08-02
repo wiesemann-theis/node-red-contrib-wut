@@ -1,10 +1,22 @@
 <script type="text/javascript">
+	// load custom styles and scripts 
+	// this has to be added to all nodes because users COULD disable all but one node and it should still be working then...
+	if (!window.wut) {
+		window.wut = { prepareWebioClamp: function () { } }; // dummy object to prevent multiple loading requests
+		$.getScript('/wut/files/wut.js').fail(function (jqxhr, settings, exception) { console.error('Loading wut.js failed.', exception); });
+		$.getScript('/wut/files/select2.min.js').fail(function (jqxhr, settings, exception) { console.error('Loading select2.min.js failed.', exception); });
+		$('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', '/wut/files/select2.min.css'));
+		$('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', '/wut/files/wut.css'));
+	}
+</script>
+
+<script type="text/javascript">
 	const defaultClampCount = 8;
 	const portinfoType = '6';
 
 	let labels = {}; // { webio-id-1: { slot1: label1, slot2: label2,...}, webio-id-2: {...}, ...}
 	let ranges = {}; // { webio-id-1: { slot1: { min: 0, max: 10, unit: 'V' }, slot2: {...}, ...}, webio-id-2: {...}, ...}
-	
+
 	RED.comms.subscribe("wut/#", function (topic, msg) {
 		const webioId = topic.split("/")[2];
 		const type = topic.split('/')[1];
@@ -37,48 +49,7 @@
 			return this.name ? 'node_label_italic' : '';
 		},
 		oneditprepare: function () {
-			let lastWebio = null;
-			let lastNumber = this.number;
-
-			const updateRange = function () {
-				const range = (ranges[lastWebio] || {})[lastNumber];
-				if (range) {
-					$('#measurement-range-wrapper').removeClass('hidden');
-					$('#measurement-range').text(range.min + ' ' + range.unit + ' ... ' + range.max + ' ' + range.unit);
-				} else {
-					$('#measurement-range-wrapper').addClass('hidden');
-				}
-			}
-
-			$('#node-input-webio').change(function () {
-				const tempWebio = $(this).val();
-				if (tempWebio !== lastWebio) {
-					lastWebio = tempWebio;
-					$('#node-input-number').children('option').remove(); // remove all clamp options
-
-					let labelData = labels[tempWebio];
-					if (!labelData) { // generate default data
-						labelData = {};
-						for (let i = 1; i <= defaultClampCount; ++i) { // NOTE: analog clamp numbers are 1 based (digital are 0 based!)
-							labelData[i] = i;
-						}
-					}
-					const slotNumbers = Object.keys(labelData).sort(function (a, b) { return (+a - +b); });
-					for (let i = 0; i < slotNumbers.length; ++i) { // add new options according to label list
-						const slot = +slotNumbers[i];
-						const label = +labelData[slot] !== slot ? (slot + ': ' + labelData[slot]) : slot;
-						$('#node-input-number').append($('<option></option>').attr('value', slot).text(label));
-					}
-					
-					$('#node-input-number').val(lastNumber); // finally, restore selection
-
-					updateRange();
-				}
-			});
-			$('#node-input-number').change(function () {
-				lastNumber = $(this).val() || lastNumber;
-				updateRange();
-			});
+			window.wut.prepareWebioClamp(this.number, true, defaultClampCount, labels, ranges);
 		}
 	});
 </script>
@@ -96,7 +67,7 @@
 		<label for="node-input-number"><i class="fa fa-fw fa-dot-circle-o"></i> <span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.clamp"></span></label>
 		<select id="node-input-number" style="width: 70%;"></select>
 	</div>
-	<div class="form-row" id="measurement-range-wrapper">
+	<div class="form-row hidden" id="measurement-range-wrapper">
 		<label for="measurement-range"></label>
 		<span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.range"></span>
 		<span id="measurement-range"></span>

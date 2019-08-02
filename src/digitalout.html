@@ -1,4 +1,16 @@
 <script type="text/javascript">
+	// load custom styles and scripts 
+	// this has to be added to all nodes because users COULD disable all but one node and it should still be working then...
+	if (!window.wut) {
+		window.wut = { prepareWebioClamp: function () { } }; // dummy object to prevent multiple loading requests
+		$.getScript('/wut/files/wut.js').fail(function (jqxhr, settings, exception) { console.error('Loading wut.js failed.', exception); });
+		$.getScript('/wut/files/select2.min.js').fail(function (jqxhr, settings, exception) { console.error('Loading select2.min.js failed.', exception); });
+		$('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', '/wut/files/select2.min.css'));
+		$('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', '/wut/files/wut.css'));
+	}
+</script>
+
+<script type="text/javascript">
 	const defaultClampCount = 12;
 	const portinfoType = '3';
 	const portinfoType2 = '5';
@@ -13,7 +25,7 @@
 		} else {
 			console.warn('Invalid portlabels message received', topic, msg);
 		}
-	});
+	});	
 
 	RED.nodes.registerType('Digital OUT', {
 		category: 'WuT',
@@ -33,35 +45,7 @@
 			return this.name ? 'node_label_italic' : '';
 		},
 		oneditprepare: function () {
-			let lastWebio = null;
-			let lastNumber = this.number;
-
-			$('#node-input-webio').change(function () {
-				const tempWebio = $(this).val();
-				if (tempWebio !== lastWebio) {
-					lastWebio = tempWebio;
-					$('#node-input-number').children('option').remove(); // remove all clamp options
-
-					let labelData = labels[tempWebio];
-					if (!labelData) { // generate default data
-						labelData = {};
-						for (let i = 0; i < defaultClampCount; ++i) {
-							labelData[i] = i;
-						}
-					}
-					const slotNumbers = Object.keys(labelData).sort(function (a, b) { return (+a - +b); });
-					for (let i = 0; i < slotNumbers.length; ++i) { // add new options according to label list
-						const slot = +slotNumbers[i];
-						const label = +labelData[slot] !== slot ? (slot + ': ' + labelData[slot]) : slot;
-						$('#node-input-number').append($('<option></option>').attr('value', slot).text(label));
-					}
-					
-					$('#node-input-number').val(lastNumber); // finally, restore selection
-				}
-			});
-			$('#node-input-number').change(function () {
-				lastNumber = $(this).val() || lastNumber;
-			});
+			window.wut.prepareWebioClamp(this.number, false, defaultClampCount, labels);
 		}
 	});
 </script>

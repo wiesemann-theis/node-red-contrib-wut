@@ -5,7 +5,7 @@ const wutBroadcast = require('./wut-broadcast');
 let isInitialized = false;
 
 const init = RED => {
-    if (!isInitialized && RED) {
+    if (!isInitialized && RED) { // endpoints only need to be initialized once
         isInitialized = true;
 
         RED.httpAdmin.get("/wut/devices/:type", RED.auth.needsPermission('wut.read'), function (req, res) {

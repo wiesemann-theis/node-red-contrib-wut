@@ -12,24 +12,26 @@ module.exports = RED => {
     wutHttpAdmin.init(RED);
 
     RED.nodes.registerType('Web-IO', function (config) {
-        RED.nodes.createNode(this, config);
-        const node = this;
-
-        if (!config.host || !+config.port) {
-            node.warn(RED._('logging.invalid-config', { host: config.host, port: config.port }));
-            return;
-        }
-
         const pollingInterval = config.pollingIntervalSec * 1000 || 1000;
         const portinfosInterval = config.portinfoIntervalSec * 1000 || 60000;
         const httpTimeout = 3000;
+        const agentTimeout = 5000;
+        const keepAliveMsecs = 5000; // Web-IOs keep connection open for 30 s
 
+        RED.nodes.createNode(this, config);
+
+        if (!config.host || !+config.port) {
+            this.warn(RED._('logging.invalid-config', { host: config.host, port: config.port }));
+            return;
+        }
+
+        const node = this;
         const http = require(config.protocol);
         const agent = new http.Agent({
             keepAlive: true,
-            keepAliveMsecs: 5000, // Web-IOs keep connection open for 30 s
+            keepAliveMsecs: keepAliveMsecs,
             maxSockets: 1,
-            timeout: 5000,
+            timeout: agentTimeout,
             host: config.host,
             port: +config.port
         });
