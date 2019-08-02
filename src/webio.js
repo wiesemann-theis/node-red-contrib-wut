@@ -78,7 +78,7 @@ module.exports = RED => {
         const httpGetHelper = (path) => {
             if (hasPendingRequest && pendingHttp) {
                 return new Promise((res, rej) => {
-                    pendingHttp.finally(() => { // when pending request is finished, call method again
+                    pendingHttp.catch(() => { }).finally(() => { // when pending request is finished, call method again
                         setTimeout(() => httpGetHelper(path).then(res, rej), 50); // little timeout to ensure "hasPendingRequest" is reset
                     });
                 });
@@ -105,7 +105,9 @@ module.exports = RED => {
                     }).on('timeout', function () { this.abort(); }).on('error', err => reject(err));
                 });
                 // second promise object to handle "hasPendingRequest" flag correctly
-                return new Promise((res, rej) => pendingHttp.then(res, rej).finally(() => { hasPendingRequest = false; }));
+                return new Promise((res, rej) => {
+                    pendingHttp.then(res, rej).finally(() => { hasPendingRequest = false; });
+                });
             }
         }
 
