@@ -9,6 +9,35 @@
         }
     }
 
+    let hasSelect2EventHandler = false;
+    function addSelect2EventHandler() {
+        if (!hasSelect2EventHandler) {
+            hasSelect2EventHandler = true;
+            $('body').on('keydown', onKeyDown);
+            $('body').on('keydown', '.select2.select2-container', function (e) {
+                const KEYS = { UP: 38, DOWN: 40 };
+                if (e.keyCode === KEYS.UP || (e.keyCode === KEYS.DOWN && !e.altKey)) {
+                    e.preventDefault();
+                    const select = $(this).siblings("select");
+                    if (select && select.length) {
+                        let newValue;
+                        if (e.keyCode === KEYS.UP) {
+                            newValue = select.find('option:selected').prevAll(":enabled").first().val();
+                        } else {
+                            newValue = select.find('option:selected').nextAll(":enabled").first().val();
+                        }
+
+                        if (newValue) {
+                            select.val(newValue).trigger('change');
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    /**************** oneditprepare functions  ************************/
+
     function initClampConfig(clampNumber, isAnalog, defaultClampCount, labels, ranges) {
         let lastWebio = null;
         let lastNumber = clampNumber;
@@ -52,6 +81,11 @@
                 }
             }
         });
+
+        if ($(window).select2) {
+            addSelect2EventHandler();
+            $('select.wut-select2,#node-input-webio').select2();
+        }
     }
 
     function initDeviceConfig(node) {
@@ -148,26 +182,7 @@
         });
 
         if ($(window).select2) {
-            $('body').on('keydown', onKeyDown);
-            $('body').on('keydown', '.select2.select2-container', function (e) {
-                const KEYS = { UP: 38, DOWN: 40 };
-                if (e.keyCode === KEYS.UP || (e.keyCode === KEYS.DOWN && !e.altKey)) {
-                    e.preventDefault();
-                    const select = $(this).siblings("select.wut-select2");
-                    if (select && select.length) {
-                        let newValue;
-                        if (e.keyCode === KEYS.UP) {
-                            newValue = select.find('option:selected').prevAll(":enabled").first().val();
-                        } else {
-                            newValue = select.find('option:selected').nextAll(":enabled").first().val();
-                        }
-
-                        if (newValue) {
-                            select.val(newValue).trigger('change');
-                        }
-                    }
-                }
-            });
+            addSelect2EventHandler();
             setTimeout(function () {
                 $('select.wut-select2:not(' + idPrefix + 'device)').select2();
                 $(idPrefix + 'device').select2({
@@ -199,20 +214,13 @@
                         return searchBase.indexOf(searchString) > -1 ? data : null;
                     }
                 });
-            }, 500);
-        } else {
-            console.warn('select2 is not available');
+            }, 500); // blame: otherwise i18n select values might not be loaded/visualized correctly!
         }
 
         discoverDevices(false); // initially discover devices (cached data is ok)
     }
 
-    function removeSelect2EventHandler() {
-        $('body').off('keydown', onKeyDown);
-        $('body').off('keydown', '.select2.select2-container');
-    }
-
     $(document).ready(function () {
-        window.wut = { initClampConfig, initDeviceConfig, removeSelect2EventHandler };
+        window.wut = { initClampConfig, initDeviceConfig };
     });
 })(jQuery, window);

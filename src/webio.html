@@ -57,10 +57,6 @@
 				$('#node-config-input-device').val('');
 			}
 			this.device = $('#node-config-input-device').val(); // because empty/invalid values are not saved automatically
-			wut.removeSelect2EventHandler();
-		},
-		oneditcancel: function () {
-			wut.removeSelect2EventHandler();
 		},
 		oneditprepare: function () {
 			wut.initDeviceConfig(this);
