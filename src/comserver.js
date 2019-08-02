@@ -1,4 +1,5 @@
 const net = require('net');
+const fs = require('fs');
 const wutBroadcast = require('./util/wut-broadcast');
 
 module.exports = RED => {
@@ -16,6 +17,16 @@ module.exports = RED => {
             node.warn(RED._('logging.wut-broadcast-failed', { msg: err.message }));
             res.json(null);
         });
+    });
+
+    RED.httpAdmin.get("/wut/files/:filename", RED.auth.needsPermission('wut.read'), (req, res) => {
+        try {
+            const filepath = __dirname + '/webfiles/' + req.params.filename;
+            fs.accessSync(filepath);
+            res.sendFile(filepath);
+        } catch (e) {
+            res.sendStatus(404);
+        }
     });
 
     RED.nodes.registerType('Com-Server', function (config) {
