@@ -1,0 +1,59 @@
+.wut-flex-container {
+    display: inline-flex;
+    width: 70%;
+}
+
+.wut-flex-container select, .wut-flex-container input, .wut-flex-container .select2-container {
+    flex-grow: 1;
+    margin-right: 5px;
+}
+
+.wut-flex-container-column {
+    display: inline-flex;
+    width: 70%;
+    flex-direction: column;
+}
+
+.wut-flex-container-column>div {
+    display: flex;
+    align-items: center;
+    margin: 6px 0px;
+}
+
+.wut-flex-container-column>div>*:first-child {
+    white-space: nowrap;
+    margin-right: 5px;
+}
+
+.wut-checkbox {
+    display: inline-block;
+    width: auto !important;
+    vertical-align: top !important;
+}
+
+/** select2 styles */
+
+.wut-select2-dropdown .wut-row {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.select2-container>.selection>.select2-selection {
+    border-color: #ccc;
+    line-height: 34px;
+    height: 34px;
+}
+
+.select2-container>.selection>.select2-selection>.select2-selection__rendered {
+    line-height: 34px;
+    padding-left: 6px;
+}
+
+.select2-container>.selection>.select2-selection>.select2-selection__arrow {
+    height: 32px;
+}
+
+.select2-results>.select2-results__options {
+    max-height: 400px !important;
+}

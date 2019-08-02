@@ -1,65 +1,5 @@
-<style>
-	.webio-flex-container {
-		display: inline-flex;
-		width: 70%;
-	}
-
-	.webio-flex-container select,
-	.webio-flex-container input,
-	.webio-flex-container .select2-container {
-		flex-grow: 1;
-		margin-right: 5px;
-	}
-
-	.webio-flex-container-column {
-		display: inline-flex;
-		width: 70%;
-		flex-direction: column;
-	}
-
-	.webio-flex-container-column>div {
-		display: flex;
-		align-items: center;
-		margin: 6px 0px;
-	}
-
-	.webio-flex-container-column>div>*:first-child {
-		white-space: nowrap;
-		margin-right: 5px;
-	}
-
-	.webio-checkbox {
-		display: inline-block;
-		width: auto !important;
-		vertical-align: top !important;
-	}
-
-	/** select2 styles */
-	.wt-select2-dropdown .wt-row {
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-
-	.select2-container>.selection>.select2-selection {
-		border-color: #ccc;
-		line-height: 34px;
-		height: 34px;
-	}
-
-	.select2-container>.selection>.select2-selection>.select2-selection__rendered {
-		line-height: 34px;
-		padding-left: 6px;
-	}
-
-	.select2-container>.selection>.select2-selection>.select2-selection__arrow {
-		height: 32px;
-	}
-
-	.select2-results>.select2-results__options {
-		max-height: 400px !important;
-	}
-</style>
+<link rel="stylesheet" type="text/css" href="/wut/files/select2.min.css" />
+<link rel="stylesheet" type="text/css" href="/wut/files/wut.css" />
 
 <script type="text/javascript">
 	// handle webio-i18n-status messages here (handling it in analogin, analogout,... would be redundant -> and there are no webio-i18n-status messages if there is no webio!)
@@ -89,12 +29,12 @@
 	}, 300); // subscribe only when nodes have been loaded (or 10s timeout) -> otherwise retained messages might not be processed correctly because node is not available yet
 
 	function onKeyDown(e) {
-        if (e.keyCode === 13 && $(e.target).hasClass('select2-search__field')) {
-            e.stopPropagation(); // blame: for some reason, this event causes an error in Node-RED core when propagated to window...
-        }
-    }
+		if (e.keyCode === 13 && $(e.target).hasClass('select2-search__field')) {
+			e.stopPropagation(); // blame: for some reason, this event causes an error in Node-RED core when propagated to window...
+		}
+	}
 
-    RED.nodes.registerType('Web-IO', {
+	RED.nodes.registerType('Web-IO', {
 		category: 'config',
 		defaults: {
 			name: { value: '' },
@@ -214,7 +154,7 @@
 					const KEYS = { UP: 38, DOWN: 40 };
 					if (e.keyCode === KEYS.UP || (e.keyCode === KEYS.DOWN && !e.altKey)) {
 						e.preventDefault();
-						const select = $(this).siblings("select.wt-select2");
+						const select = $(this).siblings("select.wut-select2");
 						if (select && select.length) {
 							let newValue;
 							if (e.keyCode === KEYS.UP) {
@@ -230,25 +170,25 @@
 					}
 				});
 				setTimeout(function () {
-					$('select.wt-select2:not(#node-config-input-device)').select2();
+					$('select.wut-select2:not(#node-config-input-device)').select2();
 					$('#node-config-input-device').select2({
 						templateResult: function (device) {
-							let template = '<div class="wt-select2-dropdown"><div class="wt-row">' + device.text + '</div>'
+							let template = '<div class="wut-select2-dropdown"><div class="wut-row">' + device.text + '</div>'
 							let title = device.text;
 							if (device.prodname) {
 								if (device.productId) {
-									template += '<div style="display: flex;"><small class="wt-row">' + sanitize(device.prodname) + '</small><small>&nbsp;(#' + device.productId + ')</small></div>';
+									template += '<div style="display: flex;"><small class="wut-row">' + sanitize(device.prodname) + '</small><small>&nbsp;(#' + device.productId + ')</small></div>';
 									title += '\n' + sanitize(device.prodname) + ' (#' + device.productId + ')';
 								} else {
-									template += '<div class="wt-row"><small>' + sanitize(device.prodname) + '</small></div>';
+									template += '<div class="wut-row"><small>' + sanitize(device.prodname) + '</small></div>';
 									title += '\n' + sanitize(device.prodname);
 								}
 							} else if (device.productId) {
-								template += '<div class="wt-row"><small>' + node._('config.label.productid') + ' #' + device.productId + '</small></div>';
+								template += '<div class="wut-row"><small>' + node._('config.label.productid') + ' #' + device.productId + '</small></div>';
 								title += '\n' + node._('config.label.productid') + ' #' + device.productId;
 							}
 							if (device.sysname) {
-								template += '<div class="wt-row"><small>' + sanitize(device.sysname) + '</small></div>';
+								template += '<div class="wut-row"><small>' + sanitize(device.sysname) + '</small></div>';
 								title += '\n' + sanitize(device.sysname);
 							}
 							template += '</div>';
@@ -277,8 +217,8 @@
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
-		<div class="webio-flex-container">
-			<select class="wt-select2" id="node-config-input-device"></select>
+		<div class="wut-flex-container">
+			<select class="wut-select2" id="node-config-input-device"></select>
 			<button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
 				<i class="fa fa-fw fa-search"></i>
 			</button>
@@ -287,13 +227,13 @@
     <div class="form-row">
 		<label>&nbsp;</label>
 		<label for="node-config-input-manualConfig" style="width: 70%;">
-			<input type="checkbox" id="node-config-input-manualConfig" class="webio-checkbox" />
+			<input type="checkbox" id="node-config-input-manualConfig" class="wut-checkbox" />
 			<span data-i18n="config.label.manual-config">
 		</label>
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-host"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.host"></label>		
-		<div class="webio-flex-container">
+		<div class="wut-flex-container">
 			<input type="text" id="node-config-input-host" class="manual-config-input" data-i18n="[placeholder]config.label.host" />
 			<button id="btn-webconfig" class="editor-button" data-i18n="[title]config.label.tooltip-webconfig">
 				<i class="fa fa-fw fa-external-link"></i>
@@ -302,7 +242,7 @@
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-protocol"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.protocol"></label>
-		<select id="node-config-input-protocol" class="manual-config-input wt-select2" style="width: 70%;">
+		<select id="node-config-input-protocol" class="manual-config-input wut-select2" style="width: 70%;">
 			<option value="http">HTTP</option>
 			<option value="https">HTTPS</option>
 		</select>
@@ -319,7 +259,7 @@
 		<hr/>
 		<div class="form-row">
 			<label for="webio-details-productid"></label>
-			<div class="webio-flex-container-column">
+			<div class="wut-flex-container-column">
 				<div>
 					<span data-i18n="config.label.productid"></span>
 					<a href="https://www.wut.de/" target="_blank" id="webio-details-productid"></a>
