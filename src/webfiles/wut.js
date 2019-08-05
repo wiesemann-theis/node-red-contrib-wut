@@ -3,6 +3,8 @@
   * Licensed under MIT (https://github.com/wiesemann-theis/node-red-contrib-wut/blob/master/LICENSE)
   */
 (function ($, window) {
+    let allDevices = {};
+
     /********** helper functions ****************/
     function sanitize(htmlText) {
         return $('<div>' + (htmlText || '').replace(/<br[ \/]*>/g, ' ') + '</div>').text();
@@ -107,7 +109,6 @@
         let isDiscovering = false;
         let isManualConfig = node.manualConfig;
         let lastDeviceId = node.device;
-        let allDevices = [];
 
         const isWebio = node.type === 'Web-IO';
         const idPrefix = isWebio ? '#node-config-input-' : '#node-input-';
@@ -123,7 +124,7 @@
                 $('#btn-discover-devices > i').attr('class', 'fa fa-fw fa-search');
                 $('#btn-discover-devices').prop('disabled', isManualConfig || isDiscovering);
                 if (data) {
-                    allDevices = data;
+                    allDevices[type] = data;
                     $(idPrefix + 'device').children('option').remove(); // remove all clamp options
 
                     for (let i = 0; i < data.length; ++i) {
@@ -133,7 +134,7 @@
                     }
 
                     if (!lastDeviceId) {
-                        const matches = allDevices.filter(function (d) {
+                        const matches = data.filter(function (d) {
                             let match = d.ip === node.host;
                             if (isWebio) {
                                 match &= +d.port === +node.port && node.protocol === (d.httpsEnabled ? 'https' : 'http');
@@ -150,7 +151,7 @@
         $(idPrefix + 'device').change(function () {
             const selectedId = $(this).val();
             lastDeviceId = selectedId || lastDeviceId;
-            const device = allDevices.filter(function (d) { return d.id === selectedId; })[0];
+            const device = (allDevices[type] || []).filter(function (d) { return d.id === selectedId; })[0];
             if (device) { // set host, protocol and port values
                 $(idPrefix + 'host').val(device.ip || '').trigger('change');
                 if (isWebio) {
