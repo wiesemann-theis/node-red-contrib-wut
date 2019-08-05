@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Unreleased
+
+### Added
+
+- Example workflows
+
 ## 1.3.0
 
 ### Added
