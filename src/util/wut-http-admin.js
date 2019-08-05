@@ -15,7 +15,7 @@ const init = RED => {
             wutBroadcast(req.query.clearCache === 'true').then(data => {
                 const result = data.filter(d => { // only return Com-Servers or Web-IOs...
                     if (type === 'comserver') {
-                        return d.productId && d.productId.startsWith('58');
+                        return d.productId && d.productId.startsWith('58') || ['57631'].indexOf(d.productId) > -1; // Com-Servers usually have an 58xxx article no. -> exceptions: 57631
                     } else if (type === 'webio') {
                         return d.portinfoAvailable;
                     }

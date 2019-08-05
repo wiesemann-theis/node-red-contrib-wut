@@ -8,7 +8,9 @@
 	"homepage": "https://www.wut.de/",
 	"keywords": [
 		"node-red",
-		"web-io"
+		"web-io",
+		"com-server",
+		"serial"
 	],
 	"dependencies": {},
 	"devDependencies": {},

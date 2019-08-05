@@ -4,9 +4,10 @@
 
 ### Added
 
-- auto-discovery / W&T broadcast feature (work in progress)
-- device details for Web-IO config node
-- button in Web-IO config to open web config application
+- auto-discovery / W&T broadcast feature (-> select available devices from dropdown list instead of adding connection parameters manually)
+- display device details for Web-IOs and Com-Servers (like article no., device type,...)
+- quicklinks from config nodes to web config application
+- [select2@4.0.8](https://select2.org/) for advanced select boxes
 
 ### Changed
 
