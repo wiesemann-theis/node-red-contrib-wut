@@ -22,9 +22,11 @@ const init = RED => {
                     return false;
                 });
                 node.log(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.wut-broadcast-finished', { count: result.length }));
+                res.set({ 'Cache-Control': 'no-cache, no-store', 'Expires': -1, 'Pragma': 'no-cache' });
                 res.json(result);
             }, err => {
                 node.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.wut-broadcast-failed', { msg: err.message }));
+                res.set({ 'Cache-Control': 'no-cache, no-store', 'Expires': -1, 'Pragma': 'no-cache' });
                 res.json(null);
             });
         });
