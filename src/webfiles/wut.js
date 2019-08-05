@@ -1,3 +1,7 @@
+/*!
+  * @wiesemann-theis/node-red-contrib-wut (https://github.com/wiesemann-theis/node-red-contrib-wut)
+  * Licensed under MIT (https://github.com/wiesemann-theis/node-red-contrib-wut/blob/master/LICENSE)
+  */
 (function ($, window) {
     /********** helper functions ****************/
     function sanitize(htmlText) {
