@@ -12,6 +12,17 @@
             e.stopPropagation(); // blame: for some reason, this event causes an error in Node-RED core when propagated to window...
         }
     }
+    function getI18nMessages() {
+        const lang = (navigator ? navigator.language || navigator.userLanguage || '' : '').toLowerCase();
+        if (lang.slice(0, 2) === 'de') {
+            return {
+                errorLoading: function () { return "Die Daten konnten nicht geladen werden." },
+                noResults: function () { return "Keine Übereinstimmungen gefunden" }
+                // all other possible messages are currently not used/needed (errorLoading, inputTooLong, inputTooShort, loadingMore, maximumSelected, searching, removeAllItems)
+            };
+        }
+        return {}; // default -> will fall back to English anyway
+    }
 
     let hasSelect2EventHandler = false;
     function addSelect2EventHandler() {
@@ -88,7 +99,7 @@
 
         if ($(window).select2) {
             addSelect2EventHandler();
-            $('select.wut-select2,#node-input-webio').select2();
+            $('select.wut-select2,#node-input-webio').select2({ language: getI18nMessages() });
         }
     }
 
@@ -188,7 +199,7 @@
         if ($(window).select2) {
             addSelect2EventHandler();
             setTimeout(function () {
-                $('select.wut-select2:not(' + idPrefix + 'device)').select2();
+                $('select.wut-select2:not(' + idPrefix + 'device)').select2({ language: getI18nMessages() });
                 $(idPrefix + 'device').select2({
                     templateResult: function (device) {
                         let template = '<div class="wut-select2-dropdown"><div class="wut-row">' + device.text + '</div>'
@@ -216,7 +227,8 @@
                         const searchBase = [data.text, data.prodname, data.sysname, data.productId].filter(Boolean).join('   ').toLowerCase();
                         const searchString = $.trim(params.term).toLowerCase();
                         return searchBase.indexOf(searchString) > -1 ? data : null;
-                    }
+                    },
+                    language: getI18nMessages()
                 });
             }, 500); // blame: otherwise i18n select values might not be loaded/visualized correctly!
         }
