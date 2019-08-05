@@ -59,7 +59,11 @@
 			this.device = $('#node-config-input-device').val(); // because empty/invalid values are not saved automatically
 		},
 		oneditprepare: function () {
-			wut.initDeviceConfig(this);
+			if (window.wut && window.wut.initDeviceConfig) {
+				window.wut.initDeviceConfig(this);
+			} else {
+				console.warn('oneditprepare (webio) failed -> probably loading wut.js failed');
+			}
 		}
 	});
 </script>

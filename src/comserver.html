@@ -64,7 +64,11 @@
                 }
             });
 
-            wut.initDeviceConfig(this);
+            if (window.wut && window.wut.initDeviceConfig) {
+                window.wut.initDeviceConfig(this);
+            } else {
+                console.warn('oneditprepare (comserver) failed -> probably loading wut.js failed');
+            }
         }
     });
 </script>
