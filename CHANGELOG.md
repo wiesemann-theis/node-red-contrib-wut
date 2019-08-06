@@ -5,6 +5,7 @@
 ### Added
 
 - Example workflows
+- Unit Tests
 
 ## 1.3.0
 

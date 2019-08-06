@@ -1,9 +1,9 @@
 const helper = require("node-red-node-test-helper");
-const analogInNode = require("../src/analogin.js");
+const comserverNode = require("../src/comserver.js");
 
 helper.init(require.resolve('node-red'));
 
-describe('Analog IN Node', function () {
+describe('Com-Server Node', function () {
 
   beforeEach(function (done) {
     helper.startServer(done);
@@ -15,10 +15,10 @@ describe('Analog IN Node', function () {
   });
 
   it('should be loaded', function (done) {
-    const flow = [{ id: "n1", type: "Analog IN", name: "Demo Analog IN" }];
-    helper.load(analogInNode, flow, function () {
+    const flow = [{ id: "n1", type: "Com-Server", name: "Demo Com-Server" }];
+    helper.load(comserverNode, flow, function () {
       const n1 = helper.getNode("n1");
-      n1.should.have.property('name', 'Demo Analog IN');
+      n1.should.have.property('name', 'Demo Com-Server');
       done();
     });
   });
