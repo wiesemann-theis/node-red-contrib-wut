@@ -223,7 +223,7 @@ module.exports = RED => {
             httpGetHelper('/portinfo').then(data => {
                 onPortinfosReceived(data);
                 setPortinfosTimeout(portinfosInterval);
-            }, err => {
+            }, () => {
                 node.warn(RED._('logging.portinfos.failed'));
                 setPortinfosTimeout(portinfosInterval);
             });
@@ -237,6 +237,7 @@ module.exports = RED => {
             }
         }
         const stateHandler = () => {
+            const requests = []; // for promise handling
             switch (machineState) {
                 case MACHINE_STATES.INITIALIZING:
                     httpGetHelper('/portinfo').then(data => {
@@ -262,8 +263,6 @@ module.exports = RED => {
                     break;
 
                 case MACHINE_STATES.POLLING:
-                    const requests = [];
-
                     if (swInterfaces[1] || swInterfaces[6]) {
                         const req = httpGetHelper('/single').then(data => onSingleDataReceived(data));
                         requests.push(req);

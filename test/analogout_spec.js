@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 const helper = require("node-red-node-test-helper");
 const analogOutNode = require("../src/analogout.js");
 

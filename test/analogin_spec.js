@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 const helper = require("node-red-node-test-helper");
 const analogInNode = require("../src/analogin.js");
 

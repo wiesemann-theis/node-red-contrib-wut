@@ -3,11 +3,12 @@
   * Licensed under MIT (https://github.com/wiesemann-theis/node-red-contrib-wut/blob/master/LICENSE)
   */
 (function ($, window) {
+    /* eslint-env browser, jquery */ // flags to enable correct linting handling
     let allDevices = {};
 
     /********** helper functions ****************/
     function sanitize(htmlText) {
-        return $('<div>' + (htmlText || '').replace(/<br[ \/]*>/g, ' ') + '</div>').text();
+        return $('<div>' + (htmlText || '').replace(/<br[ /]*>/g, ' ') + '</div>').text();
     }
     function onKeyDown(e) {
         if (e.keyCode === 13 && $(e.target).hasClass('select2-search__field')) {

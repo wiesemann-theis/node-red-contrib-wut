@@ -20,7 +20,7 @@ function createSocket(address) {
 }
 
 function closeSocket(socket) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         if (socket) {
             socket.close(resolve);
         } else {
@@ -40,7 +40,7 @@ function sendBroadcast(socket) {
     return new Promise((resolve, reject) => {
         if (socket) {
             socket.setBroadcast(true);
-            socket.send(broadcastMsg, 0, broadcastMsg.length, broadcastPort, broadcastAddress, (err, bytes) => {
+            socket.send(broadcastMsg, 0, broadcastMsg.length, broadcastPort, broadcastAddress, (err) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -61,7 +61,7 @@ function parseGisData(buffer) {
     const response = {};
     let isValid = Buffer.isBuffer(buffer) && buffer.length >= 4;
     if (isValid) {
-        version = buffer[0] + '.' + buffer[1];
+        const version = buffer[0] + '.' + buffer[1];
         response.version = version;
         if (version === '1.4') { // special treatment for v1.04
             const gisLength = buffer.readUInt16LE(2);
@@ -130,48 +130,58 @@ function parseGisData(buffer) {
     return isValid ? response : null;
 }
 
-async function findWutDevices(clearCache) {
-    if (!cachedData || clearCache || new Date() - cacheTimestamp > cacheTimeoutSec * 1000) {
-        const responses = [];
-        let sockets = [];
-        try {
-            const rawList = [].concat(...Object.values(os.networkInterfaces()));
-            const ifaces = rawList.filter(d => d.family === 'IPv4' && !d.internal);
-            if (!ifaces.length) {
-                ifaces.push({ address: '0.0.0.0' });
-            }
-
-            for (let i = 0; i < ifaces.length; ++i) {
-                let socket = await createSocket(ifaces[i].address);
-                sockets.push(socket);
-
-                socket.on('message', (msg, src) => {
-                    if (src.port === broadcastPort) {
-                        const infos = parseGisData(msg, src.address);
-                        if (infos) {
-                            infos.ip = src.address;
-                            infos.id = `${infos.ip} (${infos.mac})`;
-                            responses.push(infos);
-                        } else {
-                            console.warn('W&T broadcast: invalid GIS data received from ' + src.address);
-                        }
-                    }
-                });
-
-                await sendBroadcast(socket);
-            }
-
-            await timeout(broadcastTimeout); // wait for responses
-            await closeSockets(sockets);
-        } catch (e) {
-            await closeSockets(sockets).catch(err => console.warn('W&T broadcast: closing socket failed', err.message));
-            throw e; // re-throw exception -> like Promise.reject
+async function findWutDevices() {
+    const responses = [];
+    let sockets = [];
+    try {
+        const rawList = [].concat(...Object.values(os.networkInterfaces()));
+        const ifaces = rawList.filter(d => d.family === 'IPv4' && !d.internal);
+        if (!ifaces.length) {
+            ifaces.push({ address: '0.0.0.0' });
         }
-        const mapIp = (ip) => ip.replace(/(\d+)/g, d => ('000' + d).slice(-3));
-        cachedData = responses.sort((a, b) => mapIp(a.ip) > mapIp(b.ip) ? 1 : -1); // sort by ip
-        cacheTimestamp = new Date();
+
+        for (let i = 0; i < ifaces.length; ++i) {
+            let socket = await createSocket(ifaces[i].address);
+            sockets.push(socket);
+
+            socket.on('message', (msg, src) => {
+                if (src.port === broadcastPort) {
+                    const infos = parseGisData(msg, src.address);
+                    if (infos) {
+                        infos.ip = src.address;
+                        infos.id = `${infos.ip} (${infos.mac})`;
+                        responses.push(infos);
+                    } else {
+                        console.warn('W&T broadcast: invalid GIS data received from ' + src.address);
+                    }
+                }
+            });
+
+            await sendBroadcast(socket);
+        }
+
+        await timeout(broadcastTimeout); // wait for responses
+        await closeSockets(sockets);
+    } catch (e) {
+        await closeSockets(sockets).catch(err => console.warn('W&T broadcast: closing socket failed', err.message));
+        throw e; // re-throw exception -> like Promise.reject
     }
-    return cachedData;
+    return responses;
 }
 
-module.exports = findWutDevices;
+// wrapper to avoid possible race conditions (eslint warning)
+function findWutDevicesWrapper(clearCache) {
+    if (!cachedData || clearCache || new Date() - cacheTimestamp > cacheTimeoutSec * 1000) {
+        return new Promise((resolve, reject) => {
+            findWutDevices().then(responses => {
+                const mapIp = (ip) => ip.replace(/(\d+)/g, d => ('000' + d).slice(-3));
+                cachedData = responses.sort((a, b) => mapIp(a.ip) > mapIp(b.ip) ? 1 : -1); // sort by ip
+                cacheTimestamp = new Date();
+                resolve(cachedData);
+            }, err => reject(err));
+        });
+    }
+    return Promise.resolve(cachedData);
+}
+
+module.exports = findWutDevicesWrapper;

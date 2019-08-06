@@ -13,11 +13,14 @@
 		"serial"
 	],
 	"scripts": {
+		"lint": "eslint test src",
 		"test": "mocha \"test/**/*_spec.js\" --watch",
-		"test-once": "mocha \"test/**/*_spec.js\""
+		"test-once": "mocha \"test/**/*_spec.js\"",
+		"test-prerelease": "npm run lint & npm run test-once"
 	},
 	"dependencies": {},
 	"devDependencies": {
+		"eslint": "6.1.0",
 		"mocha": "6.2.0",
 		"node-red-node-test-helper": "0.2.3"
 	},
@@ -30,5 +33,16 @@
 			"digital-out": "src/digitalout.js",
 			"com-server": "src/comserver.js"
 		}
-	}
+	},
+	"eslintConfig": {
+		"extends": "eslint:recommended",
+		"parserOptions": {
+			"ecmaVersion": 2017
+		},
+		"env": {
+			"es6": true,
+			"node": true
+		}
+	},
+	"eslintIgnore": ["src/webfiles/select2*.js"]
 }
