@@ -12,8 +12,15 @@
 		"com-server",
 		"serial"
 	],
+	"scripts": {
+		"test": "mocha \"test/**/*_spec.js\" --watch",
+		"test-once": "mocha \"test/**/*_spec.js\""
+	},
 	"dependencies": {},
-	"devDependencies": {},
+	"devDependencies": {
+		"mocha": "6.2.0",
+		"node-red-node-test-helper": "0.2.3"
+	},
 	"node-red": {
 		"nodes": {
 			"web-io": "src/webio.js",
