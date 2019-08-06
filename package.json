@@ -14,8 +14,8 @@
 	],
 	"scripts": {
 		"lint": "eslint test src",
-		"test": "mocha \"test/**/*_spec.js\" --watch",
-		"test-once": "mocha \"test/**/*_spec.js\"",
+		"test": "mocha test/**/*_spec.js --watch",
+		"test-once": "mocha test/**/*_spec.js --reporter dot",
 		"test-prerelease": "npm run lint & npm run test-once"
 	},
 	"dependencies": {},
