@@ -1,5 +1,8 @@
 # @wiesemann-theis/node-red-contrib-wut
 
+[![License: MIT](https://img.shields.io/github/license/wiesemann-theis/node-red-contrib-wut)](LICENSE)
+
+
 Integrate [Wiesemann & Theis](https://www.wut.de/) products - like Com-Servers, Web-IOs or Web-Thermometers - into Node-RED.
 
 The package currently provides the following nodes:
@@ -33,4 +36,4 @@ To visualize your data, you might for example use the nodes provided by the [nod
 
 ## License
 
-see [LICENSE file](LICENSE)
+[MIT](LICENSE)
