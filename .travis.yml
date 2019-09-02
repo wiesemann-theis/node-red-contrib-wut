@@ -3,7 +3,7 @@ node_js:
   - 10
   - node
 
-before_install:
+install:
   - npm install -g --unsafe-perm node-red
   - npm install
   
