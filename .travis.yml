@@ -1,10 +1,15 @@
 language: node_js
 node_js:
   - 10
-  - node
+  - lts/*
 
 install:
   - npm install -g --unsafe-perm node-red
   - npm install
+  
+before_script:
+  - npm link node-red
+  - npm list -g --depth=0
+  - npm list --depth=0
   
 script: npm run test-once
