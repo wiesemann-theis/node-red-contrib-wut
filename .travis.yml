@@ -7,5 +7,8 @@ node_js:
 install:
   - npm install -g --unsafe-perm node-red
   - npm install
-  
+
+before_script:
+  - npm link node-red
+
 script: npm run test-once
