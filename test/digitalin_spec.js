@@ -11,8 +11,7 @@ describe('Digital IN Node', function () {
   });
 
   afterEach(function (done) {
-    helper.unload();
-    helper.stopServer(done);
+    helper.unload().then(() => helper.stopServer(done));
   });
 
   it('should be loaded', function (done) {

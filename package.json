@@ -20,7 +20,7 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"eslint": "6.1.0",
+		"eslint": "6.3.0",
 		"mocha": "6.2.0",
 		"node-red-node-test-helper": "0.2.3"
 	},
@@ -44,5 +44,7 @@
 			"node": true
 		}
 	},
-	"eslintIgnore": ["src/webfiles/select2*.js"]
+	"eslintIgnore": [
+		"src/webfiles/select2*.js"
+	]
 }
