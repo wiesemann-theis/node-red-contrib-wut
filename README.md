@@ -4,6 +4,7 @@
 [![issues](https://img.shields.io/github/issues/wiesemann-theis/node-red-contrib-wut)](https://github.com/wiesemann-theis/node-red-contrib-wut/issues)
 [![dependencies](https://img.shields.io/david/wiesemann-theis/node-red-contrib-wut)](package.json)
 [![license](https://img.shields.io/github/license/wiesemann-theis/node-red-contrib-wut?color=blue)](LICENSE)
+[![build](https://travis-ci.com/wiesemann-theis/node-red-contrib-wut.svg?branch=master)](https://travis-ci.com/wiesemann-theis/node-red-contrib-wut)
 
 Integrate [Wiesemann & Theis](https://www.wut.de/) products - like Com-Servers, Web-IOs or Web-Thermometers - into Node-RED.
 

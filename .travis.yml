@@ -1,6 +1,6 @@
 language: node_js
-sudo: required
 node_js:
+  - 8
   - 10
   - lts/*
 
@@ -9,6 +9,8 @@ install:
   - npm install
 
 before_script:
+  # blame: required workaround since eslint@6.3.0 update!?
   - npm link node-red
 
-script: npm run test-once
+# "npm run test" runs tests in watch mode
+script: npm run test-build
