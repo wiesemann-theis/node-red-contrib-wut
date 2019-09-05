@@ -1,16 +1,11 @@
 language: node_js
+# test officially supported NodeJS versions (https://nodered.org/docs/faq/node-versions) and latest stable
 node_js:
   - 8
   - 10
   - lts/*
 
-install:
-  - npm install -g --unsafe-perm node-red
-  - npm install
-
-before_script:
-  # blame: required workaround since eslint@6.3.0 update!?
-  - npm link node-red
-
-# "npm run test" runs tests in watch mode
+# "npm test" runs tests in watch mode
 script: npm run test-build
+
+after_success: npm run coverage

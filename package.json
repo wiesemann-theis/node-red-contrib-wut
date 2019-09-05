@@ -17,13 +17,17 @@
 		"test": "mocha test/**/*_spec.js --watch",
 		"test-once": "mocha test/**/*_spec.js --reporter dot",
 		"test-prerelease": "npm run lint & npm run test-once",
-		"test-build": "npm run lint & mocha test/**/*_spec.js --reporter dot --exit"
+		"test-build": "npm run lint & mocha test/**/*_spec.js --reporter dot --exit",
+		"coverage": "nyc npm run test-once && nyc report --reporter=text-lcov | coveralls"
 	},
 	"dependencies": {},
 	"devDependencies": {
+		"coveralls": "3.0.6",
 		"eslint": "6.3.0",
 		"mocha": "6.2.0",
-		"node-red-node-test-helper": "0.2.3"
+		"node-red": "0.20.7",
+		"node-red-node-test-helper": "0.2.3",
+		"nyc": "14.1.1"
 	},
 	"node-red": {
 		"nodes": {

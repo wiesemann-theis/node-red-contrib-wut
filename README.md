@@ -1,10 +1,11 @@
 # @wiesemann-theis/node-red-contrib-wut
 
-[![npm (scoped)](https://img.shields.io/npm/v/@wiesemann-theis/node-red-contrib-wut)](https://www.npmjs.com/package/@wiesemann-theis/node-red-contrib-wut)
-[![issues](https://img.shields.io/github/issues/wiesemann-theis/node-red-contrib-wut)](https://github.com/wiesemann-theis/node-red-contrib-wut/issues)
-[![dependencies](https://img.shields.io/david/wiesemann-theis/node-red-contrib-wut)](package.json)
-[![license](https://img.shields.io/github/license/wiesemann-theis/node-red-contrib-wut?color=blue)](LICENSE)
 [![build](https://travis-ci.com/wiesemann-theis/node-red-contrib-wut.svg?branch=master)](https://travis-ci.com/wiesemann-theis/node-red-contrib-wut)
+[![coverage](https://coveralls.io/repos/github/wiesemann-theis/node-red-contrib-wut/badge.svg?branch=master)](https://coveralls.io/github/wiesemann-theis/node-red-contrib-wut?branch=master)
+[![dependencies](https://img.shields.io/david/wiesemann-theis/node-red-contrib-wut)](package.json)
+[![issues](https://img.shields.io/github/issues/wiesemann-theis/node-red-contrib-wut)](https://github.com/wiesemann-theis/node-red-contrib-wut/issues)
+[![license](https://img.shields.io/github/license/wiesemann-theis/node-red-contrib-wut?color=blue)](LICENSE)
+[![npm (scoped)](https://img.shields.io/npm/v/@wiesemann-theis/node-red-contrib-wut)](https://www.npmjs.com/package/@wiesemann-theis/node-red-contrib-wut)
 
 Integrate [Wiesemann & Theis](https://www.wut.de/) products - like Com-Servers, Web-IOs or Web-Thermometers - into Node-RED.
 
