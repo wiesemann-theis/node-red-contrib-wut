@@ -76,7 +76,7 @@ module.exports = RED => {
 		this.on('input', msg => {
 			if (isValidClamp) {
 				const value = parseFloat(msg.payload);
-				if (isValidClamp && webio && webio.emitter && !isNaN(value)) {
+				if (webio && webio.emitter && !isNaN(value)) {
 					webio.emitter.emit('webioSet', 'analogout', config.number, value);
 				} else {
 					this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.input-failed'));

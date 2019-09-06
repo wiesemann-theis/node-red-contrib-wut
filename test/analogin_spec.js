@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 const helper = require('node-red-node-test-helper');
-const analogInNode = require('../src/analogin.js');
+const testNode = require('../src/analogin.js');
 const webioNode = require('../src/webio.js');
 const { STATUS } = require('../src/util/status');
 
@@ -23,7 +23,7 @@ describe('Analog IN Node', () => {
 
   it('should be loaded', done => {
     const flow = [{ id: 'testNode', type: 'Analog IN', name: 'DEMO Analog IN' }];
-    helper.load(analogInNode, flow, () => {
+    helper.load(testNode, flow, () => {
       helper.getNode('testNode').should.have.property('name', 'DEMO Analog IN');
       done();
     });
@@ -31,7 +31,7 @@ describe('Analog IN Node', () => {
 
   it('should generate output messages when data is received', done => {
     const nodeName = 'Demo Analog IN';
-    helper.load([analogInNode, webioNode], getTestFlow(nodeName, 2), () => {
+    helper.load([testNode, webioNode], getTestFlow(nodeName, 2), () => {
       helper.getNode('helperNode').on('input', msg => {
         msg.should.have.properties({ topic: nodeName, payload: 45.3, unit: '%', clampName: 2 });
         done();
@@ -42,7 +42,7 @@ describe('Analog IN Node', () => {
   });
 
   it('should pass on additional analog clamp data', done => {
-    helper.load([analogInNode, webioNode], getTestFlow(null, 2), () => {
+    helper.load([testNode, webioNode], getTestFlow(null, 2), () => {
       let wasCalled = false;
       helper.getNode('helperNode').on('input', msg => {
         if (!wasCalled) {
@@ -66,7 +66,7 @@ describe('Analog IN Node', () => {
   });
 
   it('should pass on custom clamp labels', done => {
-    helper.load([analogInNode, webioNode], getTestFlow(null, 3), () => {
+    helper.load([testNode, webioNode], getTestFlow(null, 3), () => {
       let msgCount = 0;
       helper.getNode('helperNode').on('input', msg => {
         msg.should.have.properties({ payload: 34.5, unit: '°C' });
@@ -98,7 +98,7 @@ describe('Analog IN Node', () => {
   });
 
   it('should handle invalid webio information properly', done => {
-    helper.load([analogInNode, webioNode], getTestFlow(), () => {
+    helper.load([testNode, webioNode], getTestFlow(), () => {
       const emitter = helper.getNode('webio1').emitter;
 
       let msgCount = 0;
