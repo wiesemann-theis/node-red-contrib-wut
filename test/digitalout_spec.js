@@ -10,7 +10,7 @@ const getTestFlow = (nodeName, clampNumber) => {
   return [
     { id: 'helperNode', type: 'helper' },
     { id: 'testNode', type: 'Digital OUT', name: nodeName, webio: 'webio1', number: (clampNumber || 0), wires: [['helperNode']] },
-    { id: 'webio1', type: 'Web-IO', host: 'foobar', port: '80', protocol: 'http' }
+    { id: 'webio1', type: 'Web-IO', host: 'i n va l i d', port: '80', protocol: 'http' }
   ];
 };
 

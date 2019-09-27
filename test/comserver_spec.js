@@ -18,6 +18,7 @@ describe('Com-Server Node', () => {
     testSocket = null;
     configServer = null;
     tcpServer = net.createServer(socket => { testSocket = socket; });
+    tcpServer.maxConnections = 1; // allow only one connection
     tcpServer.listen(demoPort, demoHost);
     helper.startServer(done);
   });
@@ -38,19 +39,19 @@ describe('Com-Server Node', () => {
   });
 
   it('should be loaded', done => {
-    const flow = [{ id: 'testNode', type: 'Com-Server', name: 'DEMO Com-Server' }];
+    const flow = [{ id: 'n1', type: 'Com-Server', name: 'DEMO Com-Server' }];
     helper.load(testNode, flow, () => {
-      helper.getNode('testNode').should.have.property('name', 'DEMO Com-Server');
+      helper.getNode('n1').should.have.property('name', 'DEMO Com-Server');
       done();
     });
   });
 
   it('should connect to the configured tcp server', done => {
-    const flow = [{ id: 'testNode', type: 'Com-Server', name: null, host: demoHost, port: demoPort }];
+    const flow = [{ id: 'n1', type: 'Com-Server', name: null, host: demoHost, port: demoPort }];
 
     helper.load(testNode, flow, () => {
       setTimeout(() => {
-        const args = helper.getNode('testNode').status.args;
+        const args = helper.getNode('n1').status.args;
         args[args.length - 1][0].text.should.equal('status.connected');
         done();
       }, 10); // short timeout for connection establishment
@@ -61,14 +62,14 @@ describe('Com-Server Node', () => {
     const nodeName = 'Demo Node';
     const testMsg = 'Test, Test, 123, äÖüß!';
     const flow = [
-      { id: 'helperNode', type: 'helper' },
-      { id: 'testNode', type: 'Com-Server', name: nodeName, host: demoHost, port: demoPort, wires: [['helperNode']] }
+      { id: 'h1', type: 'helper' },
+      { id: 'n1', type: 'Com-Server', name: nodeName, host: demoHost, port: demoPort, wires: [['h1']] }
     ];
 
     helper.load(testNode, flow, () => {
       setTimeout(() => {
         if (testSocket) {
-          helper.getNode('helperNode').on('input', msg => {
+          helper.getNode('h1').on('input', msg => {
             msg.should.have.properties({ topic: nodeName, payload: testMsg });
             done();
           });
@@ -83,8 +84,8 @@ describe('Com-Server Node', () => {
   it('should be able to group received data based on a delimiter', done => {
     const nodeName = 'Demo äÖüß!';
     const flow = [
-      { id: 'helperNode', type: 'helper' },
-      { id: 'testNode', type: 'Com-Server', name: nodeName, host: demoHost, port: demoPort, delimiter: '\n', wires: [['helperNode']] }
+      { id: 'h1', type: 'helper' },
+      { id: 'n1', type: 'Com-Server', name: nodeName, host: demoHost, port: demoPort, delimiter: '\n', wires: [['h1']] }
     ];
 
     helper.load(testNode, flow, () => {
@@ -98,8 +99,8 @@ describe('Com-Server Node', () => {
           testSocket.write('p\nqrst');
 
           setTimeout(() => {
-            const testNode = helper.getNode('testNode');
-            const args = testNode.send.args;
+            const n1 = helper.getNode('n1');
+            const args = n1.send.args;
             args.length.should.equal(4); // expect four complete blocks
             args[0][0].should.have.properties({ topic: nodeName, payload: 'abcd' });
             args[1][0].should.have.properties({ topic: nodeName, payload: 'efgh' });
@@ -109,7 +110,7 @@ describe('Com-Server Node', () => {
             testSocket.destroy(); // close connection
 
             setTimeout(() => {
-              const args2 = testNode.send.args;
+              const args2 = n1.send.args;
               args2.length.should.equal(5); // expect one additional message!
               args2[4][0].should.have.properties({ topic: nodeName, payload: 'qrst' });
               done();
@@ -122,11 +123,11 @@ describe('Com-Server Node', () => {
     });
   });
 
-  it('should be able to group received data based on a delimiter', done => {
+  it('should be able to send delimiter itself', done => {
     const nodeName = 'Demo äÖüß!';
     const flow = [
-      { id: 'helperNode', type: 'helper' },
-      { id: 'testNode', type: 'Com-Server', name: nodeName, host: demoHost, port: demoPort, delimiter: '\n', sendDelimiter: true, wires: [['helperNode']] }
+      { id: 'h1', type: 'helper' },
+      { id: 'n1', type: 'Com-Server', name: nodeName, host: demoHost, port: demoPort, delimiter: '\n', sendDelimiter: true, wires: [['h1']] }
     ];
 
     helper.load(testNode, flow, () => {
@@ -137,7 +138,7 @@ describe('Com-Server Node', () => {
           testSocket.write('gh\nijkl');
 
           setTimeout(() => {
-            const args = helper.getNode('testNode').send.args;
+            const args = helper.getNode('n1').send.args;
             args.length.should.equal(2); // expect two complete blocks
             args[0][0].should.have.properties({ topic: nodeName, payload: 'abcd\n' });
             args[1][0].should.have.properties({ topic: nodeName, payload: 'efgh\n' });
@@ -155,14 +156,14 @@ describe('Com-Server Node', () => {
     const nodeName = 'Demo Node';
     const testMsg = 'Test, Test, 123, äÖüß!';
     const flow = [
-      { id: 'helperNode', type: 'helper' },
-      { id: 'testNode', type: 'Com-Server', name: nodeName, host: demoHost, port: demoPort, format: 'buffer', wires: [['helperNode']] }
+      { id: 'h1', type: 'helper' },
+      { id: 'n1', type: 'Com-Server', name: nodeName, host: demoHost, port: demoPort, format: 'buffer', wires: [['h1']] }
     ];
 
     helper.load(testNode, flow, () => {
       setTimeout(() => {
         if (testSocket) {
-          helper.getNode('helperNode').on('input', msg => {
+          helper.getNode('h1').on('input', msg => {
             Buffer.isBuffer(msg.payload).should.equal(true);
             msg.payload.toString().should.equal(testMsg);
             done();
@@ -177,21 +178,27 @@ describe('Com-Server Node', () => {
 
   it('should process input data correctly', done => {
     const testMsg = 'Test, Test, 123, äÖüß!';
-    const flow = [{ id: 'testNode', type: 'Com-Server', name: null, host: demoHost, port: demoPort }];
+    const flow = [{ id: 'n1', type: 'Com-Server', name: null, host: demoHost, port: demoPort }];
 
     helper.load(testNode, flow, () => {
       setTimeout(() => {
         if (testSocket) {
+          const n1 = helper.getNode('n1');
+          let wasCalled = false;
           testSocket.on('data', data => {
             data.toString().should.equal(testMsg);
-            done();
+            if (wasCalled) {
+              done();
+            } else {
+              wasCalled = true;
+              n1.receive({ payload: Buffer.from(testMsg) }); // valid message with Buffer object
+            }
           });
-          const testNode = helper.getNode('testNode');
-          testNode.receive({}); // empty message -> expect warning
-          testNode.warn.callCount.should.equal(1);
+          n1.receive({}); // empty message -> expect warning
+          n1.warn.callCount.should.equal(1);
 
-          testNode.receive({ payload: testMsg }); // valid message -> no warning, but webioSet message
-          testNode.warn.callCount.should.equal(1);
+          n1.receive({ payload: testMsg }); // valid message with string -> no warning, but webioSet message
+          n1.warn.callCount.should.equal(1);
         } else {
           throw new Error('TCP connection not established.');
         }
@@ -200,7 +207,7 @@ describe('Com-Server Node', () => {
   });
 
   it('should automatically reconnect when connection is lost', done => {
-    const flow = [{ id: 'testNode', type: 'Com-Server', name: null, host: demoHost, port: demoPort }];
+    const flow = [{ id: 'n1', type: 'Com-Server', name: null, host: demoHost, port: demoPort }];
 
     helper.settings({ socketReconnectTime: 1 }); // reconnect immediately
     helper.load(testNode, flow, () => {
@@ -208,13 +215,13 @@ describe('Com-Server Node', () => {
         if (testSocket) {
           testSocket.destroy(); // close connection
           setTimeout(() => {
-            const testNode = helper.getNode('testNode');
-            const args = testNode.status.args;
+            const n1 = helper.getNode('n1');
+            const args = n1.status.args;
             args.length.should.equal(5);
             args[args.length - 3][0].text.should.equal('status.disconnected');
             args[args.length - 1][0].text.should.equal('status.connected');
 
-            testNode.error.callCount.should.equal(1);
+            n1.error.callCount.should.equal(1);
 
             done();
           }, 15);  // short timeout for connection re-establishment
@@ -225,134 +232,155 @@ describe('Com-Server Node', () => {
     });
   });
 
-  it('should set up uart parameters', done => {
-    const flow = [{ id: 'testNode', type: 'Com-Server', name: null, host: demoHost, port: demoPort, setuart: true }];
-
-    configServer = net.createServer(socket => {
-      let wasCalled = false;
-      socket.on('data', data => {
-        if (wasCalled) {
-          data[9].should.equal(0xE3); // default parameter baudrate = 3
-          data[10].should.equal(0x03); // default parameters: parity = 0, stopbits = 1, databits = 8
-          data[24].should.equal(0xF1); // default parameter eepromUpdate = false
-          socket.write(data); // just mirror response as confirmation
-
-          setTimeout(() => {
-            helper.getNode('testNode').log.lastCall.args[0].should.equal('logging.config.success');
-            done();
-          }, 5);
-        } else {
-          wasCalled = true;
-          data.toString().should.equal('\u0000');
-          const sendData = [0];
-          for (let i = 0; i < 28; ++i) sendData.push(0xFF);
-          sendData.push(0);
-          socket.write(Buffer.from(sendData));
-        }
-      });
-    });
+  const configServerSetupHelper = (onDataCallback, flow) => {
+    flow = flow || [{ id: 'n1', type: 'Com-Server', name: null, host: demoHost, port: demoPort, setuart: true }];
+    configServer = net.createServer(socket => { socket.on('data', data => onDataCallback(socket, data)); });
     configServer.listen(demoPort + 1094, demoHost);
-
     helper.load(testNode, flow, () => { });
+  };
+
+  it('should set up uart parameters', done => {
+    let wasCalled = false;
+    const onDataCallback = (socket, data) => {
+      if (wasCalled) {
+        data[9].should.equal(0xE3); // default parameter baudrate = 3
+        data[10].should.equal(0x03); // default parameters: parity = 0, stopbits = 1, databits = 8
+        data[24].should.equal(0xF1); // default parameter eepromUpdate = false
+        socket.write(data); // just mirror response as confirmation
+
+        setTimeout(() => {
+          helper.getNode('n1').log.lastCall.args[0].should.equal('logging.config.success');
+          done();
+        }, 5);
+      } else {
+        wasCalled = true;
+        data.toString().should.equal('\u0000');
+        const sendData = [0];
+        for (let i = 0; i < 28; ++i) sendData.push(0xFF);
+        sendData.push(0);
+        socket.write(Buffer.from(sendData));
+      }
+    };
+
+    configServerSetupHelper(onDataCallback);
   });
 
   it('should set up custom uart parameters', done => {
     const flow = [{
-      id: 'testNode', type: 'Com-Server', name: null, host: demoHost, port: demoPort, setuart: true,
+      id: 'n1', type: 'Com-Server', name: null, host: demoHost, port: demoPort, setuart: true,
       baudrate: 12, parity: 5, stopbits: 2, databits: 5, permupdate: true
     }];
 
-    configServer = net.createServer(socket => {
-      let wasCalled = false;
-      socket.on('data', data => {
-        if (wasCalled) {
-          data[9].should.equal(0xEC); // custom parameter baudrate = 12
-          data[10].should.equal(0x2C); // custom parameters: parity = 5, stopbits = 2, databits = 5
-          data[24].should.equal(0xF2); // custom  parameter eepromUpdate = true
-          socket.write(data); // just mirror response as confirmation
+    let wasCalled = false;
+    const onDataCallback = (socket, data) => {
+      if (wasCalled) {
+        data[9].should.equal(0xEC); // custom parameter baudrate = 12
+        data[10].should.equal(0x2C); // custom parameters: parity = 5, stopbits = 2, databits = 5
+        data[24].should.equal(0xF2); // custom  parameter eepromUpdate = true
+        socket.write(data); // just mirror response as confirmation
 
-          setTimeout(() => {
-            helper.getNode('testNode').log.lastCall.args[0].should.equal('logging.config.success');
-            done();
-          }, 5);
-        } else {
-          wasCalled = true;
-          data.toString().should.equal('\u0000');
-          const sendData = [0];
-          for (let i = 0; i < 28; ++i) sendData.push(0xFF);
-          sendData.push(0);
-          socket.write(Buffer.from(sendData));
-        }
-      });
-    });
-    configServer.listen(demoPort + 1094, demoHost);
+        setTimeout(() => {
+          helper.getNode('n1').log.lastCall.args[0].should.equal('logging.config.success');
+          done();
+        }, 5);
+      } else {
+        wasCalled = true;
+        data.toString().should.equal('\u0000');
+        const sendData = [0];
+        for (let i = 0; i < 28; ++i) sendData.push(0xFF);
+        sendData.push(0);
+        socket.write(Buffer.from(sendData));
+      }
+    };
 
-    helper.load(testNode, flow, () => { });
+    configServerSetupHelper(onDataCallback, flow);
   });
 
   it('should warn if seting up uart parameters failed (I)', done => {
-    const flow = [{ id: 'testNode', type: 'Com-Server', name: null, host: demoHost, port: demoPort, setuart: true }];
+    let wasCalled = false;
+    const onDataCallback = (socket, data) => {
+      if (wasCalled) {
+        data[10] += 1; // send wrong reponse
+        socket.write(data);
 
-    configServer = net.createServer(socket => {
-      let wasCalled = false;
-      socket.on('data', data => {
-        if (wasCalled) {
-          data[10] += 1; // send wrong reponse
-          socket.write(data);
+        setTimeout(() => {
+          helper.getNode('n1').warn.lastCall.args[0].should.equal('logging.config.invaliddata');
+          done();
+        }, 10);
+      } else {
+        wasCalled = true;
+        data.toString().should.equal('\u0000');
+        socket.write(Buffer.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 0]));
+      }
+    };
 
-          setTimeout(() => {
-            helper.getNode('testNode').warn.lastCall.args[0].should.equal('logging.config.invaliddata');
-            done();
-          }, 10);
-        } else {
-          wasCalled = true;
-          data.toString().should.equal('\u0000');
-          socket.write(Buffer.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 0]));
-        }
-      });
-    });
-    configServer.listen(demoPort + 1094, demoHost);
-
-    helper.load(testNode, flow, () => { });
+    configServerSetupHelper(onDataCallback);
   });
 
   it('should warn if seting up uart parameters failed (II)', done => {
-    const flow = [{ id: 'testNode', type: 'Com-Server', name: null, host: demoHost, port: demoPort, setuart: true }];
+    const onDataCallback = (socket, data) => {
+      data.toString().should.equal('\u0000');
 
-    configServer = net.createServer(socket => {
-      socket.on('data', data => {
-        data.toString().should.equal('\u0000');
+      socket.write(Buffer.from([1, 2, 3])); // send wrong data format
 
-        socket.write(Buffer.from([1, 2, 3])); // send wrong data format
+      setTimeout(() => {
+        helper.getNode('n1').warn.lastCall.args[0].should.equal('logging.config.unexpecteddata');
+        done();
+      }, 10);
+    };
 
-        setTimeout(() => {
-          helper.getNode('testNode').warn.lastCall.args[0].should.equal('logging.config.unexpecteddata');
-          done();
-        }, 10);
-      });
-    });
-    configServer.listen(demoPort + 1094, demoHost);
-
-    helper.load(testNode, flow, () => { });
+    configServerSetupHelper(onDataCallback);
   });
 
   it('should warn if seting up uart parameters failed (III)', done => {
-    const flow = [{ id: 'testNode', type: 'Com-Server', name: null, host: demoHost, port: demoPort, setuart: true }];
+    const onDataCallback = (socket, data) => {
+      data.toString().should.equal('\u0000');
 
-    configServer = net.createServer(socket => {
-      socket.on('data', data => {
-        data.toString().should.equal('\u0000');
+      socket.write(Buffer.from('PaSSwd?\u0000')); // send password error response
 
-        socket.write(Buffer.from('PaSSwd?\u0000')); // send password error response
+      setTimeout(() => {
+        helper.getNode('n1').log.lastCall.args[0].should.equal('logging.config.passworderror');
+        done();
+      }, 10);
+    };
 
+    configServerSetupHelper(onDataCallback);
+  });
+
+  it('should handle connection rejection', done => {
+    // NOTE: this test does not trigger 'error' event but 'connect' + 'close'
+    const flow = [{ id: 'n1', type: 'Com-Server', name: null, host: demoHost, port: demoPort }];
+
+    // block server with one dummy connection
+    const testClient = net.connect(demoPort, demoHost);
+    testClient.on('connect', () => {
+      helper.load(testNode, flow, () => {
         setTimeout(() => {
-          helper.getNode('testNode').log.lastCall.args[0].should.equal('logging.config.passworderror');
+          helper.getNode('n1').error.args.length.should.be.aboveOrEqual(1);
+          testClient.destroy();
           done();
         }, 10);
       });
     });
+  });
+
+  it('should handle connection rejection (config client)', done => {
+    const flow = [{ id: 'n1', type: 'Com-Server', name: null, host: demoHost, port: demoPort, setuart: true }];
+
+    configServer = net.createServer();
+    configServer.maxConnections = 1; // allow only one connection
     configServer.listen(demoPort + 1094, demoHost);
 
-    helper.load(testNode, flow, () => { });
+    // block server with one dummy connection
+    const testClient = net.connect(demoPort + 1094, demoHost);
+    testClient.on('connect', () => {
+      helper.load(testNode, flow, () => {
+        setTimeout(() => {
+          helper.getNode('n1').error.args.length.should.be.aboveOrEqual(1);
+          testClient.destroy();
+          done();
+        }, 10);
+      });
+    });
   });
 });
