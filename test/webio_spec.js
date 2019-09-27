@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 const helper = require('node-red-node-test-helper');
 const webioNode = require('../src/webio.js');
-const { STATUS } = require('../src/util/status');
 const http = require('http');
 
 helper.init(require.resolve('node-red'));
