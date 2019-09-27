@@ -379,7 +379,7 @@ describe('Com-Server Node', () => {
           helper.getNode('n1').error.args.length.should.be.aboveOrEqual(1);
           testClient.destroy();
           done();
-        }, 10);
+        }, 50);
       });
     });
   });
