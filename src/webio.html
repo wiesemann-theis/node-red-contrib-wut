@@ -1,71 +1,75 @@
 <script type="text/javascript">
-	// load custom styles and scripts (-> this covers all IN/OUT nodes because they are anyhow not valid if the webio node is disabled)
-	if (!window.wut) {
-		window.wut = { initClampConfig: function () { } }; // dummy object to prevent multiple loading requests
-		$.getScript('/wut/files/wut.js').fail(function (jqxhr, settings, exception) { console.error('Loading wut.js failed.', exception); });
-		$.getScript('/wut/files/select2.min.js').fail(function (jqxhr, settings, exception) { console.error('Loading select2.min.js failed.', exception); });
-		$('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', '/wut/files/select2.min.css'));
-		$('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', '/wut/files/wut.css'));
-	}
+	(function () {
+		// load custom styles and scripts (-> this covers all IN/OUT nodes because they are anyhow not valid if the webio node is disabled)
+		if (!window.wut) {
+			window.wut = { initClampConfig: function () { } }; // dummy object to prevent multiple loading requests
+			$.getScript('/wut/files/wut.js').fail(function (jqxhr, settings, exception) { console.error('Loading wut.js failed.', exception); });
+			$.getScript('/wut/files/select2.min.js').fail(function (jqxhr, settings, exception) { console.error('Loading select2.min.js failed.', exception); });
+			$('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', '/wut/files/select2.min.css'));
+			$('head').append($('<link rel="stylesheet" type="text/css" />').attr('href', '/wut/files/wut.css'));
+		}
+	})();
 </script>
 
 <script type="text/javascript">
-	// handle webio-i18n-status messages here (handling it in analogin, analogout,... would be redundant -> and there are no webio-i18n-status messages if there is no webio!)
-	const startTime = new Date();
-	const startupTimer = setInterval(function () {
-		const nodes = RED.nodes.filterNodes({}) || [];
-		if (nodes.length || new Date() - startTime > 10000) {
-			clearInterval(startupTimer);
-			RED.comms.subscribe("wut/webio-i18n-status/#", function (topic, msg) {
-				if (msg && msg.text) {
-					const id = topic.split("/")[2];
-					const node = RED.nodes.node(id);
-					if (node) {
-						const key = msg.text.indexOf('@wiesemann-theis') === 0 ? msg.text : '@wiesemann-theis/node-red-contrib-wut/web-io:' + msg.text;
-						msg.text = node._(key, msg.params || {});
-						node.status = msg;
-						node.dirty = true;
-						RED.view.redraw();
+	(function () {
+		// handle webio-i18n-status messages here (handling it in analogin, analogout,... would be redundant -> and there are no webio-i18n-status messages if there is no webio!)
+		const startTime = new Date();
+		const startupTimer = setInterval(function () {
+			const nodes = RED.nodes.filterNodes({}) || [];
+			if (nodes.length || new Date() - startTime > 10000) {
+				clearInterval(startupTimer);
+				RED.comms.subscribe("wut/webio-i18n-status/#", function (topic, msg) {
+					if (msg && msg.text) {
+						const id = topic.split("/")[2];
+						const node = RED.nodes.node(id);
+						if (node) {
+							const key = msg.text.indexOf('@wiesemann-theis') === 0 ? msg.text : '@wiesemann-theis/node-red-contrib-wut/web-io:' + msg.text;
+							msg.text = node._(key, msg.params || {});
+							node.status = msg;
+							node.dirty = true;
+							RED.view.redraw();
+						} else {
+							console.warn('Invalid webio-i18n-status message received. Cannot find node with id ' + id);
+						}
 					} else {
-						console.warn('Invalid webio-i18n-status message received. Cannot find node with id ' + id);
+						console.warn('Invalid webio-i18n-status message received. Message is empty or invalid:', msg);
 					}
-				} else {
-					console.warn('Invalid webio-i18n-status message received. Message is empty or invalid:', msg);
-				}
-			});
-		}
-	}, 300); // subscribe only when nodes have been loaded (or 10s timeout) -> otherwise retained messages might not be processed correctly because node is not available yet
+				});
+			}
+		}, 300); // subscribe only when nodes have been loaded (or 10s timeout) -> otherwise retained messages might not be processed correctly because node is not available yet
 
-	RED.nodes.registerType('Web-IO', {
-		category: 'config',
-		defaults: {
-			name: { value: '' },
-			protocol: { value: 'http' },
-			host: { value: '', required: true, validate: RED.validators.regex(/^[a-z0-9\-\.]+$/i) },
-			port: { value: 80, required: true, validate: RED.validators.number() },
-			pollingIntervalSec: { value: 1, validate: RED.validators.number() }, // no corresponding input element (yet)
-			portinfoIntervalSec: { value: 60, validate: RED.validators.number() }, // no corresponding input element (yet)
-			manualConfig: { value: false },
-			device: { value: null }
-		},
-		credentials: { password: { type: 'password' } },
-		label: function () {
-			return this.name || this.host + ":" + this.port;
-		},
-		oneditsave: function () {
-			if ($('#node-config-input-manualConfig').is(':checked')) { // delete device parameter on manual configuration
-				$('#node-config-input-device').val('');
+		RED.nodes.registerType('Web-IO', {
+			category: 'config',
+			defaults: {
+				name: { value: '' },
+				protocol: { value: 'http' },
+				host: { value: '', required: true, validate: RED.validators.regex(/^[a-z0-9\-\.]+$/i) },
+				port: { value: 80, required: true, validate: RED.validators.number() },
+				pollingIntervalSec: { value: 1, validate: RED.validators.number() }, // no corresponding input element (yet)
+				portinfoIntervalSec: { value: 60, validate: RED.validators.number() }, // no corresponding input element (yet)
+				manualConfig: { value: false },
+				device: { value: null }
+			},
+			credentials: { password: { type: 'password' } },
+			label: function () {
+				return this.name || this.host + ":" + this.port;
+			},
+			oneditsave: function () {
+				if ($('#node-config-input-manualConfig').is(':checked')) { // delete device parameter on manual configuration
+					$('#node-config-input-device').val('');
+				}
+				this.device = $('#node-config-input-device').val(); // because empty/invalid values are not saved automatically
+			},
+			oneditprepare: function () {
+				if (window.wut && window.wut.initDeviceConfig) {
+					window.wut.initDeviceConfig(this);
+				} else {
+					console.warn('oneditprepare (webio) failed -> probably loading wut.js failed');
+				}
 			}
-			this.device = $('#node-config-input-device').val(); // because empty/invalid values are not saved automatically
-		},
-		oneditprepare: function () {
-			if (window.wut && window.wut.initDeviceConfig) {
-				window.wut.initDeviceConfig(this);
-			} else {
-				console.warn('oneditprepare (webio) failed -> probably loading wut.js failed');
-			}
-		}
-	});
+		});
+	})();
 </script>
 
 <script type="text/x-red" data-template-name="Web-IO">

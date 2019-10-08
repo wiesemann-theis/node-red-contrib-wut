@@ -1,49 +1,51 @@
 <script type="text/javascript">
-	const defaultClampCount = 8;
-	const portinfoType = '6';
+	(function () {
+		const defaultClampCount = 8;
+		const portinfoType = '6';
 
-	let labels = {}; // { webio-id-1: { slot1: label1, slot2: label2,...}, webio-id-2: {...}, ...}
-	let ranges = {}; // { webio-id-1: { slot1: { min: 0, max: 10, unit: 'V' }, slot2: {...}, ...}, webio-id-2: {...}, ...}
+		let labels = {}; // { webio-id-1: { slot1: label1, slot2: label2,...}, webio-id-2: {...}, ...}
+		let ranges = {}; // { webio-id-1: { slot1: { min: 0, max: 10, unit: 'V' }, slot2: {...}, ...}, webio-id-2: {...}, ...}
 
-	RED.comms.subscribe("wut/#", function (topic, msg) {
-		const webioId = topic.split("/")[2];
-		const type = topic.split('/')[1];
-		if (webioId && type && msg) {
-			if (type === 'portlabels') {
-				labels[webioId] = msg[portinfoType];
-			} else if (type === 'portdata') {
-				ranges[webioId] = msg[portinfoType];
-			} // else: other types are not relevant here
-		} else {
-			console.warn('Invalid RED.comms message received', topic, msg);
-		}
-	});
-
-	RED.nodes.registerType('Analog OUT', {
-		category: 'WuT',
-		color: '#009fe3',
-		defaults: {
-			name: { value: '' },
-			webio: { value: '', type: 'Web-IO' },
-			number: { value: 1, required: true, validate: RED.validators.number() }
-		},
-		inputs: 1,
-		outputs: 1,
-		icon: "wutlogo.png",
-		label: function () {
-			return this.name || (labels[this.webio] || [])[this.number] || 'Analog OUT';
-		},
-		labelStyle: function () {
-			return this.name ? 'node_label_italic' : '';
-		},
-		oneditprepare: function () {
-			if (window.wut && window.wut.initClampConfig) {
-				window.wut.initClampConfig(this.number, true, defaultClampCount, labels, ranges);
+		RED.comms.subscribe("wut/#", function (topic, msg) {
+			const webioId = topic.split("/")[2];
+			const type = topic.split('/')[1];
+			if (webioId && type && msg) {
+				if (type === 'portlabels') {
+					labels[webioId] = msg[portinfoType];
+				} else if (type === 'portdata') {
+					ranges[webioId] = msg[portinfoType];
+				} // else: other types are not relevant here
 			} else {
-				console.warn('oneditprepare (analog out) failed -> probably loading wut.js failed');
+				console.warn('Invalid RED.comms message received', topic, msg);
 			}
-		}
-	});
+		});
+
+		RED.nodes.registerType('Analog OUT', {
+			category: 'WuT',
+			color: '#009fe3',
+			defaults: {
+				name: { value: '' },
+				webio: { value: '', type: 'Web-IO' },
+				number: { value: 1, required: true, validate: RED.validators.number() }
+			},
+			inputs: 1,
+			outputs: 1,
+			icon: "wutlogo.png",
+			label: function () {
+				return this.name || (labels[this.webio] || [])[this.number] || 'Analog OUT';
+			},
+			labelStyle: function () {
+				return this.name ? 'node_label_italic' : '';
+			},
+			oneditprepare: function () {
+				if (window.wut && window.wut.initClampConfig) {
+					window.wut.initClampConfig(this.number, true, defaultClampCount, labels, ranges);
+				} else {
+					console.warn('oneditprepare (analog out) failed -> probably loading wut.js failed');
+				}
+			}
+		});
+	})();
 </script>
 
 <script type="text/x-red" data-template-name="Analog OUT">
