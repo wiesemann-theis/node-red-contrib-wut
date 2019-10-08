@@ -7,6 +7,10 @@
 - Example workflows
 - Unit Tests
 
+### Misc
+
+- Minor changes for Node-RED v1.0 compatibility
+
 ## 1.3.0
 
 ### Added

@@ -2,6 +2,7 @@
   * @wiesemann-theis/node-red-contrib-wut (https://github.com/wiesemann-theis/node-red-contrib-wut)
   * Licensed under MIT (https://github.com/wiesemann-theis/node-red-contrib-wut/blob/master/LICENSE)
   */
+
 .wut-flex-container {
     display: inline-flex;
     width: 70%;
@@ -60,4 +61,11 @@
 
 .select2-results>.select2-results__options {
     max-height: 400px !important;
+}
+
+li.select2-results__option {
+    font-size: 14px;
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+    color: #555;
+    line-height: 20px;
 }
