@@ -11,7 +11,9 @@ module.exports = RED => {
 		const sendWebioStatus = (status) => {
 			if (JSON.stringify(status) !== lastStatusString) {
 				lastStatusString = JSON.stringify(status);
-				RED.comms.publish('wut/webio-i18n-status/' + this.id, status, true);
+				const key = status.text.indexOf('@wiesemann-theis') === 0 ? status.text : '@wiesemann-theis/node-red-contrib-wut/web-io:' + status.text;
+				status.text = RED._(key, status.params || {});
+				this.status(status);
 			}
 		}
 

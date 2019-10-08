@@ -92,10 +92,10 @@
             if (ranges) { // e. g. digital devices do not have ranges at all
                 const range = (ranges[lastWebio] || {})[lastNumber];
                 if (range) {
-                    $('#measurement-range-wrapper').removeClass('hidden');
+                    $('#measurement-range-wrapper').show();
                     $('#measurement-range').text(range.min + ' ' + range.unit + ' ... ' + range.max + ' ' + range.unit);
                 } else {
-                    $('#measurement-range-wrapper').addClass('hidden');
+                    $('#measurement-range-wrapper').hide();
                 }
             }
         });
@@ -161,13 +161,13 @@
                 }
             }
             if (device && !isManualConfig) { // set product details
-                $('#device-details-wrapper').removeClass('hidden');
+                $('#device-details-wrapper').show();
                 const productId = device.productId || '';
                 $('#device-details-productid').text(productId).attr('href', 'https://www.wut.de/' + productId);
                 $('#device-details-prodname').text(sanitize(device.prodname));
                 $('#device-details-sysname').text(sanitize(device.sysname));
             } else {
-                $('#device-details-wrapper').addClass('hidden');
+                $('#device-details-wrapper').hide();
             }
         });
 
@@ -179,7 +179,7 @@
             if (!isManualConfig) {
                 $(idPrefix + 'device').trigger('change');
             } else {
-                $('#device-details-wrapper').addClass('hidden');
+                $('#device-details-wrapper').hide();
             }
         });
 
