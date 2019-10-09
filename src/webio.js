@@ -70,7 +70,7 @@ module.exports = RED => {
             if (hasPendingRequest && pendingHttp) {
                 return new Promise((res, rej) => {
                     pendingHttp.catch(() => { }).finally(() => { // when pending request is finished, call method again
-                        setTimeout(() => httpGetHelper(path).then(res, rej), 50); // little timeout to ensure "hasPendingRequest" is reset
+                        setTimeout(() => httpGetHelper(path).then(res, rej), 50); // little timeout to ensure 'hasPendingRequest' is reset
                     });
                 });
             } else {
@@ -95,7 +95,7 @@ module.exports = RED => {
                         });
                     }).on('timeout', function () { this.abort(); }).on('error', err => reject(err));
                 });
-                // second promise object to handle "hasPendingRequest" flag correctly
+                // second promise object to handle 'hasPendingRequest' flag correctly
                 return new Promise((res, rej) => {
                     pendingHttp.then(res, rej).finally(() => { hasPendingRequest = false; });
                 });
@@ -166,14 +166,14 @@ module.exports = RED => {
                 if (JSON.stringify(portdata) !== JSON.stringify(tempData)) {
                     portdata = tempData;
                     node.emitter.emit('webioData', portdata);
-                    RED.comms.publish("wut/portdata/" + node.id, portdata, true); // workaround to publish infos to web client
+                    RED.comms.publish('wut/portdata/' + node.id, portdata, true); // workaround to publish infos to web client
                     node.log(RED._('logging.portinfos.ranges-loaded'));
                 }
 
                 if (JSON.stringify(portlabels) !== JSON.stringify(tempLabels)) {
                     portlabels = tempLabels;
                     node.emitter.emit('webioLabels', portlabels);
-                    RED.comms.publish("wut/portlabels/" + node.id, portlabels, true); // workaround to publish infos to web client
+                    RED.comms.publish('wut/portlabels/' + node.id, portlabels, true); // workaround to publish infos to web client
                     node.log(RED._('logging.portinfos.loaded'));
                 }
             } else {

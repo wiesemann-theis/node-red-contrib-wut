@@ -19,8 +19,8 @@
         const lang = (navigator ? navigator.language || navigator.userLanguage || '' : '').toLowerCase();
         if (lang.slice(0, 2) === 'de') {
             return {
-                errorLoading: function () { return "Die Daten konnten nicht geladen werden." },
-                noResults: function () { return "Keine Übereinstimmungen gefunden" }
+                errorLoading: function () { return 'Die Daten konnten nicht geladen werden.' },
+                noResults: function () { return 'Keine Übereinstimmungen gefunden' }
                 // all other possible messages are currently not used/needed (errorLoading, inputTooLong, inputTooShort, loadingMore, maximumSelected, searching, removeAllItems)
             };
         }
@@ -36,13 +36,13 @@
                 const KEYS = { UP: 38, DOWN: 40 };
                 if (e.keyCode === KEYS.UP || (e.keyCode === KEYS.DOWN && !e.altKey)) {
                     e.preventDefault();
-                    const select = $(this).siblings("select");
+                    const select = $(this).siblings('select');
                     if (select && select.length) {
                         let newValue;
                         if (e.keyCode === KEYS.UP) {
-                            newValue = select.find('option:selected').prevAll(":enabled").first().val();
+                            newValue = select.find('option:selected').prevAll(':enabled').first().val();
                         } else {
-                            newValue = select.find('option:selected').nextAll(":enabled").first().val();
+                            newValue = select.find('option:selected').nextAll(':enabled').first().val();
                         }
 
                         if (newValue) {

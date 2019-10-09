@@ -149,7 +149,7 @@ module.exports = RED => {
             node.status({ fill: 'red', shape: 'dot', text: 'status.invalid-config' });
         }
 
-        node.on("input", (msg) => {
+        node.on('input', (msg) => {
             if (connected && tcpClient && msg.payload) {
                 const data = Buffer.isBuffer(msg.payload) ? msg.payload : Buffer.from('' + msg.payload, config.encoding || 'utf8');
                 tcpClient.write(data);
