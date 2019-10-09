@@ -337,9 +337,9 @@ module.exports = RED => {
         node.emitter.addListener('newListener', event => {
             // emit data again if a new listener is registered with a delay (for whatever reason)
             if (event === 'webioLabels' && Object.keys(portlabels).length) {
-                setTimeout(() => node.emitter.emit('webioLabels', portlabels), 10); // NOTE: immediate response might not be received!
+                setTimeout(() => node.emitter.emit('webioLabels', portlabels), 50); // NOTE: immediate response might not be received!
             } else if (event === 'webioData' && Object.keys(portdata).length) {
-                setTimeout(() => node.emitter.emit('webioData', portdata), 10); // NOTE: immediate response might not be received!
+                setTimeout(() => node.emitter.emit('webioData', portdata), 50); // NOTE: immediate response might not be received!
             } else if (event === 'webioGet' && Object.keys(lastGetData).length) {
                 setTimeout(() => {
                     for (let key in lastGetData) {
@@ -348,7 +348,7 @@ module.exports = RED => {
                             emitGetData(key, data.value, data.status);
                         }
                     }
-                }, 10); // NOTE: immediate response might not be received!
+                }, 50); // NOTE: immediate response might not be received!
             }
         });
 

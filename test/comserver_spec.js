@@ -54,7 +54,7 @@ describe('Com-Server Node', () => {
         const args = helper.getNode('n1').status.args;
         args[args.length - 1][0].text.should.equal('status.connected');
         done();
-      }, 10); // short timeout for connection establishment
+      }, 20); // short timeout for connection establishment
     });
   });
 
@@ -77,7 +77,7 @@ describe('Com-Server Node', () => {
         } else {
           throw new Error('TCP connection not established.');
         }
-      }, 10); // short timeout for connection establishment
+      }, 20); // short timeout for connection establishment
     });
   });
 
@@ -114,12 +114,12 @@ describe('Com-Server Node', () => {
               args2.length.should.equal(5); // expect one additional message!
               args2[4][0].should.have.properties({ topic: nodeName, payload: 'qrst' });
               done();
-            }, 10);
-          }, 5);
+            }, 20);
+          }, 20);
         } else {
           throw new Error('TCP connection not established.');
         }
-      }, 5); // short timeout for connection establishment
+      }, 20); // short timeout for connection establishment
     });
   });
 
@@ -144,11 +144,11 @@ describe('Com-Server Node', () => {
             args[1][0].should.have.properties({ topic: nodeName, payload: 'efgh\n' });
             // NOTE: another message is sent when socket is closed, but that is not tested here
             done();
-          }, 5);
+          }, 20);
         } else {
           throw new Error('TCP connection not established.');
         }
-      }, 5); // short timeout for connection establishment
+      }, 20); // short timeout for connection establishment
     });
   });
 
@@ -172,7 +172,7 @@ describe('Com-Server Node', () => {
         } else {
           throw new Error('TCP connection not established.');
         }
-      }, 10); // short timeout for connection establishment
+      }, 20); // short timeout for connection establishment
     });
   });
 
@@ -202,7 +202,7 @@ describe('Com-Server Node', () => {
         } else {
           throw new Error('TCP connection not established.');
         }
-      }, 10); // short timeout for connection establishment
+      }, 20); // short timeout for connection establishment
     });
   });
 
@@ -224,11 +224,11 @@ describe('Com-Server Node', () => {
             n1.error.callCount.should.equal(1);
 
             done();
-          }, 15);  // short timeout for connection re-establishment
+          }, 20);  // short timeout for connection re-establishment
         } else {
           throw new Error('TCP connection not established.');
         }
-      }, 5); // short timeout for connection establishment
+      }, 20); // short timeout for connection establishment
     });
   });
 
@@ -251,7 +251,7 @@ describe('Com-Server Node', () => {
         setTimeout(() => {
           helper.getNode('n1').log.lastCall.args[0].should.equal('logging.config.success');
           done();
-        }, 5);
+        }, 20);
       } else {
         wasCalled = true;
         data.toString().should.equal('\u0000');
@@ -282,7 +282,7 @@ describe('Com-Server Node', () => {
         setTimeout(() => {
           helper.getNode('n1').log.lastCall.args[0].should.equal('logging.config.success');
           done();
-        }, 5);
+        }, 20);
       } else {
         wasCalled = true;
         data.toString().should.equal('\u0000');
@@ -306,7 +306,7 @@ describe('Com-Server Node', () => {
         setTimeout(() => {
           helper.getNode('n1').warn.lastCall.args[0].should.equal('logging.config.invaliddata');
           done();
-        }, 10);
+        }, 20);
       } else {
         wasCalled = true;
         data.toString().should.equal('\u0000');
@@ -326,7 +326,7 @@ describe('Com-Server Node', () => {
       setTimeout(() => {
         helper.getNode('n1').warn.lastCall.args[0].should.equal('logging.config.unexpecteddata');
         done();
-      }, 10);
+      }, 20);
     };
 
     configServerSetupHelper(onDataCallback);
@@ -341,7 +341,7 @@ describe('Com-Server Node', () => {
       setTimeout(() => {
         helper.getNode('n1').log.lastCall.args[0].should.equal('logging.config.passworderror');
         done();
-      }, 10);
+      }, 20);
     };
 
     configServerSetupHelper(onDataCallback);
@@ -359,7 +359,7 @@ describe('Com-Server Node', () => {
           helper.getNode('n1').error.args.length.should.be.aboveOrEqual(1);
           testClient.destroy();
           done();
-        }, 10);
+        }, 20);
       });
     });
   });
@@ -380,7 +380,7 @@ describe('Com-Server Node', () => {
   //         helper.getNode('n1').error.args.length.should.be.aboveOrEqual(1);
   //         testClient.destroy();
   //         done();
-  //       }, 50);
+  //       }, 20);
   //     });
   //   });
   // });
