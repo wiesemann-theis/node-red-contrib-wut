@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.4.0
+
 ### Added
 
 - Example workflows
