@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Use browser instead of server language for status messages
+
 ## 1.4.0
 
 ### Added
