@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.4.1
+
 ### Added
 
 - locales files for de-DE, de-AT and de-CH (workaround for invalid language fallback behaviour in Node-RED)
