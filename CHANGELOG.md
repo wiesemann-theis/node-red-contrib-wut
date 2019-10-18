@@ -10,6 +10,7 @@
 
 - Use browser instead of server language for status messages
 - demo workflows adjusted
+- improved input value handling (allow/parse certain string inputs)
 - updated dependencies
 
 ## 1.4.0

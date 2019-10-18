@@ -58,6 +58,13 @@ module.exports = RED => {
 
 		this.on('input', msg => {
 			if (isValidClamp) {
+				const stringPayload = (msg.payload + '').toLowerCase();
+				if (['true', '1', 'on', 'an', 'ein'].indexOf(stringPayload) !== -1) {
+					msg.payload = true;
+				}
+				if (['false', '0', 'off', 'aus'].indexOf(stringPayload) !== -1) {
+					msg.payload = false;
+				}
 				if (webio && webio.emitter && typeof msg.payload === 'boolean') {
 					webio.emitter.emit('webioSet', 'digitalout', config.number, msg.payload);
 				} else {

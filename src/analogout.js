@@ -75,6 +75,9 @@ module.exports = RED => {
 
 		this.on('input', msg => {
 			if (isValidClamp) {
+				if (typeof msg.payload === 'string') {
+					msg.payload = msg.payload.replace(',', '.');
+				}
 				const value = parseFloat(msg.payload);
 				if (webio && webio.emitter && !isNaN(value)) {
 					webio.emitter.emit('webioSet', 'analogout', config.number, value);
