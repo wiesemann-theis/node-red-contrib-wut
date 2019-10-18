@@ -9,6 +9,7 @@
 ### Changed
 
 - Use browser instead of server language for status messages
+- updated dependencies
 
 ## 1.4.0
 
