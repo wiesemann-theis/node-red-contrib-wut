@@ -1,0 +1,54 @@
+{
+    "config": {
+        "label": {
+            "host": "Host",
+            "port": "TCP-Port",
+            "format": "Ausgabe",
+            "delimiter": "Trennzeichen",
+            "send-delimiter": "Trennzeichen ausgeben",
+            "encoding": "Kodierung",
+            "name": "Name",
+            "setuart": "UART Parameter konfigurieren",
+            "configport": "Control-Port",
+            "baudrate": "Baudrate",
+            "parity": "Parity",
+            "databits": "Data Bits",
+            "stopbits": "Stop Bits",
+            "password": "Passwort",
+            "permupdate": "EEPROM updaten",
+            "device": "Gerät",
+            "manual-config": "Netzwerkadresse manuell eingeben",
+            "tooltip-discover": "Geräte im Netzwerk suchen",
+            "tooltip-webconfig": "Web-Konfiguration öffnen",
+            "productid": "Artikel-Nr.:",
+            "prodname": "Gerätetyp:",
+            "sysname": "Systemname:"
+        },
+        "format": {
+            "string": "String",
+            "buffer": "Buffer"
+        }
+    },
+    "status": {
+        "connecting": "Verbindung wird hergestellt",
+        "connected": "Verbindung hergestellt",
+        "disconnected": "Verbindung getrennt",
+        "invalid-config": "Ungültige Konfiguration",
+        "unknown": "Unbekannter Status"
+    },
+    "logging": {
+        "config": {
+            "success": "Konfigurationsdaten erfolgreich übermittelt. Trenne Verbindung.",
+            "invaliddata": "Ungültige Konfigurationsdaten empfangen. Übermittlung womöglich fehlgeschlagen. Trenne Verbindung.",
+            "passworderror": "Falsches oder kein Passwort übermittelt. Trenne Verbindung.",
+            "unexpecteddata": "Unerwartete Daten vom Controlport empfangen. Trenne Verbindung."
+        },
+        "connection": {
+            "established": "Verbindung zu __host__:__port__ hergestellt",
+            "lost": "Verbindung zu __host__:__port__ verloren",
+            "force-destroy": "Verbindung(saufbau) zu __host__:__port__ abgebrochen"
+        },
+        "input-failed": "Verarbeitung von Eingabedaten fehlgeschlagen. Vermutlich noch keine Verbindung oder Verbindung verloren.",
+        "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__)."
+    }
+}

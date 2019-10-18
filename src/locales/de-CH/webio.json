@@ -1,0 +1,56 @@
+{
+    "config": {
+        "label": {
+            "name": "Name",
+            "protocol": "Protokoll",
+            "host": "Host",
+            "port": "Port",
+            "password": "Passwort",
+            "webio": "Web-IO",
+            "clamp": "Klemme",
+            "range": "Wertebereich:",
+            "device": "Gerät",
+            "manual-config": "Verbindungsparameter manuell eingeben",
+            "tooltip-discover": "Geräte im Netzwerk suchen",
+            "tooltip-webconfig": "Web-Konfiguration öffnen",
+            "productid": "Artikel-Nr.:",
+            "prodname": "Gerätetyp:",
+            "sysname": "Systemname:"
+        }
+    },
+    "status": {
+        "not-initialized": "Initialisierung...",
+        "not-supported": "Gerätetyp unbekannt",
+        "not-reachable": "Gerät nicht erreichbar",
+        "connectedON": "verbunden: AN",
+        "connectedOFF": "verbunden: AUS",
+        "connected": "verbunden: __value__",
+        "invalid-clamp": "ungültige Klemme",
+        "no-value": "kein Messwert",
+        "pw-required": "Passwort erforderlich",
+        "access-disabled": "Zugriff nicht freigeschaltet",
+        "invalid-config": "Ungültige Konfiguration",
+        "unknown": "Unbekannter Status"
+    },
+    "logging": {
+        "portinfos": {
+            "loaded": "Port-Informationen geladen.",
+            "invalid": "Ungültige Port-Informationen empfangen.",
+            "failed": "Port-Informationen Laden fehlgeschlagen.",
+            "doublet-slot": "Port-Informationen Warnung: Der Slot-Index __slot__ ist für den Typ __type__ mehrfach vergeben.",
+            "invalid-measurement-range": "Port-Informationen Warnung: Ungültiger Messwertebereich für Slot __slot__ (Typ __type__) empfangen (Steigung __gradient__, Minimum __minimum__).",
+            "ranges-loaded": "Analoge Wertebereiche geladen."
+        },
+        "invalid-config": "Ungültige Konfiguration (Host __host__, Port __port__).",
+        "set-failed-invaliddata": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Ungültige Daten empfangen: __data__).",
+        "set-failed-statuscode": "Fehler beim Setzen des Outputs #__number__ auf __value__ (StatusCode: __statusCode__).",
+        "set-failed-error": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Error: __errMsg__)",
+        "invalid-data": "Ungültige Daten empfangen (URL: __url__, Daten: __data__).",
+        "invalid-webio": "Ungültige Web-IO Konfiguration.",
+        "input-failed": "Verarbeitung von Eingabedaten fehlgeschlagen. Vermutlich kein gültiger Payload oder ungültige Web-IO-Konfiguration.",
+        "input-invalid-clamp": "Eingabedaten für ungültige(!) Klemme __index__ ignoriert.",
+        "wut-broadcast-started": "Suche nach W&T Geräten im Netzwerk...",
+        "wut-broadcast-finished": "Suche nach W&T Geräten beendet (__count__ Geräte gefunden).",
+        "wut-broadcast-failed": "Suche nach W&T Geräten fehlgeschlagen: __msg__"
+    }
+}

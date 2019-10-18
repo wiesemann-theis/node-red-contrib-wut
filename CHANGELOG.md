@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- locales files for de-DE, de-AT and de-CH (workaround for invalid language fallback behaviour in Node-RED)
+
 ### Changed
 
 - Use browser instead of server language for status messages
