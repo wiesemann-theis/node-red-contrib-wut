@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- increased robustness for portinfo validation
+
 ## 1.4.1
 
 ### Added

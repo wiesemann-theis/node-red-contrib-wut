@@ -115,12 +115,13 @@ module.exports = RED => {
                 const headerVersion = details[0][0];
                 const headerLength = +details[0][1] || 0;
 
-                isValid = headerLength + 1 === lines.length;
-                const flatInfos = details.reduce((acc, val) => acc.concat(val), []);
+                isValid = headerLength + 1 === lines.length && details[0].length === 2;
+                const relevantLines = details.filter(line => line && +line[5] >= 1);
+                const flatInfos = relevantLines.reduce((acc, val) => acc.concat(val), []);
                 if (headerVersion === '1.0') {
-                    isValid &= flatInfos.length === (2 + headerLength * 12);
+                    isValid &= flatInfos.length === (relevantLines.length * 12);
                 } else if (headerVersion === '1.1') {
-                    isValid &= flatInfos.length === (2 + headerLength * 14);
+                    isValid &= flatInfos.length === (relevantLines.length * 14);
                 } else {
                     isValid = false;
                 }
