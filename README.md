@@ -14,6 +14,7 @@ The package currently provides the following nodes:
 - Com-Server (handle both incoming and outgoing serial communication through [Com-Servers](https://www.wut.de/e-58665-ww-daus-000.php))
 - Digital IN (display input values of [Digital Web-IOs](https://www.wut.de/e-50www-10-inus-000.php))
 - Digital OUT (display and possibly set output values of [Digital Web-IOs](https://www.wut.de/e-50www-10-inus-000.php))
+- Digital COUNTER (display and possibly set counter values of [Digital Web-IOs](https://www.wut.de/e-50www-10-inus-000.php))
 - Analog IN (display input values of [Analog Web-IOs](https://www.wut.de/e-5764w-10-inus-000.php) or [Web-Thermometers](https://www.wut.de/e-5760w-10-inus-000.php))
 - Analog OUT (display and possibly set output values of [Analog Web-IOs](https://www.wut.de/e-5764w-10-inus-000.php))
 

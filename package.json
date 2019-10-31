@@ -18,7 +18,8 @@
 		"test-once": "mocha test/**/*_spec.js --reporter dot",
 		"test-prerelease": "npm run lint & npm run test-once",
 		"test-build": "npm run lint & mocha test/**/*_spec.js --reporter dot --exit",
-		"coverage": "nyc npm run test-once && nyc report --reporter=text-lcov | coveralls"
+		"coverage": "nyc npm run test-once && nyc report --reporter=text-lcov | coveralls",
+		"coverage-local": "nyc npm run test-once && nyc report"
 	},
 	"dependencies": {},
 	"devDependencies": {
@@ -36,6 +37,7 @@
 			"analog-out": "src/analogout.js",
 			"digital-in": "src/digitalin.js",
 			"digital-out": "src/digitalout.js",
+			"digital-counter": "src/digitalcounter.js",
 			"com-server": "src/comserver.js"
 		}
 	},

@@ -4,6 +4,7 @@
 
 ### Added
 
+- added digital counter node
 - made topic (for outgoing messages) configurable
 - made polling interval for Web-IOs configurable
 

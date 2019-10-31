@@ -36,7 +36,7 @@ module.exports = RED => {
             port: +config.port
         });
 
-        const pw = node.credentials.password;
+        const pw = node.credentials.password || '';
         let machineState = MACHINE_STATES.INITIALIZING;
         let portlabels = {};
         let swInterfaces = {};
@@ -185,14 +185,14 @@ module.exports = RED => {
 
         const onAlloutDataReceived = (data) => {
             if (data) {
-                let match = data.match(/input;([0-9a-f]+)/i) || [];
+                let match = data.match(/input;([\da-f]+)/i) || [];
                 sendGetData('input', parseInt(match[1], 16));
 
-                match = data.match(/output;([0-9a-f]+)/i) || [];
+                match = data.match(/output;([\da-f]+)/i) || [];
                 sendGetData('output', parseInt(match[1], 16));
 
-                match = data.match(/counter;([;0-9]+)$/i);
-                const counters = (match && match[1]) ? match[1].split(';').map(s => parseInt(s, 10)) : null;
+                match = data.match(/counter;([;\d\-]+)$/i);
+                const counters = (match && match[1]) ? match[1].split(';') : null;
                 sendGetData('counter', counters);
             } else {
                 node.warn(RED._('logging.invalid-data', { url: '/allout', data }));
@@ -306,21 +306,26 @@ module.exports = RED => {
         stateHandler();
 
         node.emitter.addListener('webioSet', (type, number, value) => {
-            if (type === 'digitalout' || type === 'analogout') {
+            if (number >= 0 && ['digitalout', 'analogout', 'digitalcounter'].indexOf(type) >= 0) {
                 if (type === 'digitalout') {
                     value = !value ? 'OFF' : 'ON';
                 }
-                const path = `/outputaccess${number}?PW=${pw}&State=${value}&`;
+                const path = type === 'digitalcounter' ? `/counterclear${number}?PW=${pw}&Set=${value}&` : `/outputaccess${number}?PW=${pw}&State=${value}&`;
                 httpGetHelper(path).then(data => {
                     let match = null;
                     if (type === 'digitalout') {
-                        match = (data || '').match(/output;([0-9a-f]+)$/i);
+                        match = (data || '').match(/output;([\da-f]+)$/i);
                         if (match) {
                             sendGetData('output', parseInt(match[1], 16)); // confirm successful setting by emitting new value							
                         }
-                    } else {
+                    } else if (type === 'analogout') {
                         match = (data || '').match(/output\d;-?\d+,?\d*\s.*$/i);
                         // don't emit value because it is the IS and not TO-BE value
+                    } else {
+                        match = data === `counter${number};${value}`;
+                        if (match) {
+                            sendGetData(`counter${number}`, value);
+                        }
                     }
 
                     if (!match) {
