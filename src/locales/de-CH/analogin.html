@@ -13,6 +13,9 @@
 		<dt>Unit <span class="property-type">string</span></dt>
 		<dd>Einheit des Eingangswertes</dd>
 		
+		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dd>Optionaler Konfigurationsparameter</dd>
+		
 		<dt class="optional">Min <span class="property-type">number</span></dt>
 		<dd>Minimaler Eingangswert (nur für bestimmte Gerätetypen)</dd>
 		
@@ -34,9 +37,6 @@
 
 	<h3>Konfiguration</h3>
 	<dl class="message-properties">		
-		<dt class="optional">Name <span class="property-type">string</span></dt>
-		<dd>Bezeichnung des Node-RED-Knotens</dd>
-
 		<dt>Web-IO <span class="property-type">select</span></dt>
 		<dd>
 			Auswahl des (analogen) Web-IOs oder Web-Thermometer, ggf. Konfiguration der Verbindungsparameter
@@ -44,6 +44,12 @@
 			
 		<dt>Klemme <span class="property-type">select</span></dt>
 		<dd>Auswahl der Eingangs-Klemme</dd>
+		
+		<dt class="optional">Name <span class="property-type">string</span></dt>
+		<dd>Bezeichnung des Node-RED-Knotens</dd>
+		
+		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dd>Topic für ausgehende Nachrichten</dd>
 	</dl>
 
 	<h3>Links</h3>

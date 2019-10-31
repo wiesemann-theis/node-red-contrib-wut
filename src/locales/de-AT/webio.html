@@ -13,9 +13,6 @@
 
 	<h3>Konfiguration</h3>
 	<dl class="message-properties">		
-		<dt class="optional">Name <span class="property-type">string</span></dt>
-		<dd>Bezeichnung des Node-RED-Knotens</dd>
-
 		<dt>Gerät <span class="property-type">select</span></dt>
 		<dd>Liste aller Web-IOs im Netzwerk</dd>
 		<dd>Neuen Netzwerk-Scan starten</dd>
@@ -32,6 +29,12 @@
 		
 		<dt class="optional">Passwort <span class="property-type">password</span></dt>
 		<dd>Passwort für HTTP(s)-Zugriff (Standard: "")</dd>
+			
+		<dt>Intervall (s) <span class="property-type">number</span></dt>
+		<dd>Intervall in Sekunden, in dem der Zustand des Web-IOs abgefragt bzw. aktualisiert werden soll</dd>
+		
+		<dt class="optional">Name <span class="property-type">string</span></dt>
+		<dd>Bezeichnung des Node-RED-Knotens</dd>
 	</dl>
 
 	<h3>Links</h3>

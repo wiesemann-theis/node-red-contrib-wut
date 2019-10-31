@@ -12,6 +12,9 @@
 	<dl class="message-properties">
 		<dt>Payload <span class="property-type">string | buffer</span></dt>
 		<dd>Serielle Daten, die vom Com-Server empfangen wurden</dd>
+		
+		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dd>Optionaler Konfigurationsparameter</dd>
 	</dl>
 
 	<h3>Details</h3>
@@ -55,9 +58,6 @@
 
 	<h3>Konfiguration</h3>
 	<dl class="message-properties">		
-		<dt class="optional">Name <span class="property-type">string</span></dt>
-		<dd>Bezeichnung des Node-RED-Knotens</dd>
-
 		<dt>Gerät <span class="property-type">string</span></dt>
 		<dd>Adresse / Hostname des Com-Servers (Auswahl aus Liste nach Netzwerk-Scan oder manuelle Konfiguration)</dd>
 			
@@ -106,5 +106,11 @@
 				und bleiben auch bei einem Neustart des Com-Servers erhalten.
 			</dd> 
 		-->
+				
+		<dt class="optional">Name <span class="property-type">string</span></dt>
+		<dd>Bezeichnung des Node-RED-Knotens</dd>
+		
+		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dd>Topic für ausgehende Nachrichten</dd>
 	</dl>
 </script>

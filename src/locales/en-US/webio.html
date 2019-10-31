@@ -13,9 +13,6 @@
 
 	<h3>Configuration</h3>
 	<dl class="message-properties">		
-		<dt class="optional">Name <span class="property-type">string</span></dt>
-		<dd>Custom name for the Node-RED node</dd>
-
 		<dt>Device <span class="property-type">select</span></dt>
 		<dd>List of all available Web-IOs</dd>
 		<dd>Trigger new network scan</dd>
@@ -32,6 +29,12 @@
 		
 		<dt class="optional">Password <span class="property-type">password</span></dt>
 		<dd>Password for http(s) access (default: "")</dd>
+			
+		<dt>Interval (s) <span class="property-type">number</span></dt>
+		<dd>Interval (in seconds) in which the state of the Web-IO is queried / polled.</dd>
+		
+		<dt class="optional">Name <span class="property-type">string</span></dt>
+		<dd>Custom name for the Node-RED node</dd>
 	</dl>
 
 	<h3>References</h3>
