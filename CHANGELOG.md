@@ -12,6 +12,7 @@
 - custom node icons
 - increased robustness for portinfo validation
 - increased max listeners limit for event emitter
+- example workflows adjusted
 
 ## 1.4.1
 
