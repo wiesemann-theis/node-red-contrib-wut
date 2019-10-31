@@ -16,7 +16,8 @@
             "tooltip-webconfig": "open web config application",
             "productid": "Article no.:",
             "prodname": "Device type:",
-            "sysname": "System name:"
+            "sysname": "System name:",
+            "poll-interval": "Interval (s)"
         }
     },
     "status": {

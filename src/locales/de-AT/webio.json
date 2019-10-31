@@ -16,7 +16,8 @@
             "tooltip-webconfig": "Web-Konfiguration öffnen",
             "productid": "Artikel-Nr.:",
             "prodname": "Gerätetyp:",
-            "sysname": "Systemname:"
+            "sysname": "Systemname:",
+            "poll-interval": "Intervall (s)"
         }
     },
     "status": {

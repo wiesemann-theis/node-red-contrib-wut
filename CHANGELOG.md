@@ -4,7 +4,8 @@
 
 ### Added
 
-- made topic a configurable property
+- made topic (for outgoing messages) configurable
+- made polling interval for Web-IOs configurable
 
 ### Changed
 

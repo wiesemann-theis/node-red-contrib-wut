@@ -73,10 +73,6 @@
 
 <script type="text/x-red" data-template-name="Web-IO">
 	<div class="form-row">
-        <label for="node-config-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="config.label.name"></span></label>
-		<input type="text" id="node-config-input-name" data-i18n="[placeholder]config.label.name" />
-	</div>
-	<div class="form-row">
 		<label for="node-config-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
 		<div class="wut-flex-container">
 			<select class="wut-select2" id="node-config-input-device"></select>
@@ -110,12 +106,24 @@
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-port"><i class="fa fa-fw fa-dot-circle-o"></i> <span data-i18n="config.label.port"></label>
-		<input type="text" id="node-config-input-port" class="manual-config-input" data-i18n="[placeholder]config.label.port" />
+		<input type="number" min="1" max="65535" id="node-config-input-port" class="manual-config-input" data-i18n="[placeholder]config.label.port" />
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-password"><i class="fa fa-fw fa-unlock-alt"></i> <span data-i18n="config.label.password"></label>
 		<input type="password" id="node-config-input-password" data-i18n="[placeholder]config.label.password" />
 	</div>
+	<div class="form-row">
+		<label for="node-config-input-pollingIntervalSec"><i class="fa fa-fw fa-clock-o"></i> <span data-i18n="config.label.poll-interval"></label>
+		<input type="number" min="1" max="86400" id="node-config-input-pollingIntervalSec" data-i18n="[placeholder]config.label.poll-interval" />
+	</div>
+	
+	<br />
+	
+	<div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="config.label.name"></span></label>
+		<input type="text" id="node-config-input-name" data-i18n="[placeholder]config.label.name" />
+	</div>
+
 	<div id="device-details-wrapper">
 		<hr/>
 		<div class="form-row">
