@@ -44,6 +44,7 @@ module.exports = RED => {
         let isActive = true;
 
         node.emitter = new EventEmitter();
+        node.emitter.setMaxListeners(128);
 
         // Helper functions
         let lastGetData = {};
