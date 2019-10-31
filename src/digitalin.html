@@ -20,6 +20,7 @@
 			color: '#009fe3',
 			defaults: {
 				name: { value: '' },
+				topic: { value: '' },
 				webio: { value: '', type: 'Web-IO' },
 				number: { value: 0, required: true, validate: RED.validators.number() }
 			},
@@ -42,11 +43,7 @@
 	})();
 </script>
 
-<script type="text/x-red" data-template-name="Digital IN">
-	<div class="form-row">
-		<label for="node-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.name"></span></label>
-		<input type="text" id="node-input-name" data-i18n="[placeholder]@wiesemann-theis/node-red-contrib-wut/web-io:config.label.name" />
-	</div>
+<script type="text/x-red" data-template-name="Digital IN">	
 	<div class="form-row">
 		<label for="node-input-webio"><i class="fa fa-fw fa-globe"></i> <span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.webio"></span></label>
 		<input class="wut-select2" type="text" id="node-input-webio" />
@@ -54,5 +51,16 @@
 	<div class="form-row">
 		<label for="node-input-number"><i class="fa fa-fw fa-dot-circle-o"></i> <span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.clamp"></span></label>
 		<select class="wut-select2" id="node-input-number" style="width: 70%;"></select>
+	</div>
+
+	<hr/>
+
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.name"></span></label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]@wiesemann-theis/node-red-contrib-wut/web-io:config.label.name" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-topic"><i class="fa fa-fw fa-envelope-o"></i> <span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.topic"></span></label>
+		<input type="text" id="node-input-topic" data-i18n="[placeholder]@wiesemann-theis/node-red-contrib-wut/web-io:config.label.topic" />
 	</div>
 </script>

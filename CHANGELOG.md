@@ -2,9 +2,15 @@
 
 ## Unreleased
 
+### Added
+
+- made topic a configurable property
+
 ### Changed
 
+- custom node icons
 - increased robustness for portinfo validation
+- increased max listeners limit for event emitter
 
 ## 1.4.1
 

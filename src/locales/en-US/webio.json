@@ -2,6 +2,7 @@
     "config": {
         "label": {
             "name": "Name",
+            "topic": "Topic",
             "protocol": "Protocol",
             "host": "Host",
             "port": "Port",

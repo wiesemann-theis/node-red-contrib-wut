@@ -11,7 +11,7 @@ module.exports = RED => {
 
         const host = config.host;
         const port = +config.port;
-        const topic = config.name || 'Com-Server';
+        const topic = config.topic || config.name || 'Com-Server';
         const format = config.format || 'string';
         const delimiter = (config.delimiter || '').replace('\\n', '\n').replace('\\r', '\r');
 

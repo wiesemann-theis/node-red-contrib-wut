@@ -8,6 +8,7 @@
             "send-delimiter": "Trennzeichen ausgeben",
             "encoding": "Kodierung",
             "name": "Name",
+            "topic": "Topic",
             "setuart": "UART Parameter konfigurieren",
             "configport": "Control-Port",
             "baudrate": "Baudrate",

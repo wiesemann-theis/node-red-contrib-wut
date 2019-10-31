@@ -8,6 +8,7 @@
             "send-delimiter": "send delimiter",
             "encoding": "Encoding",
             "name": "Name",
+            "topic": "Topic",
             "setuart": "configure UART parameters",
             "configport": "Control Port",
             "baudrate": "Baudrate",

@@ -15,6 +15,7 @@
         color: '#009fe3',
         defaults: {
             name: { value: '' },
+            topic: { value: '' },
             host: { value: '', required: true, validate: RED.validators.regex(/^[a-z0-9\-\.]+$/i) },
             port: { value: 8000, required: true, validate: RED.validators.number() },
             format: { value: 'string' },
@@ -74,19 +75,14 @@
 </script>
 
 <script type="text/x-red" data-template-name="Com-Server">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="config.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]config.label.name" />
-    </div>
-
 	<div class="form-row">
-		<label for="node-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
-		<div class="wut-flex-container">
-			<select class="wut-select2" id="node-input-device"></select>
-			<button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
-				<i class="fa fa-fw fa-search"></i>
-			</button>
-		</div>
+        <label for="node-input-device"><i class="fa fa-fw fa-globe"></i> <span data-i18n="config.label.device"></label>
+        <div class="wut-flex-container">
+            <select class="wut-select2" id="node-input-device"></select>
+            <button id="btn-discover-devices" class="editor-button" data-i18n="[title]config.label.tooltip-discover">
+                <i class="fa fa-fw fa-search"></i>
+            </button>
+        </div>
 	</div>
     <div class="form-row">
 		<label>&nbsp;</label>
@@ -223,6 +219,18 @@
             </label>
         </div>
     </div>
+
+	<hr/>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="config.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]config.label.name" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-fw fa-envelope-o"></i> <span data-i18n="config.label.topic"></span></label>
+        <input type="text" id="node-input-topic" data-i18n="[placeholder]config.label.topic" />
+    </div>
+
 	<div id="device-details-wrapper">
         <hr/>
 		<div class="form-row">
@@ -242,5 +250,5 @@
 				</div>
 			</div>
 		</div>
-	</div>
+    </div>    
 </script>

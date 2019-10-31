@@ -2,7 +2,7 @@ const { STATUS, STATUS_MSG } = require('./util/status');
 
 module.exports = RED => {
 	RED.nodes.registerType('Analog IN', function (config) {
-		const topic = config.name || 'Analog IN';
+		const topic = config.topic || config.name || 'Analog IN';
 		const portinfoType = '1';
 
 		RED.nodes.createNode(this, config);

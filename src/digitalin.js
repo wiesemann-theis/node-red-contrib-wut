@@ -2,7 +2,7 @@ const { STATUS, STATUS_MSG } = require('./util/status');
 
 module.exports = RED => {
 	RED.nodes.registerType('Digital IN', function (config) {
-		const topic = config.name || 'Digital IN';
+		const topic = config.topic || config.name || 'Digital IN';
 		const portinfoType = '2';
 
 		RED.nodes.createNode(this, config);
