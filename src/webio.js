@@ -191,7 +191,7 @@ module.exports = RED => {
                 match = data.match(/output;([\da-f]+)/i) || [];
                 sendGetData('output', parseInt(match[1], 16));
 
-                match = data.match(/counter;([;\d\-]+)$/i);
+                match = data.match(/counter;([;\d\-,]+)$/i);
                 const counters = (match && match[1]) ? match[1].split(';') : null;
                 sendGetData('counter', counters);
             } else {
@@ -319,12 +319,12 @@ module.exports = RED => {
                             sendGetData('output', parseInt(match[1], 16)); // confirm successful setting by emitting new value							
                         }
                     } else if (type === 'analogout') {
-                        match = (data || '').match(/output\d;-?\d+,?\d*\s.*$/i);
+                        match = (data || '').match(/output\d+;-?\d+,?\d*\s?.*$/i);
                         // don't emit value because it is the IS and not TO-BE value
                     } else {
-                        match = data === `counter${number};${value}`;
+                        match = (data || '').match(/counter\d+;(-?\d+,?\d*\s?.*)$/i);
                         if (match) {
-                            sendGetData(`counter${number}`, value);
+                            sendGetData(`counter${number}`, match[1]);
                         }
                     }
 

@@ -46,7 +46,7 @@
 			protocol: { value: 'http' },
 			host: { value: '', required: true, validate: RED.validators.regex(/^[a-z0-9\-\.]+$/i) },
 			port: { value: 80, required: true, validate: RED.validators.number() },
-			pollingIntervalSec: { value: 1, validate: RED.validators.number() }, // no corresponding input element (yet)
+			pollingIntervalSec: { value: 1, validate: RED.validators.number() },
 			portinfoIntervalSec: { value: 60, validate: RED.validators.number() }, // no corresponding input element (yet)
 			manualConfig: { value: false },
 			device: { value: null }

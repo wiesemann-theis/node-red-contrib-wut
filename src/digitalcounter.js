@@ -19,6 +19,9 @@ module.exports = RED => {
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
 			let value;
+			let lastValue = null;
+			let unit = '';
+			let diff = null;
 			let clampLabels = [];
 
 			sendWebioStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
@@ -27,7 +30,7 @@ module.exports = RED => {
 				clampLabels = labels[portinfoType] || {};
 				isValidClamp = !!clampLabels[config.number];
 				if (value !== undefined) {
-					this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
+					this.send({ topic, payload: value, unit, diff, clampName: clampLabels[config.number] || config.number });
 				}
 			});
 
@@ -39,18 +42,33 @@ module.exports = RED => {
 					type = 'counter';
 				}
 				if (type === 'counter') {
+					console.log('foobar', values)
 					let tmpValue = null;
 
-					if (status === STATUS.OK && isValidClamp && values && Number.isInteger(+values[config.number])) {
-						tmpValue = +values[config.number];
-						sendWebioStatus({ fill: 'green', shape: 'dot', text: 'status.connected', params: { value: values[config.number] } });
+					if (status === STATUS.OK && isValidClamp && values && values[config.number] !== undefined) {
+						let match = (values[config.number] || '').match(/^(-?\d+,?\d*).*$/);
+						if (match !== null) {
+							tmpValue = parseFloat(match[1].replace(',', '.'));
+							sendWebioStatus({ fill: 'green', shape: 'dot', text: 'status.connected', params: { value: values[config.number] } });
+						} else {
+							sendWebioStatus({ fill: 'red', shape: 'dot', text: 'status.no-value' });
+						}
+
+						match = (values[config.number] || '').match(/^-?\d+,?\d*\s?(.*)$/);
+						unit = match !== null ? match[1] : '';
 					} else {
 						sendWebioStatus(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
 					}
 
 					if (tmpValue !== value) {
 						value = tmpValue;
-						this.send({ topic: topic, payload: value, clampName: clampLabels[config.number] || config.number });
+						if (value !== null && !isNaN(value)) {
+							if (lastValue !== null) {
+								diff = value - lastValue;
+							}
+							lastValue = value;
+						}
+						this.send({ topic, payload: value, unit, diff, clampName: clampLabels[config.number] || config.number });
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
 					sendWebioStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
@@ -63,9 +81,12 @@ module.exports = RED => {
 
 		this.on('input', msg => {
 			if (isValidClamp) {
-				const numericPayload = +msg.payload;
-				if (webio && webio.emitter && Number.isInteger(numericPayload)) {
-					webio.emitter.emit('webioSet', 'digitalcounter', config.number, numericPayload);
+				if (typeof msg.payload === 'string') {
+					msg.payload = msg.payload.replace(',', '.');
+				}
+				const value = parseFloat(msg.payload);
+				if (webio && webio.emitter && !isNaN(value)) {
+					webio.emitter.emit('webioSet', 'digitalcounter', config.number, value);
 				} else {
 					this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.input-failed'));
 				}

@@ -44,7 +44,7 @@ module.exports = RED => {
 					let tmpValue = null;
 
 					if (status === STATUS.OK && isValidClamp && values && values[config.number - 1] !== undefined) {
-						let match = values[config.number - 1].match(/^(-?\d+,?\d*).*$/);
+						let match = (values[config.number - 1] || '').match(/^(-?\d+,?\d*).*$/);
 						if (match !== null) {
 							tmpValue = parseFloat(match[1].replace(',', '.'));
 							sendWebioStatus({ fill: 'green', shape: 'dot', text: 'status.connected', params: { value: values[config.number - 1] } });
@@ -52,7 +52,7 @@ module.exports = RED => {
 							sendWebioStatus({ fill: 'red', shape: 'dot', text: 'status.no-value' });
 						}
 
-						match = values[config.number - 1].match(/^[-,\d]+\s?(.*)$/);
+						match = (values[config.number - 1] || '').match(/^-?\d+,?\d*\s?(.*)$/);
 						unit = match !== null ? match[1] : '';
 					} else {
 						sendWebioStatus(STATUS_MSG[status] || STATUS_MSG[STATUS.UNKNOWN]);
