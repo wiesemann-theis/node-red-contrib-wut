@@ -47,6 +47,7 @@
         "set-failed-invaliddata": "Setting output #__number__ to __value__ failed (invalid response data: __data__).",
         "set-failed-statuscode": "Setting output #__number__ to __value__ failed with statusCode __statusCode__.",
         "set-failed-error": "Setting output #__number__ to __value__ failed with error: __errMsg__",
+        "set-failed-invalidinput": "Setting output #__number__ to __value__ failed (invalid input data for type __type__).",
         "invalid-data": "Invalid data received (URL: __url__, Data: __data__).",
         "invalid-webio": "Invalid Web-IO configuration.",
         "input-failed": "Processing input data failed. Probably invalid payload or invalid Web-IO / clamp configuration.",

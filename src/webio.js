@@ -338,6 +338,8 @@ module.exports = RED => {
                         node.error(RED._('logging.set-failed-error', { number, value, errMsg: err.message }));
                     }
                 });
+            } else {
+                node.warn(RED._('logging.set-failed-invalidinput', { type, number, value }));
             }
         });
 

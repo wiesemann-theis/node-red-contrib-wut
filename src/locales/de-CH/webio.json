@@ -47,6 +47,7 @@
         "set-failed-invaliddata": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Ungültige Daten empfangen: __data__).",
         "set-failed-statuscode": "Fehler beim Setzen des Outputs #__number__ auf __value__ (StatusCode: __statusCode__).",
         "set-failed-error": "Fehler beim Setzen des Outputs #__number__ auf __value__ (Error: __errMsg__)",
+        "set-failed-invalidinput": "Fehler beim Setzen des Outputs #__number__ auf __value__ (ungültige Eingabedaten für Typ __type__).",
         "invalid-data": "Ungültige Daten empfangen (URL: __url__, Daten: __data__).",
         "invalid-webio": "Ungültige Web-IO Konfiguration.",
         "input-failed": "Verarbeitung von Eingabedaten fehlgeschlagen. Vermutlich kein gültiger Payload oder ungültige Web-IO-Konfiguration.",
