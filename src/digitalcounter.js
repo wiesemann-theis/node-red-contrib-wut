@@ -1,8 +1,8 @@
 const { STATUS, STATUS_MSG } = require('./util/status');
 
 module.exports = RED => {
-	RED.nodes.registerType('Digital COUNTER', function (config) {
-		const topic = config.topic || config.name || 'Digital COUNTER';
+	RED.nodes.registerType('Counter', function (config) {
+		const topic = config.topic || config.name || 'Counter';
 		const portinfoType = '4';
 
 		RED.nodes.createNode(this, config);
