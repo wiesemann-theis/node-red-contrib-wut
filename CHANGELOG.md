@@ -7,6 +7,7 @@
 - added digital counter node
 - made topic (for outgoing messages) configurable
 - made polling interval for Web-IOs configurable
+- dynamically get portinfos on local config changes (not only on deploy!)
 
 ### Changed
 

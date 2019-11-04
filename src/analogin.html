@@ -12,8 +12,10 @@
 			if (webioId && type && msg) {
 				if (type === 'portlabels') {
 					labels[webioId] = msg[portinfoType];
+					$('#node-input-webio').trigger('change');
 				} else if (type === 'portdata') {
 					ranges[webioId] = msg[portinfoType];
+					$('#node-input-number').trigger('change');
 				} // else: other types are not relevant here
 			} else {
 				console.warn('Invalid RED.comms message received', topic, msg);

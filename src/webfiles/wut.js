@@ -58,15 +58,17 @@
 
     function initClampConfig(clampNumber, isAnalog, defaultClampCount, labels, ranges) {
         let lastWebio = null;
+        let lastLabelData = '';
         let lastNumber = clampNumber;
 
         $('#node-input-webio').change(function () {
             const tempWebio = $(this).val();
-            if (tempWebio !== lastWebio) {
+            let labelData = labels[tempWebio];
+            if (tempWebio !== lastWebio || JSON.stringify(labelData) !== lastLabelData) {
                 lastWebio = tempWebio;
+                lastLabelData = JSON.stringify(labelData);
                 $('#node-input-number').children('option').remove(); // remove all clamp options
 
-                let labelData = labels[tempWebio];
                 if (!labelData) { // generate default data
                     labelData = {};
                     const startIndex = isAnalog ? 1 : 0; // NOTE: analog clamp numbers are 1 based (digital are 0 based!)

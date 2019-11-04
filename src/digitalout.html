@@ -11,6 +11,7 @@
 			const webioId = topic.split("/")[2];
 			if (webioId && msg) {
 				labels[webioId] = msg[portinfoType] || msg[portinfoType2]; // only use portinfoType2 if there is no data for portinfoType
+				$('#node-input-webio').trigger('change');
 			} else {
 				console.warn('Invalid portlabels message received', topic, msg);
 			}

@@ -60,6 +60,12 @@
 				$('#node-config-input-device').val('');
 			}
 			this.device = $('#node-config-input-device').val(); // because empty/invalid values are not saved automatically
+
+			$.ajax({ // trigger portinfo and portdata update
+				type: "PUT",
+				url: '/wut/portinfo/' + this.id,
+				data: { protocol: $('#node-config-input-protocol').val(), host: $('#node-config-input-host').val(), port: $('#node-config-input-port').val() }
+			});
 		},
 		oneditprepare: function () {
 			if (window.wut && window.wut.initDeviceConfig) {
