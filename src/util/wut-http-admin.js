@@ -48,33 +48,40 @@ const init = RED => {
             const protocol = req.body.protocol || 'http';
             const host = req.body.host || '';
             const port = req.body.port || 80;
-            const url = `${protocol}://${host}:${port}/portinfo`;
 
-            const http = require(protocol);
-            http.get(url, response => {
-                response.setEncoding(JSON.stringify(response.headers).includes('utf-8') ? 'utf-8' : 'latin1');
-
-                let data = '';
-                response.on('data', chunk => data += chunk);
-
-                response.on('end', () => {
-                    let portlabels = {}; // if invalid or no portinfos received -> delete old portlabel information to avoid inconsistent states
-                    let portdata = {}; // if invalid or no portinfos received -> delete old portdata information to avoid inconsistent states
-                    if (response.statusCode === 200) {
-                        const parsedData = parsePortinfos(data, RED, nodeId);
-                        portlabels = parsedData ? (parsedData.portLabels || {}) : {};
-                        portdata = parsedData ? (parsedData.portData || {}) : {};
-                    } else if (response.statusCode !== 404) {
-                        node.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.portinfos.failed'));
-                    }
-                    RED.comms.publish('wut/portlabels/' + nodeId, portlabels); // workaround to publish infos to web client
-                    RED.comms.publish('wut/portdata/' + nodeId, portdata); // workaround to publish infos to web client
-                });
-            }).on('error', err => {
+            const onerror = () => {
                 node.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.portinfos.failed'));
                 RED.comms.publish('wut/portlabels/' + nodeId, {}); // delete old portlabel information to avoid inconsistent states
                 RED.comms.publish('wut/portdata/' + nodeId, {}); // delete old portdata information to avoid inconsistent states
-            });
+            }
+
+            if (host) {
+                const url = `${protocol}://${host}:${port}/portinfo`;
+
+                const http = require(protocol);
+                http.get(url, response => {
+                    response.setEncoding(JSON.stringify(response.headers).includes('utf-8') ? 'utf-8' : 'latin1');
+
+                    let data = '';
+                    response.on('data', chunk => data += chunk);
+
+                    response.on('end', () => {
+                        let portlabels = {}; // if invalid or no portinfos received -> delete old portlabel information to avoid inconsistent states
+                        let portdata = {}; // if invalid or no portinfos received -> delete old portdata information to avoid inconsistent states
+                        if (response.statusCode === 200) {
+                            const parsedData = parsePortinfos(data, RED, nodeId);
+                            portlabels = parsedData ? (parsedData.portLabels || {}) : {};
+                            portdata = parsedData ? (parsedData.portData || {}) : {};
+                        } else if (response.statusCode !== 404) {
+                            node.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.portinfos.failed'));
+                        }
+                        RED.comms.publish('wut/portlabels/' + nodeId, portlabels); // workaround to publish infos to web client
+                        RED.comms.publish('wut/portdata/' + nodeId, portdata); // workaround to publish infos to web client
+                    });
+                }).on('error', err => onerror());
+            } else {
+                onerror();
+            }
 
             res.sendStatus(200); // portinfo request was triggered -> therefore, this put request was successful (regardless of the portinfo request result)
         });

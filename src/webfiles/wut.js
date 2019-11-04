@@ -2,7 +2,7 @@
   * @wiesemann-theis/node-red-contrib-wut (https://github.com/wiesemann-theis/node-red-contrib-wut)
   * Licensed under MIT (https://github.com/wiesemann-theis/node-red-contrib-wut/blob/master/LICENSE)
   */
-(function ($, window) {
+(function ($, window, RED) {
     /* eslint-env browser, jquery */ // flags to enable correct linting handling
     let allDevices = {};
 
@@ -105,6 +105,16 @@
         if ($(window).select2) {
             addSelect2EventHandler();
             $('select.wut-select2,#node-input-webio').select2({ language: getI18nMessages() });
+        }
+
+        const webioId = $('#node-input-webio').val();
+        const webio = RED.nodes.node(webioId);
+        if (webio && !labels[webioId]) { // trigger portinfo and portdata update if there is no data available yet
+            $.ajax({
+                type: "PUT",
+                url: '/wut/portinfo/' + webioId,
+                data: { protocol: webio.protocol, host: webio.host, port: webio.port }
+            });
         }
     }
 
@@ -243,4 +253,4 @@
     $(document).ready(function () {
         window.wut = { initClampConfig: initClampConfig, initDeviceConfig: initDeviceConfig };
     });
-})(jQuery, window);
+})(jQuery, window, RED);
