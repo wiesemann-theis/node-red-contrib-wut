@@ -42,7 +42,6 @@ module.exports = RED => {
 					type = 'counter';
 				}
 				if (type === 'counter') {
-					console.log('foobar', values)
 					let tmpValue = null;
 
 					if (status === STATUS.OK && isValidClamp && values && values[config.number] !== undefined) {

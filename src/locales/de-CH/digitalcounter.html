@@ -1,0 +1,65 @@
+<script type="text/x-red" data-help-name="Digital COUNTER">
+	<p>Anbindung eines Counters eines <a href="https://www.wut.de/e-50www-10-inde-000.php" target="_blank">Wiesemann & Theis Web-IOs</a> an Node-RED.</p>
+	<p>Wenn sich der Zählwert ändert, wird eine entsprechende Node-RED-Meldung ausgegeben.</p>
+	<p>Außerdem kann der Wert über eingehende Meldungen (mit einem numerischen Payload) aktiv gesetzt werden.</p>
+	
+	<h3>Inputs</h3>
+	<dl class="message-properties">
+		<dt>Payload <span class="property-type">number</span></dt>
+		<dd>Gewünschter Zählwert</dd>
+	</dl>
+
+	<h3>Outputs</h3>
+	<dl class="message-properties">
+		<dt>Payload <span class="property-type">number</span></dt>
+		<dd>Aktueller Zählwert</dd>
+		
+		<dt>ClampName <span class="property-type">string</span></dt>
+		<dd>Bezeichnung der (Zähl-)Klemme</dd>
+		
+		<dt>Diff <span class="property-type">number</span></dt>
+		<dd>Differenz zum letzten (gültigen) Zählwert</dd>
+		
+		<dt>Unit <span class="property-type">string</span></dt>
+		<dd>Einheit des Zählwerts (nur bei bestimmten Gerätetypen)</dd>
+		
+		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dd>Optionaler Konfigurationsparameter</dd>
+	</dl>
+
+	<h3>Details</h3>
+	<p>
+		ACHTUNG: Der Zugriff ist nur möglich, wenn in der Web-Konfiguration des Web-IOs unter "Kommunikationswege -> Web-API" die Option "HTTP-Requests erlauben" aktiviert wurde!
+	</p>
+	<p>
+		Ein Knoten bildet einen einzelnen Zählwert ab.
+		Andere Zählwerte des gleichen Web-IOs können über weitere "Digital COUNTER"-Knoten angebunden werden.
+	</p>
+	<p>
+		Die genauen Verbindungsparameter (Host, Port,...) werden über den entsprechenden (Web-IO-)Konfigurations-Knoten verwaltet.
+	</p>
+
+	<h3>Konfiguration</h3>
+	<dl class="message-properties">		
+		<dt>Web-IO <span class="property-type">select</span></dt>
+		<dd>
+			Auswahl des Web-IOs, ggf. Konfiguration der Verbindungsparameter
+		</dd>
+			
+		<dt>Klemme <span class="property-type">select</span></dt>
+		<dd>Auswahl der (Zähl-)Klemme</dd>
+		
+		<dt class="optional">Name <span class="property-type">string</span></dt>
+		<dd>Bezeichnung des Node-RED-Knotens</dd>
+		
+		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dd>Topic für ausgehende Nachrichten</dd>
+	</dl>
+
+	<h3>Links</h3>
+	<ul>
+		<li><a href="https://www.wut.de" target="_blank">Wiesemann & Theis GmbH</a></li>
+		<li><a href="https://www.wut.de/e-50www-10-inde-000.php" target="_blank">Web-IO Digital</a></li>
+		<li><a href="https://www.wut.de/e-57www-10-inde-000.php" target="_blank">Web-IO Übersicht</a></li>
+	</ul>
+</script>
