@@ -191,7 +191,7 @@ module.exports = RED => {
                 match = data.match(/output;([\da-f]+)/i) || [];
                 sendGetData('output', parseInt(match[1], 16));
 
-                match = data.match(/counter;([;\d\-,]+)$/i);
+                match = data.match(/counter;(.*)$/i);
                 const counters = (match && match[1]) ? match[1].split(';') : null;
                 sendGetData('counter', counters);
             } else {
