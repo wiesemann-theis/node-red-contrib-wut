@@ -24,9 +24,9 @@
 	"dependencies": {},
 	"devDependencies": {
 		"coveralls": "3.0.7",
-		"eslint": "6.5.1",
-		"mocha": "6.2.1",
-		"node-red": "0.20.7",
+		"eslint": "6.6.0",
+		"mocha": "6.2.2",
+		"node-red": "0.20.8",
 		"node-red-node-test-helper": "0.2.3",
 		"nyc": "14.1.1"
 	},
