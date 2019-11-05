@@ -108,6 +108,7 @@ describe('Analog IN Node', () => {
           case 1:
             emitter.emit('webioGet', 'single', null, STATUS.OK); // -> error 'invalid clamp' (no output message)
             emitter.emit('webioGet', 'single', [], STATUS.OK); // -> error 'invalid clamp' (no output message)
+            emitter.emit('webioGet', 'single', [null], STATUS.OK); // -> error 'invalid clamp' (no output message)
             emitter.emit('webioGet', 'single', ['abc'], STATUS.OK); // -> error 'no value' (no output message)
             emitter.emit('webioGet', 'invalidtype', ['23,4°C'], STATUS.OK); // -> invalid type -> don't do anything (no output message)
 

@@ -1,59 +1,61 @@
 /* eslint-env mocha */
 const helper = require("node-red-node-test-helper");
-const testNode = require("../src/digitalout.js");
+const testNode = require("../src/digitalcounter.js");
 const webioNode = require('../src/webio.js');
 const { STATUS } = require('../src/util/status');
 
-const portinfoType = '3';
-const portinfoType2 = '5';
+const portinfoType = '4';
 const getTestFlow = (nodeName, clampNumber) => {
   return [
     { id: 'helperNode', type: 'helper' },
-    { id: 'testNode', type: 'Digital OUT', name: nodeName, webio: 'webio1', number: (clampNumber || 0), wires: [['helperNode']] },
+    { id: 'testNode', type: 'Counter', name: nodeName, webio: 'webio1', number: (clampNumber || 0), wires: [['helperNode']] },
     { id: 'webio1', type: 'Web-IO', host: 'i n va l i d', port: '80', protocol: 'http' }
   ];
 };
 
 helper.init(require.resolve('node-red'));
 
-describe('Digital OUT Node', () => {
+describe('Counter Node', () => {
 
   beforeEach(done => { helper.startServer(done); });
 
   afterEach(done => { helper.unload().then(() => helper.stopServer(done)); });
 
   it('should be loaded', done => {
-    const flow = [{ id: 'testNode', type: 'Digital OUT', name: 'DEMO Digital OUT' }];
+    const flow = [{ id: 'testNode', type: 'Counter', name: 'DEMO Counter' }];
     helper.load(testNode, flow, () => {
-      helper.getNode('testNode').should.have.property('name', 'DEMO Digital OUT');
+      helper.getNode('testNode').should.have.property('name', 'DEMO Counter');
       done();
     });
   });
 
   it('should generate output messages when data is received', done => {
-    const nodeName = 'Demo Digital OUT';
+    const nodeName = 'Demo Counter';
     helper.load([testNode, webioNode], getTestFlow(nodeName, 1), () => {
       let msgCount = 0;
       helper.getNode('helperNode').on('input', msg => {
         msg.should.have.properties({ topic: nodeName, clampName: 1 });
         switch (++msgCount) {
           case 1:
-            msg.should.have.property('payload', false);
-            helper.getNode('webio1').emitter.emit('webioGet', 'output', 2, STATUS.OK);  // expect message with payload true to be sent
+            msg.should.have.property('payload', 73);
+            msg.should.have.property('unit', '');
+            helper.getNode('webio1').emitter.emit('webioGet', 'counter', ['73', '42'], STATUS.OK);  // expect message with payload true to be sent
             break;
           case 2:
-            msg.should.have.property('payload', true);
-            helper.getNode('webio1').emitter.emit('webioGet', 'output', 2, STATUS.OK);  // same message again -> should not generate output
-            helper.getNode('webio1').emitter.emit('webioGet', 'output', 1, STATUS.OK);  // expect message with payload false to be sent
+            msg.should.have.property('payload', 42);
+            msg.should.have.property('unit', '');
+            helper.getNode('webio1').emitter.emit('webioGet', 'counter', ['73', '42'], STATUS.OK);  // same message again -> should not generate output
+            helper.getNode('webio1').emitter.emit('webioGet', 'counter', ['1', '12,34mA'], STATUS.OK);  // expect message with payload 12.34 and unit 'mA' to be sent
             break;
           case 3:
-            msg.should.have.property('payload', false);
+            msg.should.have.property('payload', 12.34);
+            msg.should.have.property('unit', 'mA');
             done();
             break;
         }
       });
 
-      helper.getNode('webio1').emitter.emit('webioGet', 'output', 0, STATUS.OK); // expect message with payload false to be sent
+      helper.getNode('webio1').emitter.emit('webioGet', 'counter', ['42', '73'], STATUS.OK); // expect message with payload 73 to be sent
     });
   });
 
@@ -71,20 +73,19 @@ describe('Digital OUT Node', () => {
       node.warn.callCount.should.equal(1);
 
       const testData = [
-        [true, true], ['true', true], [1, true], ['1', true], ['on', true],
-        [false, false], ['false', false], [0, false], ['0', false], ['off', false]
+        ['42', 42], ['12.34', 12.34], ['12,34', 12.34], [42, 42], [-1.2, -1.2]
       ];
       let expect = '';
       testData.forEach(data => {
         setData = [];
         node.receive({ payload: data[0] }); // valid message -> no warning, but webioSet message
         node.warn.callCount.should.equal(1);
-        expect = JSON.stringify([{ type: 'digitalout', number: 1, value: data[1] }]);
+        expect = JSON.stringify([{ type: 'digitalcounter', number: 1, value: data[1] }]);
         JSON.stringify(setData).should.equal(expect);
       });
 
       emitter.emit('webioLabels', {}); // set isValidClamp to false
-      node.receive({ payload: true }); // valid message, but invalid clamp -> expect warning
+      node.receive({ payload: 42 }); // valid message, but invalid clamp -> expect warning
       node.warn.callCount.should.equal(2);
 
       done();
@@ -95,7 +96,7 @@ describe('Digital OUT Node', () => {
     helper.load([testNode, webioNode], getTestFlow(null, 3), () => {
       let msgCount = 0;
       helper.getNode('helperNode').on('input', msg => {
-        msg.should.have.properties({ payload: true });
+        msg.should.have.properties({ payload: 7.8 });
         switch (++msgCount) {
           case 1:
             msg.should.have.property('clampName', 'DEMO');
@@ -114,9 +115,9 @@ describe('Digital OUT Node', () => {
       let data = {};
       data[portinfoType] = { 3: 'DEMO' };
       emitter.emit('webioLabels', data); // do not expect output mesasge (because value is not set yet)
-      emitter.emit('webioGet', 'output', 8, STATUS.OK); // do not expect clampData (mask = 8 -> payload true)
+      emitter.emit('webioGet', 'counter', ['1,2', '3,4', '5,6', '7,8'], STATUS.OK); // do not expect clampData
 
-      data[portinfoType2] = { 3: 'foo bar' }; // portinfoType2 should still override data
+      data[portinfoType] = { 3: 'foo bar' };
       emitter.emit('webioLabels', data); // expect retriggered output message
 
       emitter.emit('webioLabels', {}); // expect retriggered output message
@@ -129,20 +130,36 @@ describe('Digital OUT Node', () => {
 
       let msgCount = 0;
       helper.getNode('helperNode').on('input', msg => {
-        msg.should.have.properties({ topic: 'Digital OUT', payload: null, clampName: 0 });
+        msg.should.have.properties({ topic: 'Counter', payload: null, clampName: 0 });
         switch (++msgCount) {
           case 1:
-            emitter.emit('webioGet', 'invalidtype', 1, STATUS.OK); // -> invalid type -> don't do anything (no output message)
+            emitter.emit('webioGet', 'invalidtype', ['42'], STATUS.OK); // -> invalid type -> don't do anything (no output message)
+            emitter.emit('webioGet', 'counter', [null], STATUS.OK); // -> invalid value -> don't do anything (no output message)
+
             emitter.emit('webioLabels', {}); // set isValidClamp to false (will resend payload null)
             break;
           case 2:
-            emitter.emit('webioGet', 'invalidtype', 1, STATUS.OK); // -> error 'invalid clamp' (no output message)
+            emitter.emit('webioGet', 'invalidtype', ['42'], STATUS.OK); // -> error 'invalid clamp' (no output message)
             done();
             break;
         }
       });
 
-      emitter.emit('webioGet', 'output', 1, 'unknown_status'); // -> error 'unknown status' (send payload null)
+      emitter.emit('webioGet', 'counter', ['42'], 'unknown_status'); // -> error 'unknown status' (send payload null)
+    });
+  });
+
+  it('should handle single values properly', done => {
+    const nodeName = 'Demo Counter';
+    helper.load([testNode, webioNode], getTestFlow(nodeName, 7), () => {
+      helper.getNode('helperNode').on('input', msg => {
+        msg.should.have.property('payload', 12.34);
+        msg.should.have.property('unit', 'mA');
+        msg.should.have.property('clampName', 7);
+        done();
+      });
+
+      helper.getNode('webio1').emitter.emit('webioGet', 'counter7', '12,34mA', STATUS.OK); // expect message with payload 73 to be sent
     });
   });
 });

@@ -46,7 +46,7 @@ describe('Analog OUT Node', () => {
       const node = helper.getNode('testNode');
       const emitter = helper.getNode('webio1').emitter;
 
-      const setData = [];
+      let setData = [];
       emitter.addListener('webioSet', (type, number, value) => {
         setData.push({ type, number, value });
       });
@@ -59,8 +59,20 @@ describe('Analog OUT Node', () => {
       const expect = JSON.stringify([{ type: 'analogout', number: 1, value: 42.73 }]);
       JSON.stringify(setData).should.equal(expect);
 
+      setData = [];
+      node.receive({ payload: '73.42' }); // valid message -> no warning, but webioSet message
+      node.warn.callCount.should.equal(1);
+      const expect2 = JSON.stringify([{ type: 'analogout', number: 1, value: 73.42 }]);
+      JSON.stringify(setData).should.equal(expect2);
+
+      setData = [];
+      node.receive({ payload: '12,34' }); // valid message -> no warning, but webioSet message
+      node.warn.callCount.should.equal(1);
+      const expect3 = JSON.stringify([{ type: 'analogout', number: 1, value: 12.34 }]);
+      JSON.stringify(setData).should.equal(expect3);
+
       emitter.emit('webioLabels', {}); // set isValidClamp to false
-      node.receive({ payload: true }); // valid message, but invalid clamp -> expect warning
+      node.receive({ payload: 42.73 }); // valid message, but invalid clamp -> expect warning
       node.warn.callCount.should.equal(2);
 
       done();
@@ -134,6 +146,7 @@ describe('Analog OUT Node', () => {
           case 1:
             emitter.emit('webioGet', 'single', null, STATUS.OK); // -> error 'invalid clamp' (no output message)
             emitter.emit('webioGet', 'single', [], STATUS.OK); // -> error 'invalid clamp' (no output message)
+            emitter.emit('webioGet', 'single', [null], STATUS.OK); // -> error 'invalid clamp' (no output message)
             emitter.emit('webioGet', 'single', ['abc'], STATUS.OK); // -> error 'no value' (no output message)
             emitter.emit('webioGet', 'invalidtype', ['23,4°C'], STATUS.OK); // -> invalid type -> don't do anything (no output message)
 
