@@ -18,6 +18,7 @@ module.exports = RED => {
         const httpTimeout = 3000;
         const agentTimeout = 5000;
         const keepAliveMsecs = 5000; // Web-IOs keep connection open for 30 s
+        const retryTimeout = Math.min(pollingInterval, 10000); // in case of an error and a long polling interval -> do not wait x minutes for retry but max. 10 s
 
         RED.nodes.createNode(this, config);
 
@@ -205,7 +206,7 @@ module.exports = RED => {
                         } else {
                             sendErrorStatus(STATUS.NOT_REACHABLE);
                         }
-                        setStateHandlerTimeout(pollingInterval);
+                        setStateHandlerTimeout(retryTimeout);
                     });
                     break;
 
@@ -234,7 +235,7 @@ module.exports = RED => {
                             }
                         }
                         sendErrorStatus(status);
-                        setStateHandlerTimeout(pollingInterval);
+                        setStateHandlerTimeout(retryTimeout);
                     });
                     break;
 
