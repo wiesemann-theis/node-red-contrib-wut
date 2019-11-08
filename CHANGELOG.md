@@ -5,6 +5,7 @@
 ### Changed
 
 - Web-IO: on error (e. g. device not reachable) - retry after 10 s latest
+- properties list reorderd
 
 ## 2.0.0
 
