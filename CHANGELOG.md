@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.1.0
+
 ### Changed
 
 - Web-IO: on error (e. g. device not reachable) - retry after 10 s latest
