@@ -13,8 +13,10 @@ module.exports = RED => {
     wutHttpAdmin.init(RED);
 
     RED.nodes.registerType('Web-IO', function (config) {
-        const pollingInterval = config.pollingIntervalSec * 1000 || 1000;
-        const portinfosInterval = config.portinfoIntervalSec * 1000 || 60000;
+        const pollValue = +config.pollingIntervalValue || +config.pollingIntervalSec || 1; // use pollingIntervalSec as fallback for backwards compatibility
+        const pollFactor = +config.pollingIntervalFactor || 1000;
+        const pollingInterval = Math.max(pollValue * pollFactor, 50);
+        const portinfosInterval = +config.portinfoIntervalSec * 1000 || 60000;
         const httpTimeout = 3000;
         const agentTimeout = 5000;
         const keepAliveMsecs = 5000; // Web-IOs keep connection open for 30 s

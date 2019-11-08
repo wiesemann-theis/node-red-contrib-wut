@@ -46,10 +46,13 @@
 			protocol: { value: 'http' },
 			host: { value: '', required: true, validate: RED.validators.regex(/^[a-z0-9\-\.]+$/i) },
 			port: { value: 80, required: true, validate: RED.validators.number() },
-			pollingIntervalSec: { value: 1, validate: RED.validators.number() },
 			portinfoIntervalSec: { value: 60, validate: RED.validators.number() }, // no corresponding input element (yet)
 			manualConfig: { value: false },
-			device: { value: null }
+			device: { value: null },
+			// polling interval -> no validator here for backwards compatibility
+			pollingIntervalValue: { value: 1 },
+			pollingIntervalFactor: { value: 1000 },
+			pollingIntervalSec: { value: 1 } // only needed for old versions
 		},
 		credentials: { password: { type: 'password' } },
 		label: function () {
@@ -68,6 +71,14 @@
 			});
 		},
 		oneditprepare: function () {
+			if (!this.pollingIntervalValue) { // for backwards compatibility
+				const pollInterval = parseFloat(this.pollingIntervalSec) || 1;
+				const pollFactor = pollInterval < 1 ? 1 : 1000;
+				const pollValue = parseInt(pollInterval * 1000 / pollFactor);
+				$("#node-config-input-pollingIntervalValue").val(pollValue);
+				$("#node-config-input-pollingIntervalFactor").val(pollFactor);
+			}
+
 			if (window.wut && window.wut.initDeviceConfig) {
 				window.wut.initDeviceConfig(this);
 			} else {
@@ -119,8 +130,18 @@
 		<input type="password" id="node-config-input-password" data-i18n="[placeholder]config.label.password" />
 	</div>
 	<div class="form-row">
-		<label for="node-config-input-pollingIntervalSec"><i class="fa fa-fw fa-clock-o"></i> <span data-i18n="config.label.poll-interval"></label>
-		<input type="number" min="1" max="86400" id="node-config-input-pollingIntervalSec" data-i18n="[placeholder]config.label.poll-interval" />
+		<label for="node-config-input-pollingIntervalValue"><i class="fa fa-fw fa-clock-o"></i> <span data-i18n="config.label.poll-interval"></label>
+		<div style="display: inline-flex; width: 70%">
+			<input style="margin-right: 10px; width: 50%" type="number" min="1" max="1000000" id="node-config-input-pollingIntervalValue" data-i18n="[placeholder]config.label.poll-interval" />
+			<div style="width: 50%">
+				<select style="width: 100%" class="wut-select2" id="node-config-input-pollingIntervalFactor">
+					<option value="1" data-i18n="config.label.milliseconds"></option>
+					<option value="1000" data-i18n="config.label.seconds"></option>
+					<option value="60000" data-i18n="config.label.minutes"></option>
+					<option value="3600000" data-i18n="config.label.hours"></option>
+				</select>
+			</div>
+		</div>
 	</div>
 	
 	<br />

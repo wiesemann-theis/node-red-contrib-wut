@@ -17,7 +17,11 @@
             "productid": "Artikel-Nr.:",
             "prodname": "Gerätetyp:",
             "sysname": "Systemname:",
-            "poll-interval": "Intervall (s)"
+            "poll-interval": "Intervall",
+            "milliseconds": "Millisekunden",
+            "seconds": "Sekunden",
+            "minutes": "Minuten",
+            "hours": "Stunden"
         }
     },
     "status": {
