@@ -11,13 +11,19 @@
 
 	<h3>Outputs</h3>
 	<dl class="message-properties">
-		<dt>Payload <span class="property-type">boolean</span></dt>
-		<dd>Current switching state</dd>
+		<dt>payload <span class="property-type">boolean</span></dt>
+		<dd>Current switching state ("null" on connection loss or similar)</dd>
+		
+		<dt>lastValue <span class="property-type">boolean</span></dt>
+		<dd>Last (valid) switching state</dd>
+		
+		<dt>diff <span class="property-type">boolean</span></dt>
+		<dd>true, if the switching state has changed since the last message</dd>
 
-		<dt>ClampName <span class="property-type">string</span></dt>
+		<dt>clampName <span class="property-type">string</span></dt>
 		<dd>Output clamp name</dd>
 		
-		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dt class="optional">topic <span class="property-type">string</span></dt>
 		<dd>Optional configuration property</dd>
 	</dl>
 

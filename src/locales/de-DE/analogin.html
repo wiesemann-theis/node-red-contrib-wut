@@ -4,22 +4,28 @@
 
 	<h3>Outputs</h3>
 	<dl class="message-properties">
-		<dt>Payload <span class="property-type">number</span></dt>
-		<dd>Aktueller (analoger) Eingangswert</dd>
-
-		<dt>ClampName <span class="property-type">string</span></dt>
-		<dd>Bezeichnung der (Eingangs-)Klemme</dd>
+		<dt>payload <span class="property-type">number</span></dt>
+		<dd>Aktueller (analoger) Eingangswert ("null" bei Verbindungsverlust o. ä.)</dd>
 		
-		<dt>Unit <span class="property-type">string</span></dt>
+		<dt>lastValue <span class="property-type">number</span></dt>
+		<dd>Letzter (gültiger) Eingangswert</dd>
+		
+		<dt>diff <span class="property-type">number</span></dt>
+		<dd>Differenz zum letzten (gültigen) Eingangswert</dd>
+		
+		<dt>unit <span class="property-type">string</span></dt>
 		<dd>Einheit des Eingangswertes</dd>
 		
-		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dt>clampName <span class="property-type">string</span></dt>
+		<dd>Bezeichnung der (Eingangs-)Klemme</dd>
+		
+		<dt class="optional">topic <span class="property-type">string</span></dt>
 		<dd>Optionaler Konfigurationsparameter</dd>
 		
-		<dt class="optional">Min <span class="property-type">number</span></dt>
+		<dt class="optional">min <span class="property-type">number</span></dt>
 		<dd>Minimaler Eingangswert (nur für bestimmte Gerätetypen)</dd>
 		
-		<dt class="optional">Max <span class="property-type">number</span></dt>
+		<dt class="optional">max <span class="property-type">number</span></dt>
 		<dd>Maximaler Eingangswert (nur für bestimmte Gerätetypen)</dd>
 	</dl>
 

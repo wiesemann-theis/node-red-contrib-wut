@@ -11,13 +11,19 @@
 
 	<h3>Outputs</h3>
 	<dl class="message-properties">
-		<dt>Payload <span class="property-type">boolean</span></dt>
-		<dd>Aktueller Schaltzustand</dd>
+		<dt>payload <span class="property-type">boolean</span></dt>
+		<dd>Aktueller Schaltzustand ("null" bei Verbindungsverlust o. ä.)</dd>
 		
-		<dt>ClampName <span class="property-type">string</span></dt>
+		<dt>lastValue <span class="property-type">boolean</span></dt>
+		<dd>Letzter (gültiger) Schaltzustand</dd>
+		
+		<dt>diff <span class="property-type">boolean</span></dt>
+		<dd>true, falls sich der Schaltzustand seit der letzten Meldung geändert hat</dd>
+		
+		<dt>clampName <span class="property-type">string</span></dt>
 		<dd>Bezeichnung der (Ausgangs-)Klemme</dd>
 		
-		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dt class="optional">topic <span class="property-type">string</span></dt>
 		<dd>Optionaler Konfigurationsparameter</dd>
 	</dl>
 

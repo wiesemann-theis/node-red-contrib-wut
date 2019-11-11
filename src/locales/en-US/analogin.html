@@ -4,22 +4,28 @@
 	
 	<h3>Outputs</h3>
 	<dl class="message-properties">
-		<dt>Payload <span class="property-type">number</span></dt>
-		<dd>Current (analog) input value</dd>
+		<dt>payload <span class="property-type">number</span></dt>
+		<dd>Current (analog) input value ("null" on connection loss or similar)</dd>
+		
+		<dt>lastValue <span class="property-type">number</span></dt>
+		<dd>Last (valid) input value</dd>
+		
+		<dt>diff <span class="property-type">number</span></dt>
+		<dd>Difference to last (valid) input value</dd>
+		
+		<dt>unit <span class="property-type">string</span></dt>
+		<dd>Measurement unit</dd>
 
-		<dt>ClampName <span class="property-type">string</span></dt>
+		<dt>clampName <span class="property-type">string</span></dt>
 		<dd>Input clamp name</dd>
 		
-		<dt>Unit <span class="property-type">string</span></dt>
-		<dd>Measurement unit</dd>
-		
-		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dt class="optional">topic <span class="property-type">string</span></dt>
 		<dd>Optional configuration property</dd>
 		
-		<dt class="optional">Min <span class="property-type">number</span></dt>
+		<dt class="optional">min <span class="property-type">number</span></dt>
 		<dd>Minimal input value (only for some device types)</dd>
 		
-		<dt class="optional">Max <span class="property-type">number</span></dt>
+		<dt class="optional">max <span class="property-type">number</span></dt>
 		<dd>Maximal input value (only for some device types)</dd>
 	</dl>
 

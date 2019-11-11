@@ -11,19 +11,22 @@
 	
 	<h3>Outputs</h3>
 	<dl class="message-properties">
-		<dt>Payload <span class="property-type">number</span></dt>
-		<dd>Current counter value</dd>
-
-		<dt>ClampName <span class="property-type">string</span></dt>
-		<dd>Counter clamp name</dd>
+		<dt>payload <span class="property-type">number</span></dt>
+		<dd>Current counter value ("null" on connection loss or similar)</dd>
 		
-		<dt>Diff <span class="property-type">number</span></dt>
+		<dt>lastValue <span class="property-type">number</span></dt>
+		<dd>Last (valid) counter value</dd>
+		
+		<dt>diff <span class="property-type">number</span></dt>
 		<dd>Difference to the last (valid) counter value</dd>
 		
-		<dt>Unit <span class="property-type">string</span></dt>
+		<dt>unit <span class="property-type">string</span></dt>
 		<dd>Unit of the counter value (for certain device types only)</dd>
+
+		<dt>clampName <span class="property-type">string</span></dt>
+		<dd>Counter clamp name</dd>
 		
-		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dt class="optional">topic <span class="property-type">string</span></dt>
 		<dd>Optional configuration property</dd>
 	</dl>
 

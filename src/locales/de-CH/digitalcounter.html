@@ -11,19 +11,22 @@
 
 	<h3>Outputs</h3>
 	<dl class="message-properties">
-		<dt>Payload <span class="property-type">number</span></dt>
-		<dd>Aktueller Zählwert</dd>
+		<dt>payload <span class="property-type">number</span></dt>
+		<dd>Aktueller Zählwert ("null" bei Verbindungsverlust o. ä.)</dd>
 		
-		<dt>ClampName <span class="property-type">string</span></dt>
-		<dd>Bezeichnung der (Zähl-)Klemme</dd>
+		<dt>lastValue <span class="property-type">number</span></dt>
+		<dd>Letzter (gültiger) Zählwert</dd>
 		
-		<dt>Diff <span class="property-type">number</span></dt>
+		<dt>diff <span class="property-type">number</span></dt>
 		<dd>Differenz zum letzten (gültigen) Zählwert</dd>
 		
-		<dt>Unit <span class="property-type">string</span></dt>
+		<dt>unit <span class="property-type">string</span></dt>
 		<dd>Einheit des Zählwerts (nur bei bestimmten Gerätetypen)</dd>
 		
-		<dt class="optional">Topic <span class="property-type">string</span></dt>
+		<dt>clampName <span class="property-type">string</span></dt>
+		<dd>Bezeichnung der (Zähl-)Klemme</dd>
+		
+		<dt class="optional">topic <span class="property-type">string</span></dt>
 		<dd>Optionaler Konfigurationsparameter</dd>
 	</dl>
 
