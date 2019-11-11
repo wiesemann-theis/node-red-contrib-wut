@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Web-IO: diff and lastValue properties for output messages of all node types
+
 ## 2.1.0
 
 ### Changed

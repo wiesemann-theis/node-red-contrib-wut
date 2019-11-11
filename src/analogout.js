@@ -19,6 +19,8 @@ module.exports = RED => {
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
 			let value;
+			let lastValue = null;
+			let diff = null;
 			let unit = '';
 			let clampLabels = [];
 			let clampData = null;
@@ -29,7 +31,8 @@ module.exports = RED => {
 				clampLabels = labels[portinfoType] || {};
 				isValidClamp = !!clampLabels[config.number];
 				if (value !== undefined) {
-					const msg = { topic, payload: value, unit, clampName: clampLabels[config.number] || config.number };
+					const clampName = clampLabels[config.number] || config.number;
+					const msg = { topic, payload: value, unit, lastValue, diff, clampName };
 					Object.assign(msg, clampData);
 					this.send(msg);
 				}
@@ -60,9 +63,12 @@ module.exports = RED => {
 
 					if (tmpValue !== value) {
 						value = tmpValue;
-						const msg = { topic, payload: value, unit, clampName: clampLabels[config.number] || config.number };
+						diff = value !== null && !isNaN(value) && lastValue !== null ? +(value - lastValue).toFixed(3) : null;
+						const clampName = clampLabels[config.number] || config.number;
+						const msg = { topic, payload: value, unit, lastValue, diff, clampName };
 						Object.assign(msg, clampData);
 						this.send(msg);
+						lastValue = value !== null && !isNaN(value) ? value : lastValue;
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
 					sendWebioStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
