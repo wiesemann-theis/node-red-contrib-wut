@@ -46,11 +46,12 @@ module.exports = RED => {
 					}
 
 					if (tmpValue !== value) {
+						const lastLastValue = lastValue; // lastValue will be overwritten before msg is sent (to ensure data consistency)
 						value = tmpValue;
 						diff = value != null && lastValue !== null ? value !== lastValue : null;
-						const clampName = clampLabels[config.number] || config.number;
-						this.send({ topic, payload: value, lastValue, diff, clampName });
 						lastValue = value !== null ? value : lastValue;
+						const clampName = clampLabels[config.number] || config.number;
+						this.send({ topic, payload: value, lastValue: lastLastValue, diff, clampName });
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
 					sendWebioStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
