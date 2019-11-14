@@ -9,6 +9,8 @@ const MACHINE_STATES = Object.freeze({
     NOT_SUPPORTED: 90
 });
 
+const MAX_HTTP_QUEUE = 100;
+
 module.exports = RED => {
     wutHttpAdmin.init(RED);
 
@@ -69,42 +71,54 @@ module.exports = RED => {
                 emitGetData(category, null, STATUS.NO_VALUE);
             }
         };
-        let pendingHttp;
+        
         let hasPendingRequest;
+        const httpQueue = [];
         const httpGetHelper = (path) => {
-            if (hasPendingRequest && pendingHttp) {
-                return new Promise((res, rej) => {
-                    pendingHttp.catch(() => { }).finally(() => { // when pending request is finished, call method again
-                        setTimeout(() => httpGetHelper(path).then(res, rej), 50); // little timeout to ensure 'hasPendingRequest' is reset
-                    });
-                });
-            } else {
-                hasPendingRequest = true;
-                pendingHttp = new Promise((resolve, reject) => {
-                    http.get({ agent, path, timeout: httpTimeout }, response => {
-                        response.setEncoding(JSON.stringify(response.headers).includes('utf-8') ? 'utf-8' : 'latin1');
-
-                        let data = '';
-                        response.on('data', chunk => data += chunk);
-
-                        response.on('end', () => {
-                            if (response.statusCode === 200) {
-                                if (path.startsWith('/portinfo')) {
-                                    setTimeout(() => resolve(data), 100); // /portinfo will reset TCP connection!
-                                } else {
-                                    resolve(data);
-                                }
-                            } else {
-                                reject({ statusCode: response.statusCode, message: `http statusCode ${response.statusCode}` });
-                            }
-                        });
-                    }).on('timeout', function () { this.abort(); }).on('error', err => reject(err));
-                });
-                // second promise object to handle 'hasPendingRequest' flag correctly
-                return new Promise((res, rej) => {
-                    pendingHttp.then(res, rej).finally(() => { hasPendingRequest = false; });
-                });
+            return new Promise((resolve, reject) => {
+                if (httpQueue.length < MAX_HTTP_QUEUE) {
+                    httpQueue.push({ path, resolve, reject });
+                    handleHttpQueue();
+                } else {
+                    reject(new Error('Maximum number of queued requests exceeded!'));
+                }
+            });
+        }
+        const handleHttpQueue = () => {
+            if (hasPendingRequest || !httpQueue.length) {
+                return false;
             }
+            hasPendingRequest = true;
+
+            const nextItem = httpQueue.shift() || {};
+            const nextPath = nextItem.path;
+            const pendingRequest = new Promise((resolve, reject) => {
+                http.get({ agent, path: nextPath, timeout: httpTimeout }, response => {
+                    response.setEncoding(JSON.stringify(response.headers).includes('utf-8') ? 'utf-8' : 'latin1');
+
+                    let data = '';
+                    response.on('data', chunk => data += chunk);
+
+                    response.on('end', () => {
+                        if (response.statusCode === 200) {
+                            if (nextPath.startsWith('/portinfo')) {
+                                setTimeout(() => resolve(data), 100); // /portinfo will reset TCP connection!
+                            } else {
+                                resolve(data);
+                            }
+                        } else {
+                            reject({ statusCode: response.statusCode, message: `http statusCode ${response.statusCode}` });
+                        }
+                    });
+                }).on('timeout', function () { this.abort(); }).on('error', err => reject(err));
+            });
+
+            pendingRequest.then(nextItem.resolve, nextItem.reject).finally(() => {
+                hasPendingRequest = false;
+                handleHttpQueue();
+            });
+
+            return true;
         }
 
         // callback helper functions
@@ -258,7 +272,6 @@ module.exports = RED => {
                 if (type === 'digitalout') {
                     value = !value ? 'OFF' : 'ON';
                 }
-                console.log('input', value, new Date());
                 const path = type === 'digitalcounter' ? `/counterclear${number}?PW=${pw}&Set=${value}&` : `/outputaccess${number}?PW=${pw}&State=${value}&`;
                 httpGetHelper(path).then(data => {
                     let match = null;

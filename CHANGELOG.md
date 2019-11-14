@@ -9,6 +9,7 @@
 ### Changed
 
 - portinfo polling interval increased
+- increased request queueing robustness
 
 ## 2.1.0
 
