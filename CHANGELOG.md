@@ -6,6 +6,10 @@
 
 - Web-IO: diff and lastValue properties for output messages of all node types
 
+### Changed
+
+- portinfo polling interval increased
+
 ## 2.1.0
 
 ### Changed
