@@ -9,7 +9,7 @@ const init = RED => {
     if (!isInitialized && RED) { // endpoints only need to be initialized once
         isInitialized = true;
 
-        RED.httpAdmin.get("/wut/devices/:type", RED.auth.needsPermission('wut.read'), function (req, res) {
+        RED.httpAdmin.get("/wut/devices/:type", function (req, res) {
             const node = RED.nodes.getNode(req.query.nodeId) || console; // for logging: try to identify node for logging; use console as default
             const type = req.params.type || '';
             node.log(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.wut-broadcast-started'));
@@ -32,7 +32,7 @@ const init = RED => {
             });
         });
 
-        RED.httpAdmin.get("/wut/files/:filename", RED.auth.needsPermission('wut.read'), (req, res) => {
+        RED.httpAdmin.get("/wut/files/:filename", (req, res) => {
             try {
                 const filepath = path.normalize(__dirname + '/../webfiles/' + req.params.filename);
                 fs.accessSync(filepath);
@@ -42,7 +42,7 @@ const init = RED => {
             }
         });
 
-        RED.httpAdmin.put("/wut/portinfo/:webioid", RED.auth.needsPermission('wut.read'), (req, res) => {
+        RED.httpAdmin.put("/wut/portinfo/:webioid", (req, res) => {
             const nodeId = req.params.webioid;
             const node = RED.nodes.getNode(nodeId) || console; // for logging: try to identify node for logging; use console as default
             const protocol = req.body.protocol || 'http';

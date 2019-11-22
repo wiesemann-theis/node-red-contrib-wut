@@ -11,6 +11,10 @@
 - portinfo polling interval increased
 - increased request queueing robustness
 
+### Fixed
+
+- httpAdmin permissions
+
 ## 2.1.0
 
 ### Changed
