@@ -19,9 +19,9 @@ module.exports = RED => {
         const pollFactor = +config.pollingIntervalFactor || 1000;
         const pollingInterval = Math.max(pollValue * pollFactor, 50);
         const portinfosInterval = +config.portinfoIntervalSec * 1000 || 300000;
-        const httpTimeout = 3000;
-        const agentTimeout = 5000;
-        const keepAliveMsecs = 5000; // Web-IOs keep connection open for 30 s
+        const httpTimeout = 5000;
+        const agentTimeout = 10000;
+        const keepAliveMsecs = 10000; // Web-IOs keep connection open for 30 s
         const retryTimeout = Math.min(pollingInterval, 10000); // in case of an error and a long polling interval -> do not wait x minutes for retry but max. 10 s
 
         RED.nodes.createNode(this, config);
@@ -71,7 +71,7 @@ module.exports = RED => {
                 emitGetData(category, null, STATUS.NO_VALUE);
             }
         };
-        
+
         let hasPendingRequest;
         const httpQueue = [];
         const httpGetHelper = (path) => {

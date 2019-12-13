@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- increased http timeout
+
 ## 2.1.1
 
 ### Added
