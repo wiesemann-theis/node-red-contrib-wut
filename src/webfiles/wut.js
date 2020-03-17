@@ -2,8 +2,9 @@
   * @wiesemann-theis/node-red-contrib-wut (https://github.com/wiesemann-theis/node-red-contrib-wut)
   * Licensed under MIT (https://github.com/wiesemann-theis/node-red-contrib-wut/blob/master/LICENSE)
   */
+/* global RED */
+/* eslint-env browser, jquery */ // flags to enable correct linting handling
 (function ($, window, RED) {
-    /* eslint-env browser, jquery */ // flags to enable correct linting handling
     let allDevices = {};
 
     /********** helper functions ****************/

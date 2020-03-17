@@ -1,3 +1,4 @@
+/* global should */
 /* eslint-env mocha */
 const helper = require('node-red-node-test-helper');
 // const webioNode = require('../src/webio.js');
