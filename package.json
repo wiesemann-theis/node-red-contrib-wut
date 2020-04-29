@@ -23,12 +23,12 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"coveralls": "3.0.9",
+		"coveralls": "3.1.0",
 		"eslint": "6.8.0",
-		"mocha": "7.1.0",
+		"mocha": "7.1.2",
 		"node-red": "0.20.8",
 		"node-red-node-test-helper": "0.2.3",
-		"nyc": "15.0.0"
+		"nyc": "15.0.1"
 	},
 	"node-red": {
 		"nodes": {
@@ -51,7 +51,12 @@
 			"node": true
 		},
 		"rules": {
-			"no-unused-vars": ["error", {"args": "none"}]
+			"no-unused-vars": [
+				"error",
+				{
+					"args": "none"
+				}
+			]
 		}
 	},
 	"eslintIgnore": [
