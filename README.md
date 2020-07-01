@@ -22,7 +22,7 @@ The package currently provides the following nodes:
 
 The easiest way to install the WuT nodes is to use the Node-RED editor's `Menu -> Manage palette` option.
 In the `Install` tab you can search for the `@wiesemann-theis/node-red-contrib-wut` package and click `install`.
-Once the installation is complete the nodes will available straight away (no Node-RED restart required).
+Once the installation is complete the nodes will be available straight away (no Node-RED restart required).
 
 Alternatively, you can run the following command in your Node-RED user directory (typically `~/.node-red`):
 
