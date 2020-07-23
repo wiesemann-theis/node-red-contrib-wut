@@ -2,9 +2,12 @@
 
 ## Unreleased
 
+## 2.1.2
+
 ### Changed
 
 - increased http timeout
+- updated dependencies
 
 ## 2.1.1
 
