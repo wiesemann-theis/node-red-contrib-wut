@@ -1,8 +1,9 @@
 language: node_js
-# test officially supported NodeJS versions (https://nodered.org/docs/faq/node-versions) and latest stable
+# test officially supported NodeJS versions (https://nodered.org/docs/faq/node-versions) except 8.x (no longer maintained) and latest stable
 node_js:
-  - 8
   - 10
+  - 12
+  - 14
   - lts/*
 
 # "npm test" runs tests in watch mode
