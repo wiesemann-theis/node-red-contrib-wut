@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- remove event listeners individually in each node (needed for partial deploys)
+
 ## 2.1.2
 
 ### Changed

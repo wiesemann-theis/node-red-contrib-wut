@@ -26,16 +26,16 @@ module.exports = RED => {
 
 			sendWebioStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
-			webio.emitter.addListener('webioLabels', labels => {
+			const webioLabelsCb = (labels) => {
 				clampLabels = labels[portinfoType] || {};
 				isValidClamp = !!clampLabels[config.number];
 				if (value !== undefined) {
 					const clampName = clampLabels[config.number] || config.number;
 					this.send({ topic, payload: value, unit, lastValue, diff, clampName });
 				}
-			});
+			};
 
-			webio.emitter.addListener('webioGet', (type, values, status) => {
+			const webioGetCb = (type, values, status) => {
 				if (type === `counter${config.number}`) { // workaround to handle single counter value messages
 					const tmp = new Array(config.number + 1);
 					tmp[config.number] = values;
@@ -71,6 +71,15 @@ module.exports = RED => {
 				} else if (!isValidClamp && status === STATUS.OK) {
 					sendWebioStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
 				}
+			};
+
+			webio.emitter.addListener('webioLabels', webioLabelsCb);
+
+			webio.emitter.addListener('webioGet', webioGetCb);
+
+			this.on('close', () => {
+				webio.emitter.removeListener('webioLabels', webioLabelsCb);
+				webio.emitter.removeListener('webioGet', webioGetCb);
 			});
 		} else {
 			this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.invalid-webio'));
