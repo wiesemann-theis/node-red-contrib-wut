@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- updated dependencies
+
 ### Fixed
 
 - remove event listeners individually in each node (needed for partial deploys)
