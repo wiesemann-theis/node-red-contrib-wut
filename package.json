@@ -1,6 +1,6 @@
 {
 	"name": "@wiesemann-theis/node-red-contrib-wut",
-	"version": "2.1.2",
+	"version": "2.1.3",
 	"description": "Integrate Wiesemann & Theis products - like Com-Servers, Web-IOs or Web-Thermometers - into Node-RED.",
 	"author": "Wiesemann & Theis GmbH <info@wut.de> (https://www.wut.de/)",
 	"license": "MIT",
