@@ -18,19 +18,25 @@ helper.init(require.resolve('node-red'));
 
 describe('Analog OUT Node', () => {
   let webioServer;
+  let pendingResponses = [];
 
   beforeEach(done => {
     // simulate webio
+    pendingResponses = [];
     webioServer = http.createServer((req, res) => {
-      // do not react to http requests at all to prevent http errors from
-      // interfering (test should be completed within http request timeout)
-      // blame/TODO: find a better solution for that
+      // do not respond to http requests to prevent http errors from interfering with test
+      pendingResponses.push(res);
     }).listen(8008, () => helper.startServer(done));
   });
 
   afterEach(done => {
     helper.unload().then(() => {
       helper.stopServer(() => {
+        // finally respond to all pendings http requests
+        pendingResponses.forEach(res => {
+          res.writeHead(500);
+          res.end();
+        });
         webioServer.close(() => {
           done();
         });
@@ -79,30 +85,22 @@ describe('Analog OUT Node', () => {
 
       let testIndex = 0;
       node.on('input', msg => {
-        console.log('debug 1', msg, node.warn.callCount, setData, testData[testIndex][1]);
         // evaluate test result
         const expectedData = testData[testIndex][1];
         JSON.stringify(setData).should.equal(JSON.stringify(expectedData));
         node.warn.callCount.should.equal(expectedData.length ? 0 : 1);
 
-        console.log('debug 2');
-
         // special handling
         if (testIndex === testData.length - 2) {
-          console.log('debug 3');
           emitter.emit('webioLabels', {}); // set isValidClamp to false
         }
-        console.log('debug 4');
 
         // next test
         if (++testIndex < testData.length) {
-          console.log('debug 5');
           setData = [];
           node.warn.resetHistory();
           node.receive(testData[testIndex][0]);
-          console.log('debug 6');
         } else {
-          console.log('debug 7');
           done();
         }
       });
