@@ -30,13 +30,13 @@ describe('Analog OUT Node', () => {
   });
 
   afterEach(done => {
+    // finally respond to all pendings http requests
+    pendingResponses.forEach(res => {
+      res.writeHead(500);
+      res.end();
+    });
     helper.unload().then(() => {
       helper.stopServer(() => {
-        // finally respond to all pendings http requests
-        pendingResponses.forEach(res => {
-          res.writeHead(500);
-          res.end();
-        });
         webioServer.close(() => {
           done();
         });
