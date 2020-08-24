@@ -80,7 +80,7 @@ describe('Analog OUT Node', () => {
       let testIndex = 0;
       node.on('input', msg => {
         try {
-          console.log('debug 1', msg);
+          console.log('debug 1', msg, node.warn.callCount, setData, testData[testIndex][1]);
           // evaluate test result
           const expectedData = testData[testIndex][1];
           JSON.stringify(setData).should.equal(JSON.stringify(expectedData));
