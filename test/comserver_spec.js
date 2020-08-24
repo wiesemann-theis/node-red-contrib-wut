@@ -194,11 +194,17 @@ describe('Com-Server Node', () => {
               n1.receive({ payload: Buffer.from(testMsg) }); // valid message with Buffer object
             }
           });
-          n1.receive({}); // empty message -> expect warning
-          n1.warn.callCount.should.equal(1);
 
+          let counter = 0;
+          n1.on('input', msg => {
+            n1.warn.callCount.should.equal(1); // warning on first test, then no more warnings
+            if (++counter > 1) {
+              msg.payload.toString().should.equal(testMsg);
+            }
+          });
+
+          n1.receive({}); // empty message -> expect warning
           n1.receive({ payload: testMsg }); // valid message with string -> no warning, but webioSet message
-          n1.warn.callCount.should.equal(1);
         } else {
           throw new Error('TCP connection not established.');
         }
