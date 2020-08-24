@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const helper = require('node-red-node-test-helper');
+const http = require('http');
 const testNode = require('../src/analogin.js');
 const webioNode = require('../src/webio.js');
 const { STATUS } = require('../src/util/status');
@@ -9,17 +10,33 @@ const getTestFlow = (nodeName, clampNumber) => {
   return [
     { id: 'helperNode', type: 'helper' },
     { id: 'testNode', type: 'Analog IN', name: nodeName, webio: 'webio1', number: (clampNumber || 1), wires: [['helperNode']] },
-    { id: 'webio1', type: 'Web-IO', host: 'i n va l i d', port: '80', protocol: 'http' }
+    { id: 'webio1', type: 'Web-IO', host: '127.0.0.1', port: '8008', protocol: 'http' }
   ];
 }
 
 helper.init(require.resolve('node-red'));
 
 describe('Analog IN Node', () => {
+  let webioServer;
 
-  beforeEach(done => { helper.startServer(done); });
+  beforeEach(done => {
+    // simulate webio
+    webioServer = http.createServer((req, res) => {
+      // do not react to http requests at all to prevent http errors from
+      // interfering (test should be completed within http request timeout)
+      // blame/TODO: find a better solution for that
+    }).listen(8008, () => helper.startServer(done));
+  });
 
-  afterEach(done => { helper.unload().then(() => helper.stopServer(done)); });
+  afterEach(done => {
+    helper.unload().then(() => {
+      helper.stopServer(() => {
+        webioServer.close(() => {
+          done();
+        });
+      });
+    });
+  });
 
   it('should be loaded', done => {
     const flow = [{ id: 'testNode', type: 'Analog IN', name: 'DEMO Analog IN' }];
@@ -81,6 +98,9 @@ describe('Analog IN Node', () => {
             msg.should.have.property('clampName', 3);
             done();
             break;
+          default:
+            done(new Error('Unexpected input message', msg));
+            break;
         }
       });
 
@@ -117,6 +137,9 @@ describe('Analog IN Node', () => {
           case 2:
             emitter.emit('webioGet', 'invalidtype', ['23,4°C'], STATUS.OK); // -> error 'invalid clamp' (no output message)
             done();
+            break;
+          default:
+            done(new Error('Unexpected input message', msg));
             break;
         }
       });
