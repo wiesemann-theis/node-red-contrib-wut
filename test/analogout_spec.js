@@ -79,29 +79,31 @@ describe('Analog OUT Node', () => {
 
       let testIndex = 0;
       node.on('input', msg => {
-        try {
-          console.log('debug 1', msg, node.warn.callCount, setData, testData[testIndex][1]);
-          // evaluate test result
-          const expectedData = testData[testIndex][1];
-          JSON.stringify(setData).should.equal(JSON.stringify(expectedData));
-          node.warn.callCount.should.equal(expectedData.length ? 0 : 1);
+        console.log('debug 1', msg, node.warn.callCount, setData, testData[testIndex][1]);
+        // evaluate test result
+        const expectedData = testData[testIndex][1];
+        JSON.stringify(setData).should.equal(JSON.stringify(expectedData));
+        node.warn.callCount.should.equal(expectedData.length ? 0 : 1);
 
-          // special handling
-          if (testIndex === testData.length - 2) {
-            emitter.emit('webioLabels', {}); // set isValidClamp to false
-          }
+        console.log('debug 2');
 
-          // next test
-          if (++testIndex < testData.length) {
-            setData = [];
-            node.warn.resetHistory();
-            node.receive(testData[testIndex][0]);
-          } else {
-            done();
-          }
-        } catch (err) {
-          console.log('debug 2', err);
-          done(err);
+        // special handling
+        if (testIndex === testData.length - 2) {
+          console.log('debug 3');
+          emitter.emit('webioLabels', {}); // set isValidClamp to false
+        }
+        console.log('debug 4');
+
+        // next test
+        if (++testIndex < testData.length) {
+          console.log('debug 5');
+          setData = [];
+          node.warn.resetHistory();
+          node.receive(testData[testIndex][0]);
+          console.log('debug 6');
+        } else {
+          console.log('debug 7');
+          done();
         }
       });
 
