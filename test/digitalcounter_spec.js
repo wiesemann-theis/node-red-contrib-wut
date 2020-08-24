@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 const helper = require("node-red-node-test-helper");
-const http = require('http');
 const testNode = require("../src/digitalcounter.js");
 const webioNode = require('../src/webio.js');
 const { STATUS } = require('../src/util/status');
@@ -10,33 +9,17 @@ const getTestFlow = (nodeName, clampNumber) => {
   return [
     { id: 'helperNode', type: 'helper' },
     { id: 'testNode', type: 'Counter', name: nodeName, webio: 'webio1', number: (clampNumber || 0), wires: [['helperNode']] },
-    { id: 'webio1', type: 'Web-IO', host: '127.0.0.1', port: '8008', protocol: 'http' }
+    { id: 'webio1', type: 'Web-IO', host: 'i n va l i d', port: '80', protocol: 'http' }
   ];
 };
 
 helper.init(require.resolve('node-red'));
 
 describe('Counter Node', () => {
-  let webioServer;
 
-  beforeEach(done => {
-    // simulate webio
-    webioServer = http.createServer((req, res) => {
-      // do not react to http requests at all to prevent http errors from
-      // interfering (test should be completed within http request timeout)
-      // blame/TODO: find a better solution for that
-    }).listen(8008, () => helper.startServer(done));
-  });
+  beforeEach(done => { helper.startServer(done); });
 
-  afterEach(done => {
-    helper.unload().then(() => {
-      helper.stopServer(() => {
-        webioServer.close(() => {
-          done();
-        });
-      });
-    });
-  });
+  afterEach(done => { helper.unload().then(() => helper.stopServer(done)); });
 
   it('should be loaded', done => {
     const flow = [{ id: 'testNode', type: 'Counter', name: 'DEMO Counter' }];
@@ -69,9 +52,6 @@ describe('Counter Node', () => {
             msg.should.have.property('unit', 'mA');
             done();
             break;
-          default:
-            done(new Error('Unexpected input message', msg));
-            break;
         }
       });
 
@@ -89,40 +69,26 @@ describe('Counter Node', () => {
         setData.push({ type, number, value });
       });
 
+      node.receive({}); // empty message -> expect warning
+      node.warn.callCount.should.equal(1);
+
       const testData = [
-        [{}, []], // empty message -> expect warning
-        [{ payload: '42' }, [{ type: 'digitalcounter', number: 1, value: 42 }]],
-        [{ payload: '12.34' }, [{ type: 'digitalcounter', number: 1, value: 12.34 }]],
-        [{ payload: '12,34' }, [{ type: 'digitalcounter', number: 1, value: 12.34 }]],
-        [{ payload: 42 }, [{ type: 'digitalcounter', number: 1, value: 42 }]],
-        [{ payload: -1.2 }, [{ type: 'digitalcounter', number: 1, value: -1.2 }]],
-        // special handling: set isValidClamp to false
-        [{ payload: 42.73 }, []], // valid message, but invalid clamp -> expect warning
+        ['42', 42], ['12.34', 12.34], ['12,34', 12.34], [42, 42], [-1.2, -1.2]
       ];
-
-      let testIndex = 0;
-      node.on('input', msg => {
-        // evaluate test result
-        const expectedData = testData[testIndex][1];
-        JSON.stringify(setData).should.equal(JSON.stringify(expectedData));
-        node.warn.callCount.should.equal(expectedData.length ? 0 : 1);
-
-        // special handling
-        if (testIndex === testData.length - 2) {
-          emitter.emit('webioLabels', {}); // set isValidClamp to false
-        }
-
-        // next test
-        if (++testIndex < testData.length) {
-          setData = [];
-          node.warn.resetHistory();
-          node.receive(testData[testIndex][0]);
-        } else {
-          done();
-        }
+      let expect = '';
+      testData.forEach(data => {
+        setData = [];
+        node.receive({ payload: data[0] }); // valid message -> no warning, but webioSet message
+        node.warn.callCount.should.equal(1);
+        expect = JSON.stringify([{ type: 'digitalcounter', number: 1, value: data[1] }]);
+        JSON.stringify(setData).should.equal(expect);
       });
 
-      node.receive(testData[testIndex][0]); // initial test
+      emitter.emit('webioLabels', {}); // set isValidClamp to false
+      node.receive({ payload: 42 }); // valid message, but invalid clamp -> expect warning
+      node.warn.callCount.should.equal(2);
+
+      done();
     });
   });
 
@@ -141,9 +107,6 @@ describe('Counter Node', () => {
           case 3:
             msg.should.have.property('clampName', 3);
             done();
-            break;
-          default:
-            done(new Error('Unexpected input message', msg));
             break;
         }
       });
@@ -178,9 +141,6 @@ describe('Counter Node', () => {
           case 2:
             emitter.emit('webioGet', 'invalidtype', ['42'], STATUS.OK); // -> error 'invalid clamp' (no output message)
             done();
-            break;
-          default:
-            done(new Error('Unexpected input message', msg));
             break;
         }
       });

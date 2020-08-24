@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 const helper = require('node-red-node-test-helper');
-const http = require('http');
 const testNode = require('../src/analogout.js');
 const webioNode = require('../src/webio.js');
 const { STATUS } = require('../src/util/status');
@@ -10,39 +9,17 @@ const getTestFlow = (nodeName, clampNumber) => {
   return [
     { id: 'helperNode', type: 'helper' },
     { id: 'testNode', type: 'Analog OUT', name: nodeName, webio: 'webio1', number: (clampNumber || 1), wires: [['helperNode']] },
-    { id: 'webio1', type: 'Web-IO', host: '127.0.0.1', port: '8008', protocol: 'http' }
+    { id: 'webio1', type: 'Web-IO', host: 'i n va l i d', port: '80', protocol: 'http' }
   ];
 }
 
 helper.init(require.resolve('node-red'));
 
 describe('Analog OUT Node', () => {
-  let webioServer;
-  let pendingResponses = [];
 
-  beforeEach(done => {
-    // simulate webio
-    pendingResponses = [];
-    webioServer = http.createServer((req, res) => {
-      // do not respond to http requests to prevent http errors from interfering with test
-      pendingResponses.push(res);
-    }).listen(8008, () => helper.startServer(done));
-  });
+  beforeEach(done => { helper.startServer(done); });
 
-  afterEach(done => {
-    // finally respond to all pendings http requests
-    pendingResponses.forEach(res => {
-      res.writeHead(500);
-      res.end();
-    });
-    helper.unload().then(() => {
-      helper.stopServer(() => {
-        webioServer.close(() => {
-          done();
-        });
-      });
-    });
-  });
+  afterEach(done => { helper.unload().then(() => helper.stopServer(done)); });
 
   it('should be loaded', done => {
     const flow = [{ id: 'testNode', type: 'Analog OUT', name: 'DEMO Analog OUT' }];
@@ -74,38 +51,31 @@ describe('Analog OUT Node', () => {
         setData.push({ type, number, value });
       });
 
-      const testData = [
-        [{}, []], // empty message -> expect warning
-        [{ payload: 42.73 }, [{ type: 'analogout', number: 1, value: 42.73 }]],
-        [{ payload: '73.42' }, [{ type: 'analogout', number: 1, value: 73.42 }]],
-        [{ payload: '12,34' }, [{ type: 'analogout', number: 1, value: 12.34 }]],
-        // special handling: set isValidClamp to false
-        [{ payload: 42.73 }, []], // valid message, but invalid clamp -> expect warning
-      ];
+      node.receive({}); // empty message -> expect warning
+      node.warn.callCount.should.equal(1);
 
-      let testIndex = 0;
-      node.on('input', msg => {
-        // evaluate test result
-        const expectedData = testData[testIndex][1];
-        JSON.stringify(setData).should.equal(JSON.stringify(expectedData));
-        node.warn.callCount.should.equal(expectedData.length ? 0 : 1);
+      node.receive({ payload: 42.73 }); // valid message -> no warning, but webioSet message
+      node.warn.callCount.should.equal(1);
+      const expect = JSON.stringify([{ type: 'analogout', number: 1, value: 42.73 }]);
+      JSON.stringify(setData).should.equal(expect);
 
-        // special handling
-        if (testIndex === testData.length - 2) {
-          emitter.emit('webioLabels', {}); // set isValidClamp to false
-        }
+      setData = [];
+      node.receive({ payload: '73.42' }); // valid message -> no warning, but webioSet message
+      node.warn.callCount.should.equal(1);
+      const expect2 = JSON.stringify([{ type: 'analogout', number: 1, value: 73.42 }]);
+      JSON.stringify(setData).should.equal(expect2);
 
-        // next test
-        if (++testIndex < testData.length) {
-          setData = [];
-          node.warn.resetHistory();
-          node.receive(testData[testIndex][0]);
-        } else {
-          done();
-        }
-      });
+      setData = [];
+      node.receive({ payload: '12,34' }); // valid message -> no warning, but webioSet message
+      node.warn.callCount.should.equal(1);
+      const expect3 = JSON.stringify([{ type: 'analogout', number: 1, value: 12.34 }]);
+      JSON.stringify(setData).should.equal(expect3);
 
-      node.receive(testData[testIndex][0]); // initial test
+      emitter.emit('webioLabels', {}); // set isValidClamp to false
+      node.receive({ payload: 42.73 }); // valid message, but invalid clamp -> expect warning
+      node.warn.callCount.should.equal(2);
+
+      done();
     });
   });
 
@@ -149,9 +119,6 @@ describe('Analog OUT Node', () => {
             msg.should.have.property('clampName', 3);
             done();
             break;
-          default:
-            done(new Error('Unexpected input message', msg));
-            break;
         }
       });
 
@@ -188,9 +155,6 @@ describe('Analog OUT Node', () => {
           case 2:
             emitter.emit('webioGet', 'invalidtype', ['23,4°C'], STATUS.OK); // -> error 'invalid clamp' (no output message)
             done();
-            break;
-          default:
-            done(new Error('Unexpected input message', msg));
             break;
         }
       });
