@@ -79,26 +79,32 @@ describe('Analog OUT Node', () => {
 
       let testIndex = 0;
       node.on('input', msg => {
-        // evaluate test result
-        const expectedData = testData[testIndex][1];
-        JSON.stringify(setData).should.equal(JSON.stringify(expectedData));
-        node.warn.callCount.should.equal(expectedData.length ? 0 : 1);
+        try {
+          console.log('debug 1', msg);
+          // evaluate test result
+          const expectedData = testData[testIndex][1];
+          JSON.stringify(setData).should.equal(JSON.stringify(expectedData));
+          node.warn.callCount.should.equal(expectedData.length ? 0 : 1);
 
-        // special handling
-        if(testIndex === testData.length - 2){
-          emitter.emit('webioLabels', {}); // set isValidClamp to false
-        }
+          // special handling
+          if (testIndex === testData.length - 2) {
+            emitter.emit('webioLabels', {}); // set isValidClamp to false
+          }
 
-        // next test
-        if(++testIndex < testData.length){
-          setData = [];
-          node.warn.resetHistory();
-          node.receive(testData[testIndex][0]);
-        }else{
-          done();
+          // next test
+          if (++testIndex < testData.length) {
+            setData = [];
+            node.warn.resetHistory();
+            node.receive(testData[testIndex][0]);
+          } else {
+            done();
+          }
+        } catch (err) {
+          console.log('debug 2', err);
+          done(err);
         }
       });
-      
+
       node.receive(testData[testIndex][0]); // initial test
     });
   });
