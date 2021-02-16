@@ -27,7 +27,7 @@ module.exports = RED => {
 			sendWebioStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			const webioLabelsCb = (labels) => {
-				clampLabels = labels[portinfoType] || labels[portinfoType2] || {};
+				clampLabels = { ...labels[portinfoType2], ...labels[portinfoType] };
 				isValidClamp = !!clampLabels[config.number];
 				if (value !== undefined) {
 					const clampName = clampLabels[config.number] || config.number;
