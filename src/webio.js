@@ -58,11 +58,11 @@ module.exports = RED => {
             node.emitter.emit('webioGet', category, value, status);
             lastGetData[category] = { value, status };
         }
-        const sendErrorStatus = (status) => {
-            emitGetData('counter', null, status);
-            emitGetData('input', null, status);
-            emitGetData('output', null, status);
-            emitGetData('single', null, status);
+        const sendErrorStatus = (status, categories) => {
+            if (!Array.isArray(categories)) {
+                categories = categories ? [categories] : ['input', 'output', 'counter', 'single'];
+            }
+            categories.forEach(category => emitGetData(category, null, status));
         };
         const sendGetData = (category, value) => {
             if (value || value === 0) {
@@ -200,6 +200,19 @@ module.exports = RED => {
                 stateHandlerTimeout = setTimeout(stateHandler, time || pollingInterval);
             }
         }
+        const getErrorStatus = err => {
+            let status = STATUS.NOT_REACHABLE;
+            if (err && err.statusCode !== undefined) {
+                if (err.statusCode === 403) {
+                    status = STATUS.PW_REQUIRED;
+                } else if (err.statusCode === 404) {
+                    status = STATUS.NOT_ENABLED;
+                } else {
+                    status = STATUS.UNKNOWN;
+                }
+            }
+            return status;
+        };
         const stateHandler = () => {
             const requests = []; // for promise handling
             switch (machineState) {
@@ -228,31 +241,24 @@ module.exports = RED => {
 
                 case MACHINE_STATES.POLLING:
                     if (swInterfaces[1] || swInterfaces[6]) {
-                        const req = httpGetHelper('/single').then(data => onSingleDataReceived(data));
+                        const req = httpGetHelper('/single').then(
+                            data => onSingleDataReceived(data),
+                            err => sendErrorStatus(getErrorStatus(err), ['single'])
+                        );
                         requests.push(req);
                     }
 
                     if (swInterfaces[2] || swInterfaces[3] || swInterfaces[4] || swInterfaces[5]) {
-                        const req = httpGetHelper(`/allout?PW=${pw}&`).then(data => onAlloutDataReceived(data));
+                        const req = httpGetHelper(`/allout?PW=${pw}&`).then(
+                            data => onAlloutDataReceived(data),
+                            err => sendErrorStatus(getErrorStatus(err), ['counter', 'input', 'output'])
+                        );
                         requests.push(req);
                     }
 
                     Promise.all(requests).then(() => {
                         setStateHandlerTimeout(pollingInterval);
-                    }, err => { // if > 0 requests failed -> set error status based on first rejected promise
-                        let status = STATUS.NOT_REACHABLE;
-                        if (err.statusCode !== undefined) {
-                            if (err.statusCode === 403) {
-                                status = STATUS.PW_REQUIRED;
-                            } else if (err.statusCode === 404) {
-                                status = STATUS.NOT_ENABLED;
-                            } else {
-                                status = STATUS.UNKNOWN;
-                            }
-                        }
-                        sendErrorStatus(status);
-                        setStateHandlerTimeout(retryTimeout);
-                    });
+                    }, () => setStateHandlerTimeout(retryTimeout));
                     break;
 
                 case MACHINE_STATES.NOT_SUPPORTED:
