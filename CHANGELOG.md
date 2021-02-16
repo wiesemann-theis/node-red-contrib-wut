@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 2.1.4
+
+### Changed
+
+- improved error status handlilng
+- updated dependencies
+
+### Fixed
+
+- fixed multiple portinfoTypes handling
+
 ## 2.1.3
 
 ### Changed
