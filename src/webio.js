@@ -93,7 +93,7 @@ module.exports = RED => {
             const nextItem = httpQueue.shift() || {};
             const nextPath = nextItem.path;
             const pendingRequest = new Promise((resolve, reject) => {
-                http.get({ agent, path: nextPath, timeout: httpTimeout }, response => {
+                http.get({ agent, path: nextPath, timeout: httpTimeout, rejectUnauthorized: false }, response => {
                     response.setEncoding(JSON.stringify(response.headers).includes('utf-8') ? 'utf-8' : 'latin1');
 
                     let data = '';
