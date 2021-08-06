@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Changed
+
+- updated dependencies
+
+### Fixed
+
+- fixed Web-IO https handling
+
 ## 2.1.4
 
 ### Changed
