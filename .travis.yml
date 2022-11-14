@@ -5,7 +5,7 @@ node_js:
   - 12
   - 14
   - 16
-  - '--lts'
+#  - '--lts'
 
 # "npm test" runs tests in watch mode
 script: npm run test-build
