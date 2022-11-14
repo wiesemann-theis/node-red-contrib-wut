@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- fixed digital out clamp selection after connection loss
+
 ## 2.1.6
 
 ### Fixed

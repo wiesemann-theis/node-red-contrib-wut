@@ -10,7 +10,11 @@
 		RED.comms.subscribe("wut/portlabels/#", function (topic, msg) {
 			const webioId = topic.split("/")[2];
 			if (webioId && msg) {
-				labels[webioId] = Object.assign({}, msg[portinfoType2], msg[portinfoType]);
+				if(msg[portinfoType2] || msg[portinfoType]) {
+					labels[webioId] = Object.assign({}, msg[portinfoType2], msg[portinfoType]);
+				} else { // NOTE: handle empty msg object correctly (sent if no portinfos available)
+					labels[webioId] = undefined;
+				}
 				$('#node-input-webio').trigger('change');
 			} else {
 				console.warn('Invalid portlabels message received', topic, msg);
