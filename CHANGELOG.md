@@ -2,9 +2,12 @@
 
 ## Unreleased
 
+## 2.1.6
+
 ### Fixed
 
 - fixed Web-IO https portinfo handling
+- workaround for Travis CI issues with NodeJS v18
 
 ## 2.1.5
 
