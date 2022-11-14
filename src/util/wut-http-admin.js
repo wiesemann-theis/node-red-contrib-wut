@@ -59,7 +59,7 @@ const init = RED => {
                 const url = `${protocol}://${host}:${port}/portinfo`;
 
                 const http = require(protocol);
-                http.get(url, response => {
+                http.get(url, { rejectUnauthorized: false }, response => {
                     response.setEncoding(JSON.stringify(response.headers).includes('utf-8') ? 'utf-8' : 'latin1');
 
                     let data = '';

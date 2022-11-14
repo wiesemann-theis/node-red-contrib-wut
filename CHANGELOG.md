@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- fixed Web-IO https portinfo handling
+
 ## 2.1.5
 
 ### Changed
