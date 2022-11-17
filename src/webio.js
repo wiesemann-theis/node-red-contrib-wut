@@ -52,6 +52,9 @@ module.exports = RED => {
         node.emitter = new EventEmitter();
         node.emitter.setMaxListeners(128);
 
+        let isUsed = false; // determine if Web-IO is used at all
+        RED.nodes.eachNode((n) => (isUsed = isUsed || n.webio === node.id));
+
         // Helper functions
         let lastGetData = {};
         const emitGetData = (category, value, status) => {
@@ -240,6 +243,9 @@ module.exports = RED => {
                     break;
 
                 case MACHINE_STATES.POLLING:
+                    if(!isUsed){
+                        break; // special case: if Web-IO is not used at all, polling its data is unnecessary
+                    }
                     if (swInterfaces[1] || swInterfaces[6]) {
                         const req = httpGetHelper('/single').then(
                             data => onSingleDataReceived(data),

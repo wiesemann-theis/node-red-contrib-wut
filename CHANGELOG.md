@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- do not poll data of unused Web-IOs
+
 ### Fixed
 
 - fixed digital out clamp selection after connection loss
