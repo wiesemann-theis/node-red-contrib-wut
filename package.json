@@ -30,7 +30,11 @@
 		"node-red-node-test-helper": "0.2.5",
 		"nyc": "15.1.0"
 	},
+	"engines": {
+		"node": ">=12.0.0"
+	},
 	"node-red": {
+		"version": ">=2.0.0",
 		"nodes": {
 			"web-io": "src/webio.js",
 			"analog-in": "src/analogin.js",
