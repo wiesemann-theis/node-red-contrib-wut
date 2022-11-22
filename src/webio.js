@@ -22,7 +22,9 @@ module.exports = RED => {
         const httpTimeout = 5000;
         const agentTimeout = 10000;
         const keepAliveMsecs = 10000; // Web-IOs keep connection open for 30 s
-        const retryTimeout = Math.min(pollingInterval, 10000); // in case of an error and a long polling interval -> do not wait x minutes for retry but max. 10 s
+        // in case of an error and a long polling interval -> do not wait x minutes for retry but max. 10 s
+        const retryTimeout = Math.min(pollingInterval, 10000);
+        const portinfoRetryInterval = Math.min(portinfosInterval, 10000);
 
         RED.nodes.createNode(this, config);
 
@@ -192,7 +194,7 @@ module.exports = RED => {
                 setPortinfosTimeout(portinfosInterval);
             }, () => {
                 node.warn(RED._('logging.portinfos.failed'));
-                setPortinfosTimeout(portinfosInterval);
+                setPortinfosTimeout(portinfoRetryInterval);
             });
         };
 
@@ -238,7 +240,7 @@ module.exports = RED => {
                         } else {
                             sendErrorStatus(STATUS.NOT_REACHABLE);
                         }
-                        setStateHandlerTimeout(retryTimeout);
+                        setStateHandlerTimeout(portinfoRetryInterval);
                     });
                     break;
 

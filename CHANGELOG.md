@@ -5,6 +5,7 @@
 ### Changed
 
 - do not poll data of unused Web-IOs
+- minimum requirements for Node.js and Node-RED specified
 
 ### Fixed
 
