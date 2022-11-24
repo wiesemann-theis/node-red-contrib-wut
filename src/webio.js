@@ -238,6 +238,7 @@ module.exports = RED => {
                         if (err.statusCode === 404) { // /portinfo not supported?
                             machineState = MACHINE_STATES.NOT_SUPPORTED;
                         } else {
+                            node.warn(RED._('logging.portinfos.failed'));
                             sendErrorStatus(STATUS.NOT_REACHABLE);
                         }
                         setStateHandlerTimeout(portinfoRetryInterval);
