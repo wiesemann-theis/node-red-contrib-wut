@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- added new example flow with all W&T nodes
+
 ### Changed
 
 - do not poll data of unused Web-IOs
