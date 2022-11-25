@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.1.7
+
 ### Added
 
 - added new example flow with all W&T nodes
