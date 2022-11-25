@@ -34,7 +34,7 @@
 		"node": ">=12.0.0"
 	},
 	"node-red": {
-		"version": ">=2.0.0",
+		"version": ">=0.20.8",
 		"nodes": {
 			"web-io": "src/webio.js",
 			"analog-in": "src/analogin.js",
