@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.1.8
+
 ### Changed
 
 - increased default clamp count for digital W&T devices
