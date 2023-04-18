@@ -113,7 +113,7 @@
         if (webio && !labels[webioId]) { // trigger portinfo and portdata update if there is no data available yet
             $.ajax({
                 type: "PUT",
-                url: '/wut/portinfo/' + webioId,
+                url: 'wut/portinfo/' + webioId,
                 data: { protocol: webio.protocol, host: webio.host, port: webio.port }
             });
         }

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- fixed internal http api calls (e. g. absolute paths not compatible with custom httpRoot)
+
 ## 2.1.7
 
 ### Added
