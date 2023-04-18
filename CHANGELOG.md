@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- increased default clamp count for digital W&T devices
+
 ### Fixed
 
 - fixed internal http api calls (e. g. absolute paths not compatible with custom httpRoot)
