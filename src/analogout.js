@@ -94,9 +94,9 @@ module.exports = RED => {
 			if (isValidClamp) {
 				if (msg.status !== undefined) { // msg.status triggers output message with current value
 					const clampName = clampLabels[config.number] || config.number;
-					const msg = { topic, payload: value, unit, lastValue, diff: null, clampName, status: msg.status };
-					Object.assign(msg, clampData);
-					this.send(msg);
+					const outMsg = { topic, payload: value, unit, lastValue, diff: null, clampName, status: msg.status };
+					Object.assign(outMsg, clampData);
+					this.send(outMsg);
 				} else {
 					if (typeof msg.payload === 'string') {
 						msg.payload = msg.payload.replace(',', '.');
