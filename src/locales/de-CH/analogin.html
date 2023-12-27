@@ -1,14 +1,21 @@
 <script type="text/x-red" data-help-name="Analog IN">
 	<p>Anbindung eines analogen Eingangs eines <a href="https://www.wut.de/e-5764w-10-inde-000.php" target="_blank">Wiesemann & Theis Web-IOs</a> oder <a href="https://www.wut.de/e-5760w-10-inde-000.php" target="_blank">Web-Thermometers</a> an Node-RED.</p>
 	<p>Wenn sich der Mess-/Eingangswert ändert, wird eine entsprechende Node-RED-Meldung ausgegeben.</p>
+	<p>Über eine eingehende Meldung mit msg.status kann der aktuelle Wert abgefragt werden (alle anderen eingehenden Meldungen sind ungültig).</p>
+	
+	<h3>Inputs</h3>
+	<dl class="message-properties">
+		<dt>status <span class="property-type">any</span></dt>
+		<dd>triggert eine Output-Message mit dem aktuellen Mess-/Eingangswert</dd>
+	</dl>
 
 	<h3>Outputs</h3>
 	<dl class="message-properties">
 		<dt>payload <span class="property-type">number</span></dt>
-		<dd>Aktueller (analoger) Eingangswert ("null" bei Verbindungsverlust o. ä.)</dd>
+		<dd>aktueller (analoger) Eingangswert ("null" bei Verbindungsverlust o. ä.)</dd>
 		
 		<dt>lastValue <span class="property-type">number</span></dt>
-		<dd>Letzter (gültiger) Eingangswert</dd>
+		<dd>letzter (gültiger) Eingangswert</dd>
 		
 		<dt>diff <span class="property-type">number</span></dt>
 		<dd>Differenz zum letzten (gültigen) Eingangswert</dd>
@@ -20,13 +27,16 @@
 		<dd>Bezeichnung der (Eingangs-)Klemme</dd>
 		
 		<dt class="optional">topic <span class="property-type">string</span></dt>
-		<dd>Optionaler Konfigurationsparameter</dd>
+		<dd>optionaler Konfigurationsparameter</dd>
 		
 		<dt class="optional">min <span class="property-type">number</span></dt>
-		<dd>Minimaler Eingangswert (nur für bestimmte Gerätetypen)</dd>
+		<dd>minimaler Eingangswert (nur für bestimmte Gerätetypen)</dd>
 		
 		<dt class="optional">max <span class="property-type">number</span></dt>
-		<dd>Maximaler Eingangswert (nur für bestimmte Gerätetypen)</dd>
+		<dd>maximaler Eingangswert (nur für bestimmte Gerätetypen)</dd>
+		
+		<dt class="optional">status <span class="property-type">any</span></dt>
+		<dd>nur bei Status-Message (s. Inputs -> status)</dd>
 	</dl>
 
 	<h3>Details</h3>

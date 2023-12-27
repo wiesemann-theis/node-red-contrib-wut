@@ -2,29 +2,35 @@
 	<p>This node integrates a digital output of a <a href="https://www.wut.de/e-50www-10-inus-000.php" target="_blank">Wiesemann & Theis Web-IO</a> in Node-RED.</p>
 	<p>When the switching state changes, a corresponding Node-RED message is generated.</p>
 	<p>Furthermore, the output value can be actively set using input messages with a boolean payload.</p>
+	<p>Input messages with msg.status set will (only) trigger a status message (without actively setting anything).</p>
 	
 	<h3>Inputs</h3>
 	<dl class="message-properties">
-		<dt>Payload <span class="property-type">boolean</span></dt>
-		<dd>Desired switching state</dd>
+		<dt>payload <span class="property-type">boolean</span></dt>
+		<dd>desired switching state (will be ignored, if msg.status is set!)</dd>
+		<dt class="optional">status <span class="property-type">any</span></dt>
+		<dd>triggers an output message with the current switching state (and ignores the "payload" (see above))</dd>
 	</dl>
 
 	<h3>Outputs</h3>
 	<dl class="message-properties">
 		<dt>payload <span class="property-type">boolean</span></dt>
-		<dd>Current switching state ("null" on connection loss or similar)</dd>
+		<dd>current switching state ("null" on connection loss or similar)</dd>
 		
 		<dt>lastValue <span class="property-type">boolean</span></dt>
-		<dd>Last (valid) switching state</dd>
+		<dd>last (valid) switching state</dd>
 		
 		<dt>diff <span class="property-type">boolean</span></dt>
 		<dd>true, if the switching state has changed since the last message</dd>
 
 		<dt>clampName <span class="property-type">string</span></dt>
-		<dd>Output clamp name</dd>
+		<dd>output clamp name</dd>
 		
 		<dt class="optional">topic <span class="property-type">string</span></dt>
-		<dd>Optional configuration property</dd>
+		<dd>optional configuration property</dd>
+		
+		<dt class="optional">status <span class="property-type">any</span></dt>
+		<dd>for status messages only (see Inputs -> status)</dd>
 	</dl>
 
 	<h3>Details</h3>
@@ -44,17 +50,17 @@
 	<dl class="message-properties">	
 		<dt>Web-IO <span class="property-type">select</span></dt>
 		<dd>
-			Select (digital) Web-IO and possibly configure connection parameters
+			select (digital) Web-IO and possibly configure connection parameters
 		</dd>
 			
 		<dt>Clamp <span class="property-type">select</span></dt>
-		<dd>Select output clamp</dd>
+		<dd>select output clamp</dd>
 		
 		<dt class="optional">Topic <span class="property-type">string</span></dt>
-		<dd>Topic for outgoing messages</dd>
+		<dd>topic for outgoing messages</dd>
 		
 		<dt class="optional">Name <span class="property-type">string</span></dt>
-		<dd>Custom name for the Node-RED node</dd>
+		<dd>custom name for the Node-RED node</dd>
 	</dl>
 
 	<h3>References</h3>

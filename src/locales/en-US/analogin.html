@@ -1,32 +1,42 @@
 <script type="text/x-red" data-help-name="Analog IN">
 	<p>This node integrates an analog input of a <a href="https://www.wut.de/e-5764w-10-inus-000.php" target="_blank">Wiesemann & Theis Web-IO</a> or <a href="https://www.wut.de/e-5760w-10-inus-000.php" target=_"blank">Web-Thermometer</a> in Node-RED.</p>
 	<p>When the input value changes, a corresponding Node-RED message is generated.</p>
+	<p>Input messages with msg.status set will trigger a status message (all other input messages are invalid).</p>
+	
+	<h3>Inputs</h3>
+	<dl class="message-properties">
+		<dt>status <span class="property-type">any</span></dt>
+		<dd>triggers an output message with the current input value</dd>
+	</dl>
 	
 	<h3>Outputs</h3>
 	<dl class="message-properties">
 		<dt>payload <span class="property-type">number</span></dt>
-		<dd>Current (analog) input value ("null" on connection loss or similar)</dd>
+		<dd>current (analog) input value ("null" on connection loss or similar)</dd>
 		
 		<dt>lastValue <span class="property-type">number</span></dt>
-		<dd>Last (valid) input value</dd>
+		<dd>last (valid) input value</dd>
 		
 		<dt>diff <span class="property-type">number</span></dt>
-		<dd>Difference to last (valid) input value</dd>
+		<dd>difference to last (valid) input value</dd>
 		
 		<dt>unit <span class="property-type">string</span></dt>
-		<dd>Measurement unit</dd>
+		<dd>measurement unit</dd>
 
 		<dt>clampName <span class="property-type">string</span></dt>
-		<dd>Input clamp name</dd>
+		<dd>input clamp name</dd>
 		
 		<dt class="optional">topic <span class="property-type">string</span></dt>
-		<dd>Optional configuration property</dd>
+		<dd>optional configuration property</dd>
 		
 		<dt class="optional">min <span class="property-type">number</span></dt>
-		<dd>Minimal input value (only for some device types)</dd>
+		<dd>minimal input value (only for some device types)</dd>
 		
 		<dt class="optional">max <span class="property-type">number</span></dt>
-		<dd>Maximal input value (only for some device types)</dd>
+		<dd>maximal input value (only for some device types)</dd>
+		
+		<dt class="optional">status <span class="property-type">any</span></dt>
+		<dd>for status messages only (see Inputs -> status)</dd>
 	</dl>
 
 	<h3>Details</h3>
@@ -45,17 +55,17 @@
 	<dl class="message-properties">	
 		<dt>Web-IO <span class="property-type">select</span></dt>
 		<dd>
-			Select (analog) Web-IO or Web-Thermometer and possibly configure connection parameters
+			select (analog) Web-IO or Web-Thermometer and possibly configure connection parameters
 		</dd>
 			
 		<dt>Clamp <span class="property-type">select</span></dt>
-		<dd>Select input clamp</dd>
+		<dd>select input clamp</dd>
 		
 		<dt class="optional">Topic <span class="property-type">string</span></dt>
-		<dd>Topic for outgoing messages</dd>
+		<dd>topic for outgoing messages</dd>
 		
 		<dt class="optional">Name <span class="property-type">string</span></dt>
-		<dd>Custom name for the Node-RED node</dd>
+		<dd>custom name for the Node-RED node</dd>
 	</dl>
 
 	<h3>References</h3>

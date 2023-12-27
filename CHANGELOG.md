@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+
+- added inputs (and msg.status handling) for all Web-IO nodes (previously only OUT nodes hat inputs)
+
+### Changed
+
+- increased retry timeout for portinfos
+
 ## 2.1.8
 
 ### Changed

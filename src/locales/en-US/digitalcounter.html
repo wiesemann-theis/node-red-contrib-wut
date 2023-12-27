@@ -2,32 +2,38 @@
 	<p>This node integrates a counter of a <a href="https://www.wut.de/e-50www-10-inus-000.php" target="_blank">Wiesemann & Theis Web-IO</a> in Node-RED.</p>
 	<p>When the counter value changes, a corresponding Node-RED message is generated.</p>
 	<p>Furthermore, the counter value can be actively set using input messages with a numeric payload.</p>
-		
+	<p>Input messages with msg.status set will (only) trigger a status message (without actively setting anything).</p>
+	
 	<h3>Inputs</h3>
 	<dl class="message-properties">
-		<dt>Payload <span class="property-type">number</span></dt>
-		<dd>Desired counter value</dd>
+		<dt>payload <span class="property-type">number</span></dt>
+		<dd>desired counter value (will be ignored, if msg.status is set!)</dd>
+		<dt class="optional">status <span class="property-type">any</span></dt>
+		<dd>triggers an output message with the current counter value (and ignores the "payload" (see above))</dd>
 	</dl>
-	
+
 	<h3>Outputs</h3>
 	<dl class="message-properties">
 		<dt>payload <span class="property-type">number</span></dt>
-		<dd>Current counter value ("null" on connection loss or similar)</dd>
+		<dd>current counter value ("null" on connection loss or similar)</dd>
 		
 		<dt>lastValue <span class="property-type">number</span></dt>
-		<dd>Last (valid) counter value</dd>
+		<dd>last (valid) counter value</dd>
 		
 		<dt>diff <span class="property-type">number</span></dt>
-		<dd>Difference to the last (valid) counter value</dd>
+		<dd>difference to the last (valid) counter value</dd>
 		
 		<dt>unit <span class="property-type">string</span></dt>
-		<dd>Unit of the counter value (for certain device types only)</dd>
+		<dd>unit of the counter value (for certain device types only)</dd>
 
 		<dt>clampName <span class="property-type">string</span></dt>
-		<dd>Counter clamp name</dd>
+		<dd>counter clamp name</dd>
 		
 		<dt class="optional">topic <span class="property-type">string</span></dt>
-		<dd>Optional configuration property</dd>
+		<dd>optional configuration property</dd>
+		
+		<dt class="optional">status <span class="property-type">any</span></dt>
+		<dd>for status messages only (see Inputs -> status)</dd>
 	</dl>
 
 	<h3>Details</h3>
@@ -46,17 +52,17 @@
 	<dl class="message-properties">	
 		<dt>Web-IO <span class="property-type">select</span></dt>
 		<dd>
-			Select Web-IO and possibly configure connection parameters
+			select Web-IO and possibly configure connection parameters
 		</dd>
 			
 		<dt>Clamp <span class="property-type">select</span></dt>
-		<dd>Select counter clamp</dd>
+		<dd>select counter clamp</dd>
 		
 		<dt class="optional">Topic <span class="property-type">string</span></dt>
-		<dd>Topic for outgoing messages</dd>
+		<dd>topic for outgoing messages</dd>
 		
 		<dt class="optional">Name <span class="property-type">string</span></dt>
-		<dd>Custom name for the Node-RED node</dd>
+		<dd>custom name for the Node-RED node</dd>
 	</dl>
 
 	<h3>References</h3>
