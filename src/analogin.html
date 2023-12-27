@@ -31,10 +31,11 @@
 				webio: { value: '', type: 'Web-IO' },
 				number: { value: 1, required: true, validate: RED.validators.number() }
 			},
+			inputs: 1,
 			outputs: 1,
 			icon: "analog.svg",
 			label: function () {
-				return this.name || (labels[this.webio] || [])[this.number] || 'Analog IN';
+				return this.name || (labels[this.webio] || {})[this.number] || 'Analog IN';
 			},
 			labelStyle: function () {
 				return this.name ? 'node_label_italic' : '';
