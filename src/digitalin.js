@@ -15,14 +15,13 @@ module.exports = RED => {
 			}
 		}
 
+		let value;
+		let lastValue = null;
+		let diff = null;
+		let isValidClamp = true;
+		let clampLabels = [];
 		const webio = RED.nodes.getNode(config.webio);
 		if (webio && webio.emitter) {
-			let value;
-			let lastValue = null;
-			let diff = null;
-			let isValidClamp = true;
-			let clampLabels = [];
-
 			sendWebioStatus(STATUS_MSG[STATUS.NOT_INITIALIZED]);
 
 			const webioLabelsCb = (labels) => {
@@ -70,5 +69,20 @@ module.exports = RED => {
 			this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.invalid-webio'));
 			sendWebioStatus(STATUS_MSG[STATUS.INVALID_CONFIG]);
 		}
+
+		this.on('input', msg => {
+			if (isValidClamp) {
+				if (msg.status) { // msg.status triggers output message with current value
+					const clampName = clampLabels[config.number] || config.number;
+					this.send({ topic, payload: value, lastValue, diff: null, clampName, status: msg.status });
+				} else if (msg.status !== undefined) {
+					this.log(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.input-ignored', { status: msg.status }));
+				} else {
+					this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.input-failed'));
+				}
+			} else {
+				this.warn(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.input-invalid-clamp', { index: config.number }));
+			}
+		});
 	});
 }

@@ -25,10 +25,11 @@
 				webio: { value: '', type: 'Web-IO' },
 				number: { value: 0, required: true, validate: RED.validators.number() }
 			},
+			inputs: 1,
 			outputs: 1,
 			icon: "digital.svg",
 			label: function () {
-				return this.name || (labels[this.webio] || [])[this.number] || 'Digital IN';
+				return this.name || (labels[this.webio] || {})[this.number] || 'Digital IN';
 			},
 			labelStyle: function () {
 				return this.name ? 'node_label_italic' : '';
@@ -44,7 +45,7 @@
 	})();
 </script>
 
-<script type="text/x-red" data-template-name="Digital IN">	
+<script type="text/x-red" data-template-name="Digital IN">
 	<div class="form-row">
 		<label for="node-input-webio"><i class="fa fa-fw fa-globe"></i> <span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.webio"></span></label>
 		<input class="wut-select2" type="text" id="node-input-webio" />

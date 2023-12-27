@@ -56,6 +56,7 @@
         "invalid-webio": "Invalid Web-IO configuration.",
         "input-failed": "Processing input data failed. Probably invalid payload or invalid Web-IO / clamp configuration.",
         "input-invalid-clamp": "Ignored input data for invalid(!) clamp __index__.",
+        "input-ignored": "Ignored input data (msg.status: __status__).",
         "wut-broadcast-started": "Searching for W&T devices in network...",
         "wut-broadcast-finished": "Searching for W&T devices finished (__count__ devices found).",
         "wut-broadcast-failed": "Searching for W&T devices failed: __msg__"
