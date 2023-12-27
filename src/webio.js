@@ -24,7 +24,7 @@ module.exports = RED => {
         const keepAliveMsecs = 10000; // Web-IOs keep connection open for 30 s
         // in case of an error and a long polling interval -> do not wait x minutes for retry but max. 10 s
         const retryTimeout = Math.min(pollingInterval, 10000);
-        const portinfoRetryInterval = Math.min(portinfosInterval, 10000);
+        const portinfoRetryInterval = Math.min(portinfosInterval, 60000);
 
         RED.nodes.createNode(this, config);
 
