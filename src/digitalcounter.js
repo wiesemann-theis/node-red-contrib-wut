@@ -87,11 +87,9 @@ module.exports = RED => {
 
 		this.on('input', msg => {
 			if (isValidClamp) {
-				if (msg.status) { // msg.status triggers output message with current value
+				if (msg.status !== undefined) { // msg.status triggers output message with current value
 					const clampName = clampLabels[config.number] || config.number;
 					this.send({ topic, payload: value, unit, lastValue, diff: null, clampName, status: msg.status });
-				} else if (msg.status !== undefined) {
-					this.log(RED._('@wiesemann-theis/node-red-contrib-wut/web-io:logging.input-ignored', { status: msg.status }));
 				} else {
 					if (typeof msg.payload === 'string') {
 						msg.payload = msg.payload.replace(',', '.');
