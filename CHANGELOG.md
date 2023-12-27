@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.2.0
+
 ### Added
 
 - added inputs (and msg.status handling) for all Web-IO nodes (previously only OUT nodes hat inputs)
