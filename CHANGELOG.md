@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.3.0
+
 ### Added
 
 - added advanced settings to all Web-IO nodes:
