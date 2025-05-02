@@ -21,7 +21,9 @@
             "milliseconds": "Milliseconds",
             "seconds": "Seconds",
             "minutes": "Minutes",
-            "hours": "Hours"
+            "hours": "Hours",
+            "reset-diff": "discard lastValue if connection is lossed",
+            "advanced": "Advanced settings"
         }
     },
     "status": {

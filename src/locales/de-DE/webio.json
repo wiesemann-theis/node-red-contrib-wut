@@ -21,7 +21,9 @@
             "milliseconds": "Millisekunden",
             "seconds": "Sekunden",
             "minutes": "Minuten",
-            "hours": "Stunden"
+            "hours": "Stunden",
+            "reset-diff": "lastValue bei Verbindungsverlust verwerfen",
+            "advanced": "Erweiterte Optionen"
         }
     },
     "status": {

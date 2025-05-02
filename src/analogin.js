@@ -67,7 +67,7 @@ module.exports = RED => {
 						const msg = { topic, payload: value, unit, lastValue, diff, clampName };
 						Object.assign(msg, clampData);
 						this.send(msg);
-						lastValue = value !== null && !isNaN(value) ? value : lastValue;
+						lastValue = value !== null && !isNaN(value) ? value : (config.resetDiff ? null : lastValue);
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
 					sendWebioStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)

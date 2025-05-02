@@ -63,7 +63,7 @@ module.exports = RED => {
 						const lastLastValue = lastValue; // lastValue will be overwritten before msg is sent (to ensure data consistency)
 						value = tmpValue;
 						diff = value !== null && !isNaN(value) && lastValue !== null ? +(value - lastValue).toFixed(3) : null;
-						lastValue = value !== null && !isNaN(value) ? value : lastValue;
+						lastValue = value !== null && !isNaN(value) ? value : (config.resetDiff ? null : lastValue);
 						const clampName = clampLabels[config.number] || config.number;
 						this.send({ topic, payload: value, unit, lastValue: lastLastValue, diff, clampName });
 					}

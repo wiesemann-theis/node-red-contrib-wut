@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+
+- added advanced settings to all Web-IO nodes:
+  - "lastValue reset": optionally clear lastValue / diff on connection loss
+
 ## 2.2.0
 
 ### Added

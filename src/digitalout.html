@@ -28,7 +28,8 @@
 				name: { value: '' },
 				topic: { value: '' },
 				webio: { value: '', type: 'Web-IO' },
-				number: { value: 0, required: true, validate: RED.validators.number() }
+				number: { value: 0, required: true, validate: RED.validators.number() },
+				resetDiff: { value: false }
 			},
 			inputs: 1,
 			outputs: 1,
@@ -69,5 +70,19 @@
 	<div class="form-row">
 		<label for="node-input-name"><i class="fa fa-fw fa-tag"></i> <span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.name"></span></label>
 		<input type="text" id="node-input-name" data-i18n="[placeholder]@wiesemann-theis/node-red-contrib-wut/web-io:config.label.name" />
+	</div>
+
+	<hr/>
+
+    <div class="form-row">
+		<label>&nbsp;</label>
+		<b><span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.advanced"></b>
+	</div>
+    <div class="form-row">
+		<label>&nbsp;</label>
+		<label for="node-input-resetDiff" style="width: 70%;">
+			<input type="checkbox" id="node-input-resetDiff" class="wut-checkbox" />
+			<span data-i18n="@wiesemann-theis/node-red-contrib-wut/web-io:config.label.reset-diff">
+		</label>
 	</div>
 </script>
