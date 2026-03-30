@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- msg.name parameter for Web-IO and Com-Server output messages
+
 ## 2.3.0
 
 ### Added

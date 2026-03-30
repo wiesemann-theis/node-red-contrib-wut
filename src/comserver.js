@@ -12,6 +12,7 @@ module.exports = RED => {
         const host = config.host;
         const port = +config.port;
         const topic = config.topic || config.name || 'Com-Server';
+		const name = config.name || '';
         const format = config.format || 'string';
         const delimiter = (config.delimiter || '').replace('\\n', '\n').replace('\\r', '\r');
 
@@ -112,19 +113,19 @@ module.exports = RED => {
                         const parts = buffer.split(delimiter);
                         const suffix = (config.sendDelimiter ? delimiter : '');
                         for (let i = 0; i < parts.length - 1; ++i) { // send out all but last part
-                            node.send({ topic: topic, payload: parts[i] + suffix });
+                            node.send({ topic: topic, payload: parts[i] + suffix, name });
                         }
                         buffer = parts[parts.length - 1];
                     } else {
-                        node.send({ topic: topic, payload: data });
+                        node.send({ topic: topic, payload: data, name });
                     }
                 } else {
-                    node.send({ topic: topic, payload: data });
+                    node.send({ topic: topic, payload: data, name });
                 }
             });
             tcpClient.on('end', () => {
                 if (buffer) { // if there is something left in the buffer, send/output it
-                    node.send({ topic: topic, payload: buffer });
+                    node.send({ topic: topic, payload: buffer, name });
                     buffer = '';
                 }
             });

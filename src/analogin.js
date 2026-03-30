@@ -3,6 +3,7 @@ const { STATUS, STATUS_MSG } = require('./util/status');
 module.exports = RED => {
 	RED.nodes.registerType('Analog IN', function (config) {
 		const topic = config.topic || config.name || 'Analog IN';
+		const name = config.name || '';
 		const portinfoType = '1';
 
 		RED.nodes.createNode(this, config);
@@ -31,7 +32,7 @@ module.exports = RED => {
 				isValidClamp = !!clampLabels[config.number];
 				if (value !== undefined) {
 					const clampName = clampLabels[config.number] || config.number;
-					const msg = { topic, payload: value, unit, lastValue, diff, clampName };
+					const msg = { topic, payload: value, unit, lastValue, diff, clampName, name };
 					Object.assign(msg, clampData);
 					this.send(msg);
 				}
@@ -64,7 +65,7 @@ module.exports = RED => {
 						value = tmpValue;
 						diff = value !== null && !isNaN(value) && lastValue !== null ? +(value - lastValue).toFixed(3) : null;
 						const clampName = clampLabels[config.number] || config.number;
-						const msg = { topic, payload: value, unit, lastValue, diff, clampName };
+						const msg = { topic, payload: value, unit, lastValue, diff, clampName, name };
 						Object.assign(msg, clampData);
 						this.send(msg);
 						lastValue = value !== null && !isNaN(value) ? value : (config.resetDiff ? null : lastValue);
@@ -94,7 +95,7 @@ module.exports = RED => {
 			if (isValidClamp) {
 				if (msg.status !== undefined) { // msg.status triggers output message with current value
 					const clampName = clampLabels[config.number] || config.number;
-					const outMsg = { topic, payload: value, unit, lastValue, diff: null, clampName, status: msg.status };
+					const outMsg = { topic, payload: value, unit, lastValue, diff: null, clampName, status: msg.status, name };
 					Object.assign(outMsg, clampData);
 					this.send(outMsg);
 				} else {

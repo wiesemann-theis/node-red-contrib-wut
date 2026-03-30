@@ -3,6 +3,7 @@ const { STATUS, STATUS_MSG } = require('./util/status');
 module.exports = RED => {
 	RED.nodes.registerType('Digital OUT', function (config) {
 		const topic = config.topic || config.name || 'Digital OUT';
+		const name = config.name || '';
 		const portinfoType = '3';
 		const portinfoType2 = '5';
 
@@ -30,7 +31,7 @@ module.exports = RED => {
 				isValidClamp = !!clampLabels[config.number];
 				if (value !== undefined) {
 					const clampName = clampLabels[config.number] || config.number;
-					this.send({ topic, payload: value, lastValue, diff, clampName });
+					this.send({ topic, payload: value, lastValue, diff, clampName, name });
 				}
 			};
 
@@ -51,7 +52,7 @@ module.exports = RED => {
 						diff = value != null && lastValue !== null ? value !== lastValue : null;
 						lastValue = value !== null ? value : (config.resetDiff ? null : lastValue);
 						const clampName = clampLabels[config.number] || config.number;
-						this.send({ topic, payload: value, lastValue: lastLastValue, diff, clampName });
+						this.send({ topic, payload: value, lastValue: lastLastValue, diff, clampName, name });
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
 					sendWebioStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
@@ -75,7 +76,7 @@ module.exports = RED => {
 			if (isValidClamp) {
 				if (msg.status !== undefined) { // msg.status triggers output message with current value
 					const clampName = clampLabels[config.number] || config.number;
-					this.send({ topic, payload: value, lastValue, diff: null, clampName, status: msg.status });
+					this.send({ topic, payload: value, lastValue, diff: null, clampName, status: msg.status, name });
 				} else {
 					const stringPayload = (msg.payload + '').toLowerCase();
 					if (['true', '1', 'on', 'an', 'ein'].indexOf(stringPayload) !== -1) {
