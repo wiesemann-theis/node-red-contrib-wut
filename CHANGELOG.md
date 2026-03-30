@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.3.1
+
 ### Added
 
 - msg.name parameter for Web-IO and Com-Server output messages
