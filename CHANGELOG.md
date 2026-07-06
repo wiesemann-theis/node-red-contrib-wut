@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.3.2
+
 ### Added
 
 - msg.url parameter for Web-IO output messages
