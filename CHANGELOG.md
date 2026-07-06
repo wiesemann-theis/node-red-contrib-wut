@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- remove duplicate w&t broadcast results (based on MAC address; might occur in case of multiple network interfaces)
+
 ## 2.3.2
 
 ### Added

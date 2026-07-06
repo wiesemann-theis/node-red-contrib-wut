@@ -175,7 +175,16 @@ function findWutDevicesWrapper(clearCache) {
         return new Promise((resolve, reject) => {
             findWutDevices().then(responses => {
                 const mapIp = (ip) => ip.replace(/(\d+)/g, d => ('000' + d).slice(-3));
-                cachedData = responses.sort((a, b) => mapIp(a.ip) > mapIp(b.ip) ? 1 : -1); // sort by ip
+                const seenResponses = new Set();
+                const uniqueResponses = responses.filter(el => {
+                    const key = el.mac;
+                    if (seenResponses.has(key)){
+                        return false;
+                    }
+                    seenResponses.add(key);
+                    return true;
+                });
+                cachedData = uniqueResponses.sort((a, b) => mapIp(a.ip) > mapIp(b.ip) ? 1 : -1); // sort by ip
                 cacheTimestamp = new Date();
                 resolve(cachedData);
             }, err => reject(err));
