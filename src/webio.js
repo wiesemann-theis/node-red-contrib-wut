@@ -54,6 +54,9 @@ module.exports = RED => {
         node.emitter = new EventEmitter();
         node.emitter.setMaxListeners(128);
 
+        // NOTE: define url property so that it can be accessed from parent nodes
+        node.url = `${config.protocol}://${config.host}:${config.port}/`;
+
         let isUsed = false; // determine if Web-IO is used at all
         RED.nodes.eachNode((n) => (isUsed = isUsed || n.webio === node.id));
 

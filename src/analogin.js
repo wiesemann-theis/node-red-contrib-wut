@@ -32,7 +32,7 @@ module.exports = RED => {
 				isValidClamp = !!clampLabels[config.number];
 				if (value !== undefined) {
 					const clampName = clampLabels[config.number] || config.number;
-					const msg = { topic, payload: value, unit, lastValue, diff, clampName, name };
+					const msg = { topic, payload: value, unit, lastValue, diff, clampName, name, url: webio.url };
 					Object.assign(msg, clampData);
 					this.send(msg);
 				}
@@ -65,7 +65,7 @@ module.exports = RED => {
 						value = tmpValue;
 						diff = value !== null && !isNaN(value) && lastValue !== null ? +(value - lastValue).toFixed(3) : null;
 						const clampName = clampLabels[config.number] || config.number;
-						const msg = { topic, payload: value, unit, lastValue, diff, clampName, name };
+						const msg = { topic, payload: value, unit, lastValue, diff, clampName, name, url: webio.url };
 						Object.assign(msg, clampData);
 						this.send(msg);
 						lastValue = value !== null && !isNaN(value) ? value : (config.resetDiff ? null : lastValue);
@@ -95,7 +95,7 @@ module.exports = RED => {
 			if (isValidClamp) {
 				if (msg.status !== undefined) { // msg.status triggers output message with current value
 					const clampName = clampLabels[config.number] || config.number;
-					const outMsg = { topic, payload: value, unit, lastValue, diff: null, clampName, status: msg.status, name };
+					const outMsg = { topic, payload: value, unit, lastValue, diff: null, clampName, status: msg.status, name, url: webio ? webio.url : '' };
 					Object.assign(outMsg, clampData);
 					this.send(outMsg);
 				} else {

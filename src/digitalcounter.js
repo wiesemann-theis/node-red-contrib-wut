@@ -31,7 +31,7 @@ module.exports = RED => {
 				isValidClamp = !!clampLabels[config.number];
 				if (value !== undefined) {
 					const clampName = clampLabels[config.number] || config.number;
-					this.send({ topic, payload: value, unit, lastValue, diff, clampName, name });
+					this.send({ topic, payload: value, unit, lastValue, diff, clampName, name, url: webio.url });
 				}
 			};
 
@@ -66,7 +66,7 @@ module.exports = RED => {
 						diff = value !== null && !isNaN(value) && lastValue !== null ? +(value - lastValue).toFixed(3) : null;
 						lastValue = value !== null && !isNaN(value) ? value : (config.resetDiff ? null : lastValue);
 						const clampName = clampLabels[config.number] || config.number;
-						this.send({ topic, payload: value, unit, lastValue: lastLastValue, diff, clampName, name });
+						this.send({ topic, payload: value, unit, lastValue: lastLastValue, diff, clampName, name, url: webio.url });
 					}
 				} else if (!isValidClamp && status === STATUS.OK) {
 					sendWebioStatus(STATUS_MSG[STATUS.OK]);  // invalid clamp status (if invalid web-io configured)
@@ -90,7 +90,7 @@ module.exports = RED => {
 			if (isValidClamp) {
 				if (msg.status !== undefined) { // msg.status triggers output message with current value
 					const clampName = clampLabels[config.number] || config.number;
-					this.send({ topic, payload: value, unit, lastValue, diff: null, clampName, status: msg.status, name });
+					this.send({ topic, payload: value, unit, lastValue, diff: null, clampName, status: msg.status, name, url: webio ? webio.url : '' });
 				} else {
 					if (typeof msg.payload === 'string') {
 						msg.payload = msg.payload.replace(',', '.');
